@@ -120,11 +120,15 @@ export interface TimeMarker {
     start_seconds: number;
     end_seconds: number;
 }
-/** A chapter marker in seconds, with an optional title. */
+/**
+ * A chapter marker in seconds. `MediaItemController::getPlaybackInfo()` ALWAYS
+ * sets the `title` key but its value may be null, so the key is required and
+ * the value is nullable (not an optional/absent key).
+ */
 export interface ChapterMarker {
     start_seconds: number;
     end_seconds: number;
-    title?: string;
+    title: string | null;
 }
 /**
  * The marker/skip response from `GET /api/v1/media/{id}/playback`, produced by

@@ -18,16 +18,19 @@ describe('type-level construction smoke', () => {
       id: 'a1',
       name: 'Blade Runner',
       type: 'movie',
+      sort_title: 'Blade Runner',
       parent_id: null,
       season_number: null,
       episode_number: null,
       episode_title: null,
       path: '/media/blade.mkv',
       poster_url: 'https://img/p.jpg',
+      poster_srcset: 'https://img/p_w342.jpg 342w, https://img/p_w500.jpg 500w',
       genres: ['Sci-Fi'],
       year: 1982,
       rating: 'R',
-      runtime: 7020,
+      runtime: 117,
+      duration: 7020,
       overview: 'A blade runner.',
       actors: ['Harrison Ford'],
       director: 'Ridley Scott',
@@ -55,6 +58,23 @@ describe('type-level construction smoke', () => {
     expect(item.id).toBe('a1');
     expect(item.actors).toEqual(['Harrison Ford']);
     expect(item.cast?.[0].role).toBe('Deckard');
+    expect(item.sort_title).toBe('Blade Runner');
+    expect(item.duration).toBe(7020);
+    expect(item.poster_srcset).toContain('342w');
+  });
+
+  it('allows a poster_srcset/duration null when unprobed', () => {
+    // Both are nullable per the shaper (non-TMDB poster / not yet probed).
+    const item: MediaItem = {
+      id: 'b2',
+      name: 'Unprobed',
+      type: 'movie',
+      sort_title: 'Unprobed',
+      poster_srcset: null,
+      duration: null,
+    };
+    expect(item.poster_srcset).toBeNull();
+    expect(item.duration).toBeNull();
   });
 
   it('constructs the supporting REST shapes', () => {
@@ -85,7 +105,11 @@ describe('type-level construction smoke', () => {
       item_id: 'a1',
       intro_marker: { start_seconds: 0, end_seconds: 30 },
       outro_marker: null,
-      chapters: [{ start_seconds: 0, end_seconds: 600, title: 'Cold open' }],
+      chapters: [
+        { start_seconds: 0, end_seconds: 600, title: 'Cold open' },
+        // `title` key is always present but may be null (server emits it verbatim).
+        { start_seconds: 600, end_seconds: 1200, title: null },
+      ],
       skip_button_spec: {
         skip_intro_start: 0,
         skip_intro_end: 30,
@@ -95,6 +119,7 @@ describe('type-level construction smoke', () => {
     };
     expect(pb.outro_marker).toBeNull();
     expect(pb.skip_button_spec.skip_intro_end).toBe(30);
+    expect(pb.chapters[1].title).toBeNull();
   });
 
   it('constructs camelCase hub DTOs', () => {
