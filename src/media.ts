@@ -79,17 +79,35 @@ export interface MediaItem {
   id: string;
   name: string;
   type: MediaType;
+  /**
+   * Article-stripped sort title ("The Plot" → "Plot"), emitted on EVERY row by
+   * `MediaItemShaper::shape()` (`'sort_title' => SortTitle::from($name)`, always
+   * a non-null string). Optional here because legacy/older servers may omit it.
+   */
+  sort_title?: string;
   parent_id?: string | null;
   season_number?: number | null;
   episode_number?: number | null;
   episode_title?: string | null;
   path?: string;
   poster_url?: string | null;
+  /**
+   * Responsive poster `srcset` (TMDB width variants), emitted on EVERY row by
+   * `MediaItemShaper::shape()` (`'poster_srcset' => PosterSrcset::forPosterUrl(...)`).
+   * Null for non-TMDB posters → the card falls back to `poster_url`.
+   */
+  poster_srcset?: string | null;
   genres?: string[];
   year?: number | null;
   rating?: ContentRating | null;
-  /** Total runtime in seconds (NOT ticks). Null when unknown. */
+  /** Total runtime in MINUTES from TMDB (NOT ticks). Null when unknown. */
   runtime?: number | null;
+  /**
+   * Precise probed media length in SECONDS (distinct from `runtime`, which is
+   * TMDB minutes). Emitted on EVERY row by `MediaItemShaper::shape()`
+   * (`'duration' => (int) metadata.duration_seconds`); null until probed.
+   */
+  duration?: number | null;
   overview?: string | null;
   /** Flat actor-name list. Stays flat — see `cast` for rich objects. */
   actors?: string[];
@@ -143,7 +161,13 @@ export interface Library {
   /** Library media kind. Server returns a free string; common values map to
    * MediaType-ish kinds (movie/series/music/photo/audiobook). */
   type: string;
-  /** Count of items in the library, when the server includes it. */
+  /**
+   * Count of items in the library, when the server includes it. Verified
+   * snake_case `item_count` against the server: both
+   * `WebPortalRouter::getLibraries()` and `LibraryController::index()` emit
+   * `$lib['item_count'] = $this->itemRepository->countByType(...)`. The
+   * single-library detail (`GET /api/v1/libraries/{id}`) omits it.
+   */
   item_count?: number;
 }
 

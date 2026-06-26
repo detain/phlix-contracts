@@ -5,6 +5,29 @@ All notable changes to `@phlix/contracts` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2026-06-26
+
+### Added
+
+- `media`: `MediaItem` now declares three fields the server emits on EVERY row
+  (verified against `MediaItemShaper::shape()`): `sort_title?: string`
+  (article-stripped sort title, `SortTitle::from($name)`),
+  `poster_srcset?: string | null` (responsive TMDB poster `srcset`,
+  `PosterSrcset::forPosterUrl()`; null for non-TMDB posters), and
+  `duration?: number | null` (precise probed media length in SECONDS, distinct
+  from `runtime` which is TMDB minutes; null until probed).
+
+### Fixed
+
+- `playback`: `ChapterMarker.title` changed from `title?: string` to
+  `title: string | null` — `MediaItemController::getPlaybackInfo()` ALWAYS sets
+  the `title` key but its value may be null, so the key is required and the
+  value nullable (it was previously typed as an optional/absent key).
+- `media`: corrected the `MediaItem.runtime` doc — it is TMDB MINUTES, not
+  seconds (the seconds value is the new `duration` field). Confirmed the library
+  item-count wire key is snake_case `item_count` (both
+  `WebPortalRouter::getLibraries()` and `LibraryController::index()`).
+
 ## [0.1.0] - 2026-06-26
 
 ### Added
@@ -39,4 +62,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
+[0.1.1]: https://github.com/detain/phlix-contracts/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/detain/phlix-contracts/releases/tag/v0.1.0
