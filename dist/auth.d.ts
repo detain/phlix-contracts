@@ -1,0 +1,99 @@
+/**
+ * Auth wire shapes.
+ *
+ * Mirrors `phlix-shared` Auth DTOs (`AuthResult`, `UserInfo`, `JwtClaims`) and
+ * the server's `POST /api/v1/Auth/Login` JSON response shape consumed by the
+ * windows client (`User`, `AuthResult`, `Session`).
+ *
+ * Note: the PHP `JwtClaims` uses camelCase `serverId` in its payload (see
+ * `JwtClaims::toPayload()`), so we keep `serverId` camelCase here. The REST
+ * login response uses snake_case (`session_id`), so those stay snake_case.
+ */
+/** A local Phlix user, as returned in the login response. */
+export interface User {
+    id: string;
+    name: string;
+    email?: string;
+}
+/**
+ * External-provider identity, mirroring `Phlix\Shared\Auth\UserInfo`.
+ * Provider claims live in `rawAttributes` (camelCase payload, per the PHP DTO).
+ */
+export interface UserInfo {
+    externalId: string;
+    email?: string | null;
+    displayName?: string | null;
+    avatarUrl?: string | null;
+    rawAttributes?: Record<string, unknown>;
+}
+/**
+ * Result of `POST /Auth/Login` (windows REST shape): bearer token + session id
+ * + the authenticated user. This is the wire/REST AuthResult.
+ */
+export interface AuthResult {
+    token: string;
+    session_id: string;
+    user: User;
+}
+/**
+ * Result of an external-provider authentication attempt, mirroring
+ * `Phlix\Shared\Auth\AuthResult` (camelCase). Distinct from the REST login
+ * {@link AuthResult}; kept under its own name.
+ */
+export interface ProviderAuthResult {
+    success: boolean;
+    userId?: string | null;
+    externalId?: string | null;
+    error?: string | null;
+    attributes?: Record<string, unknown>;
+}
+/** A device session (windows `Session`). */
+export interface Session {
+    id: string;
+    device_id: string;
+    user_id: string;
+}
+/** JWT issuer constants (mirror `JwtClaims::ISS_*`). */
+export declare const JWT_ISS: {
+    readonly PHLIX: "phlix";
+    readonly PHLIX_HUB: "phlix-hub";
+};
+export type JwtIssuer = (typeof JWT_ISS)[keyof typeof JWT_ISS];
+/** JWT audience constants (mirror `JwtClaims::AUD_*`). */
+export declare const JWT_AUD: {
+    readonly SERVER: "server";
+    readonly HUB: "hub";
+    readonly CLIENT: "client";
+};
+export type JwtAudience = (typeof JWT_AUD)[keyof typeof JWT_AUD];
+/** JWT token-kind constants (mirror `JwtClaims::TYPE_*`). */
+export declare const JWT_TYPE: {
+    readonly ACCESS: "access";
+    readonly REFRESH: "refresh";
+};
+export type JwtType = (typeof JWT_TYPE)[keyof typeof JWT_TYPE];
+/**
+ * Decoded Phlix JWT payload, mirroring `Phlix\Shared\Auth\JwtClaims`.
+ *
+ * RFC 7519 required fields (`iss`, `aud`, `sub`, `iat`, `exp`, `type`) are
+ * always present; `nbf`, `jti`, `scope`, `serverId` are optional and omitted
+ * by the PHP `toPayload()` when null/empty.
+ */
+export interface JwtClaims {
+    iss: string;
+    aud: string;
+    sub: string;
+    /** Issued-at, UNIX seconds. */
+    iat: number;
+    /** Expires-at, UNIX seconds. */
+    exp: number;
+    /** Not-before, UNIX seconds. Optional. */
+    nbf?: number | null;
+    type: string;
+    /** Refresh-only token identifier. Optional. */
+    jti?: string | null;
+    /** Permissions list, e.g. `["library:read","playback:write"]`. */
+    scope?: string[];
+    /** Server UUID for hub-minted client tokens. Optional. */
+    serverId?: string | null;
+}
