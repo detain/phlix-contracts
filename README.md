@@ -1,5 +1,11 @@
 # @phlix/contracts
 
+[![CI](https://github.com/detain/phlix-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/detain/phlix-contracts/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/detain/phlix-contracts/graph/badge.svg)](https://codecov.io/gh/detain/phlix-contracts)
+[![Version](https://img.shields.io/github/v/tag/detain/phlix-contracts?label=version&sort=semver)](https://github.com/detain/phlix-contracts/tags)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 Framework-agnostic TypeScript REST/wire DTO types **plus** a handful of tiny
 pure helpers for Phlix. This is the single source of truth for the
 media / playback / auth / hub / library / event shapes that the JS clients
