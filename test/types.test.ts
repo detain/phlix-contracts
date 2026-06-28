@@ -1,8 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import type {
   MediaItem,
+  MediaItemUserData,
   MediaItemsResponse,
+  PagedMediaItemsResponse,
   Library,
+  LibrariesResponse,
+  LibraryResponse,
   UserData,
 } from '../src/media';
 import type { PlaybackInfo, StreamInfo } from '../src/playback';
@@ -75,6 +79,57 @@ describe('type-level construction smoke', () => {
     };
     expect(item.poster_srcset).toBeNull();
     expect(item.duration).toBeNull();
+  });
+
+  it('constructs a detail item with a user_data block (B2)', () => {
+    const ud: MediaItemUserData = { favorite: true, rating: 7 };
+    const item: MediaItem = {
+      id: 'd1',
+      name: 'Favorited',
+      type: 'movie',
+      user_data: ud,
+    };
+    expect(item.user_data?.favorite).toBe(true);
+    expect(item.user_data?.rating).toBe(7);
+  });
+
+  it('allows a null user_data when unauthenticated (B2)', () => {
+    const item: MediaItem = {
+      id: 'd2',
+      name: 'Anon',
+      type: 'movie',
+      user_data: null,
+    };
+    expect(item.user_data).toBeNull();
+  });
+
+  it('constructs the library list/detail envelopes (B3)', () => {
+    const list: LibrariesResponse = {
+      libraries: [{ id: 'l1', name: 'Movies', type: 'movie', item_count: 3 }],
+    };
+    const detail: LibraryResponse = {
+      // single-library detail omits item_count
+      library: { id: 'l1', name: 'Movies', type: 'movie' },
+    };
+    expect(list.libraries[0].item_count).toBe(3);
+    expect(detail.library.id).toBe('l1');
+  });
+
+  it('constructs a PagedMediaItemsResponse with required counters (B6)', () => {
+    // /api/v1/media always carries total/limit/offset; a paged value also
+    // satisfies the looser MediaItemsResponse base.
+    const paged: PagedMediaItemsResponse = {
+      items: [{ id: 'x', name: 'X', type: 'movie' }],
+      total: 42,
+      limit: 50,
+      offset: 0,
+    };
+    const base: MediaItemsResponse = paged;
+    // A bare { items } surface (getLibraryItems omits total) still satisfies the base.
+    const bare: MediaItemsResponse = { items: [], limit: 50, offset: 0 };
+    expect(paged.total).toBe(42);
+    expect(base.items.length).toBe(1);
+    expect(bare.total).toBeUndefined();
   });
 
   it('constructs the supporting REST shapes', () => {
