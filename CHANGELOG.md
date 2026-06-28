@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `media`: new `MediaItemUserData` interface (`{ favorite: boolean; rating:
+  number | null }`) plus a `user_data?: MediaItemUserData | null` field on
+  `MediaItem`. The detail endpoint (`GET /api/v1/media/{id}`) attaches this
+  per-user favorite/rating block via `WebPortalRouter::resolveUserData()`, which
+  returns `array{favorite: bool, rating: int|null}|null` (`null` when
+  unauthenticated or the favorites store is unwired). Optional + nullable models
+  both "absent on list responses" and "null when unauthenticated". This is a
+  DIFFERENT shape from the existing `UserData` (resume/watch ticks) and is a
+  separate type by design (B2).
+- `media`: new `LibrariesResponse` (`{ libraries: Library[] }`) and
+  `LibraryResponse` (`{ library: Library }`) envelopes. Verified against the
+  server: `WebPortalRouter::getLibraries()` / `LibraryController::index()` emit
+  `{ libraries: [...] }`, and `WebPortalRouter::getLibrary()` emits
+  `{ library: ... }` (the single library is WRAPPED, not bare) (B3).
+- `media`: new `PagedMediaItemsResponse extends MediaItemsResponse` pinning
+  `total`/`limit`/`offset` as required, for the `GET /api/v1/media`
+  (`getMedia`) grid path which ALWAYS sends them. `MediaItemsResponse` keeps
+  those counters optional and its docblock now explains why: the bare
+  `GET /api/v1/libraries/{id}/items` (`getLibraryItems`) surface returns
+  `{ items, limit, offset }` and OMITS `total`, so making `total` required on
+  the base would break that consumer (B6).
+
 ### Fixed
 
 - `README`: corrected the Usage example and Conventions note that wrongly
