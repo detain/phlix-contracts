@@ -38,7 +38,11 @@ export function ticksToMinutes(ticks: number): number {
  * `formatTime(seconds)` applied to `ticksToSeconds`, seconds-floored.
  */
 export function ticksToHms(ticks: number): string {
-  const total = Math.floor(ticksToSeconds(ticks));
+  // Guard against non-finite (NaN/Infinity) and negative input: such values
+  // would otherwise yield "NaN:NaN" / nonsensical output. Clamp to 0 so the
+  // zero-fallback ("0:00") is returned. Valid input is unaffected.
+  const safeTicks = Number.isFinite(ticks) && ticks > 0 ? ticks : 0;
+  const total = Math.floor(ticksToSeconds(safeTicks));
   const hrs = Math.floor(total / 3600);
   const mins = Math.floor((total % 3600) / 60);
   const secs = Math.floor(total % 60);
@@ -65,7 +69,10 @@ export function ticksToHms(ticks: number): string {
  * @see formatDuration
  */
 export function formatRuntime(ticks: number): string {
-  const minutes = ticksToMinutes(ticks);
+  // Guard non-finite / negative input → clamp to 0 so the zero-fallback
+  // ("0 min") is returned rather than "NaN min". Valid input is unaffected.
+  const safeTicks = Number.isFinite(ticks) && ticks > 0 ? ticks : 0;
+  const minutes = ticksToMinutes(safeTicks);
   if (minutes < 60) {
     return `${minutes} min`;
   }
@@ -92,7 +99,10 @@ export function formatRuntime(ticks: number): string {
  * @see formatRuntime
  */
 export function formatDuration(ticks: number): string {
-  if (!ticks) {
+  // Falsy (0/NaN) → "" (existing behavior). Also reject non-finite (Infinity)
+  // and negative input, which would otherwise produce "NaN..."/nonsensical
+  // output, returning the same "" fallback. Valid input is unaffected.
+  if (!ticks || !Number.isFinite(ticks) || ticks < 0) {
     return '';
   }
   const hours = Math.floor(ticks / TICKS_PER_HOUR);
