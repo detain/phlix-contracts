@@ -30,8 +30,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `GET /api/v1/libraries/{id}/items` (`getLibraryItems`) surface returns
   `{ items, limit, offset }` and OMITS `total`, so making `total` required on
   the base would break that consumer (B6).
+- `media`: new `AnyMediaItem` discriminated union
+  (`Movie | Series | Season | Episode`), narrowable on the `type` discriminant
+  so consumers can `switch (item.type)` with compiler-enforced exhaustiveness
+  (a `never`-typed default branch flags unhandled variants). All members inherit
+  the base `MediaItem` fields, including the detail-only `user_data` block (F4).
 
 ### Fixed
+
+- `ticks`: `ticksToHms`, `formatRuntime`, and `formatDuration` now guard against
+  non-finite (`NaN`/`Infinity`) and negative input — previously `ticksToHms(NaN)`
+  yielded `"NaN:NaN"`. Such input is clamped to `0` and each function returns its
+  existing zero-fallback (`"0:00"` / `"0 min"` / `""`). Valid-input output is
+  unchanged (Q3).
 
 - `README`: corrected the Usage example and Conventions note that wrongly
   treated `MediaItem.runtime` as **seconds** (a 60× error). `runtime` is TMDB

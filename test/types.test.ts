@@ -8,6 +8,11 @@ import type {
   LibrariesResponse,
   LibraryResponse,
   UserData,
+  AnyMediaItem,
+  Movie,
+  Series,
+  Season,
+  Episode,
 } from '../src/media';
 import type { PlaybackInfo, StreamInfo } from '../src/playback';
 import type { HeartbeatDto, ServerInfoDto } from '../src/hub';
@@ -130,6 +135,65 @@ describe('type-level construction smoke', () => {
     expect(paged.total).toBe(42);
     expect(base.items.length).toBe(1);
     expect(bare.total).toBeUndefined();
+  });
+
+  it('narrows AnyMediaItem exhaustively on the type discriminant (F4)', () => {
+    // A function over the union that returns on each `type`. The `never`-typed
+    // default branch makes the compiler enforce exhaustiveness: adding a member
+    // to AnyMediaItem without a case here would be a typecheck error.
+    function describeItem(item: AnyMediaItem): string {
+      switch (item.type) {
+        case 'movie': {
+          const m: Movie = item;
+          return `movie:${m.name}`;
+        }
+        case 'series': {
+          const s: Series = item;
+          return `series:${s.name}`;
+        }
+        case 'season': {
+          const s: Season = item;
+          // season_number is narrowed to number | null on Season.
+          return `season:${s.season_number ?? '?'}`;
+        }
+        case 'episode': {
+          const e: Episode = item;
+          return `episode:S${e.season_number ?? '?'}E${e.episode_number ?? '?'}`;
+        }
+        default: {
+          const _exhaustive: never = item;
+          return _exhaustive;
+        }
+      }
+    }
+
+    const movie: Movie = { id: 'm1', name: 'Blade Runner', type: 'movie' };
+    const series: Series = { id: 's1', name: 'Foundation', type: 'series' };
+    const season: Season = { id: 'se1', name: 'Season 1', type: 'season', season_number: 1 };
+    const episode: Episode = {
+      id: 'ep1',
+      name: 'Pilot',
+      type: 'episode',
+      season_number: 1,
+      episode_number: 1,
+    };
+
+    expect(describeItem(movie)).toBe('movie:Blade Runner');
+    expect(describeItem(series)).toBe('series:Foundation');
+    expect(describeItem(season)).toBe('season:1');
+    expect(describeItem(episode)).toBe('episode:S1E1');
+  });
+
+  it('AnyMediaItem members inherit MediaItem.user_data (F4 + B2)', () => {
+    // Union members carry the merged base fields, including the detail-only
+    // per-user block added in B2.
+    const movie: AnyMediaItem = {
+      id: 'm2',
+      name: 'Favorited',
+      type: 'movie',
+      user_data: { favorite: true, rating: 9 },
+    };
+    expect(movie.user_data?.rating).toBe(9);
   });
 
   it('constructs the supporting REST shapes', () => {

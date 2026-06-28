@@ -272,3 +272,16 @@ export interface Episode extends MediaItem {
   season_number: number | null;
   episode_number: number | null;
 }
+
+/**
+ * Discriminated union over the four hierarchy item shapes, narrowable on the
+ * `type` discriminant. Consumers can `switch (item.type)` and let the compiler
+ * enforce exhaustiveness (a default branch typed `never` flags an unhandled
+ * variant).
+ *
+ * NOTE: this union covers the `movie`/`series`/`season`/`episode` discriminants
+ * only; the broader `MediaType` also includes `audio`/`image`, which have no
+ * dedicated interface yet (they surface as plain `MediaItem`). All members
+ * inherit the base `MediaItem` fields, including the detail-only `user_data`.
+ */
+export type AnyMediaItem = Movie | Series | Season | Episode;
