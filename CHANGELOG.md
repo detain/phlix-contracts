@@ -15,6 +15,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `duration` is the probed length in **seconds**. The example now prefers
   `item.duration` (seconds) and falls back to `item.runtime * 60` when deriving
   ticks. Docs-only; no code or type change.
+- `playback`: corrected the server method name in the two `playback.ts`
+  docblocks from `MediaItemController::playbackInfo()` to the real
+  `MediaItemController::getPlaybackInfo()` (the shape was already correct).
+  Docs-only; no code or type change.
+
+### Changed
+
+- `auth`: `JwtClaims` docblock now carries a prominent SECURITY warning — a
+  *decoded* JWT is NOT a *verified* JWT. Never gate access or make
+  authorization decisions client-side from decoded claims (`scope` / `sub` /
+  `serverId`); treat them as display-only / hints, since only the server can
+  verify the signature. Docs-only; no type change.
+- `ticks`: `formatRuntime` and `formatDuration` docblocks now cross-reference
+  each other (with `@see`), spelling out the differences — `"<n> min"` vs
+  `"<m>m"` under an hour, and `"0 min"` vs `""` for zero/falsy input. Docs-only;
+  no behavior change.
 
 ## [0.1.1] - 2026-06-26
 
