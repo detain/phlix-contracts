@@ -6,7 +6,7 @@
  *
  *   - `GET /api/v1/media/{id}/playback` — the PlaybackInfo marker shape
  *     (`item_id`, `intro_marker`, `outro_marker`, `chapters[]`,
- *     `skip_button_spec`), produced by `MediaItemController::playbackInfo()`.
+ *     `skip_button_spec`), produced by `MediaItemController::getPlaybackInfo()`.
  *   - the play/stream descriptors the clients consume (`stream_url`, `url`,
  *     `protocol`, …).
  *
@@ -146,7 +146,7 @@ export interface ChapterMarker {
 
 /**
  * The marker/skip response from `GET /api/v1/media/{id}/playback`, produced by
- * `MediaItemController::playbackInfo()`. `intro_marker`/`outro_marker` are null
+ * `MediaItemController::getPlaybackInfo()`. `intro_marker`/`outro_marker` are null
  * when no marker was detected.
  */
 export interface PlaybackInfo {
