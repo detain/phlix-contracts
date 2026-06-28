@@ -55,8 +55,9 @@ const headers = buildPhlixHeaders({
   sessionId,
 });
 
-// `runtime` is in seconds (server schema); convert when you need ticks:
-const runtimeTicks = secondsToTicks(item.runtime ?? 0);
+// `runtime` is in minutes (TMDB); `duration` is probed seconds.
+// Prefer the probed seconds field when present:
+const runtimeTicks = secondsToTicks(item.duration ?? (item.runtime ?? 0) * 60);
 const seconds = ticksToSeconds(runtimeTicks);
 const label = formatRuntime(runtimeTicks); // "1h 30m"
 ```
@@ -77,9 +78,9 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 ## Conventions
 
 - Ticks are 100-nanosecond units (Plex/Jellyfin convention):
-  `1 second = 10,000,000 ticks`. `runtime` on `MediaItem` is in **seconds**,
-  not ticks (per the server's media-item schema); playback positions are in
-  ticks.
+  `1 second = 10,000,000 ticks`. `runtime` on `MediaItem` is in **minutes**
+  (TMDB), `duration` is the probed length in **seconds** — neither is ticks;
+  playback positions are in ticks.
 - `MediaItem.actors` is a flat `string[]` and stays flat. The rich cast objects
   live on the detail-only `cast[]`.
 - Detail-only fields (`cast`, `crew`, `production_companies`, `studio`,

@@ -5,6 +5,17 @@ All notable changes to `@phlix/contracts` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- `README`: corrected the Usage example and Conventions note that wrongly
+  treated `MediaItem.runtime` as **seconds** (a 60× error). `runtime` is TMDB
+  **minutes** (per `MediaItemShaper::shape()` → `(int) metadata.runtime`);
+  `duration` is the probed length in **seconds**. The example now prefers
+  `item.duration` (seconds) and falls back to `item.runtime * 60` when deriving
+  ticks. Docs-only; no code or type change.
+
 ## [0.1.1] - 2026-06-26
 
 ### Added
