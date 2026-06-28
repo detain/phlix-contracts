@@ -6,11 +6,24 @@
  *
  *   - `GET /api/v1/media/{id}/playback` — the PlaybackInfo marker shape
  *     (`item_id`, `intro_marker`, `outro_marker`, `chapters[]`,
- *     `skip_button_spec`), produced by `MediaItemController::getPlaybackInfo()`.
+ *     `skip_button_spec`), produced by `WebPortalRouter::getPlaybackInfo()`
+ *     (route registered at `WebPortalRouter.php:173`).
  *   - the play/stream descriptors the clients consume (`stream_url`, `url`,
  *     `protocol`, …).
  *
  * Consolidates the mobile (`playback.ts`) and windows (`api.ts`) declarations.
+ *
+ * PROVENANCE (B5, verified 2026-06-28 against `phlix-server`): the ONLY playback
+ * route on the server is `GET /api/v1/media/{id}/playback` →
+ * `WebPortalRouter::getPlaybackInfo()`, which returns
+ * `{ playback_info: { id, name, type, media_sources, markers } }`. A repo-wide
+ * grep for `Sessions/Play`, `start_position_ticks`, `play_session_id`, and a
+ * session-creating `session_id` found NO matching server endpoint. The
+ * session/start descriptors below (`PlaybackStartResponse`, `PlaybackBundle`,
+ * `PlaybackProgress`, `PlaybackSession`) and the windows `PlaybackInfoResponse`
+ * shape are therefore CLIENT-ORIGINATED (lifted from the windows/mobile client
+ * declarations) and are marked `@experimental` — they are NOT canonical server
+ * contracts. They are retained because the windows client depends on them.
  */
 
 import type { MediaItem } from './media';
@@ -162,6 +175,12 @@ export interface PlaybackInfo {
  * stream info + optional flat markers). Distinct from {@link PlaybackInfo}
  * which is the server marker endpoint; kept under its own name to preserve the
  * mobile client's existing field shape.
+ *
+ * @experimental Client-originated; no confirmed server endpoint. The `play_session_id`
+ * field has no server source (no `play_session_id` exists in `phlix-server`).
+ * The only server playback route returns
+ * `{ playback_info: { id, name, type, media_sources, markers } }`, not this
+ * bundle. Do not treat as a canonical server contract.
  */
 export interface PlaybackBundle {
   media_source: MediaSource;
@@ -176,6 +195,14 @@ export interface PlaybackBundle {
  * The windows client's `PlaybackInfoResponse` — `{ item, playback_info }`
  * where `playback_info` carries the stream URL + container + mime type and
  * optional flat markers.
+ *
+ * @experimental Client-originated; this exact shape is NOT confirmed against the
+ * server. The real `GET /api/v1/media/{id}/playback` route
+ * (`WebPortalRouter::getPlaybackInfo()`) returns
+ * `{ playback_info: { id, name, type, media_sources, markers } }` — it does NOT
+ * include a top-level `item`, nor `url`/`stream_url`/`container`/`mime_type`
+ * keys on `playback_info`. Retained for the windows client; do not treat as
+ * canonical.
  */
 export interface PlaybackInfoResponse {
   item: MediaItem;
@@ -189,13 +216,27 @@ export interface PlaybackInfoResponse {
   };
 }
 
-/** Response from `POST /Sessions/Play` (windows `PlaybackStartResponse`). */
+/**
+ * The windows `PlaybackStartResponse`, annotated `POST /Sessions/Play`.
+ *
+ * @experimental Client-originated; no confirmed server endpoint. A grep of
+ * `phlix-server` for `Sessions/Play`, `session_id` (session-creating), and
+ * `start_position_ticks` found NO matching route — this Jellyfin-style shape
+ * was lifted from the windows client declarations, not the server. Retained
+ * because the windows client depends on it; do not treat as canonical.
+ */
 export interface PlaybackStartResponse {
   session_id: string;
   start_position_ticks: number;
 }
 
-/** Progress report payload (mobile `PlaybackProgress`). Ticks are 100-ns. */
+/**
+ * Progress report payload (mobile `PlaybackProgress`). Ticks are 100-ns.
+ *
+ * @experimental Client-originated; no confirmed server endpoint accepting this
+ * payload (no server route consumes `position_ticks`/`duration_ticks` under
+ * this shape). Retained for the mobile client; do not treat as canonical.
+ */
 export interface PlaybackProgress {
   position_ticks: number;
   duration_ticks: number;
@@ -203,7 +244,14 @@ export interface PlaybackProgress {
   volume_level: number;
 }
 
-/** An active playback session (mobile `PlaybackSession`). */
+/**
+ * An active playback session (mobile `PlaybackSession`).
+ *
+ * @experimental Client-originated; no confirmed server endpoint. The server has
+ * no session-creating playback route (see module note), so this shape is not a
+ * verified server contract. Retained for the mobile client; do not treat as
+ * canonical.
+ */
 export interface PlaybackSession {
   id: string;
   user_id: string;

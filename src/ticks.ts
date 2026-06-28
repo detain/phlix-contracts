@@ -36,9 +36,13 @@ export function ticksToMinutes(ticks: number): number {
 /**
  * Format ticks as `H:MM:SS` (when >= 1 hour) or `M:SS`. Mirrors the clients'
  * `formatTime(seconds)` applied to `ticksToSeconds`, seconds-floored.
+ *
+ * Non-finite (`NaN`/`Infinity`) or negative input is treated as 0, returning
+ * the `"0:00"` zero-fallback (never `"NaN:NaN"`).
  */
 export function ticksToHms(ticks: number): string {
-  const total = Math.floor(ticksToSeconds(ticks));
+  const safeTicks = Number.isFinite(ticks) && ticks > 0 ? ticks : 0;
+  const total = Math.floor(ticksToSeconds(safeTicks));
   const hrs = Math.floor(total / 3600);
   const mins = Math.floor((total % 3600) / 60);
   const secs = Math.floor(total % 60);
@@ -65,7 +69,8 @@ export function ticksToHms(ticks: number): string {
  * @see formatDuration
  */
 export function formatRuntime(ticks: number): string {
-  const minutes = ticksToMinutes(ticks);
+  const safeTicks = Number.isFinite(ticks) && ticks > 0 ? ticks : 0;
+  const minutes = ticksToMinutes(safeTicks);
   if (minutes < 60) {
     return `${minutes} min`;
   }
@@ -77,7 +82,8 @@ export function formatRuntime(ticks: number): string {
 /**
  * Format ticks as a duration label in the tizen `Helpers.formatDuration` style:
  * `"<h>h <m>m"` when >= 1 hour, else `"<m>m"`. Returns "" for falsy input
- * (0/NaN), matching the tizen implementation.
+ * (0/NaN) and for any non-finite (`Infinity`) or negative input, matching the
+ * tizen implementation's zero-fallback (never `"NaNm"`/`"Infinitym"`).
  *
  * NOTE — easy to confuse with {@link formatRuntime}; they are NOT
  * interchangeable:
@@ -92,7 +98,7 @@ export function formatRuntime(ticks: number): string {
  * @see formatRuntime
  */
 export function formatDuration(ticks: number): string {
-  if (!ticks) {
+  if (!ticks || !Number.isFinite(ticks) || ticks < 0) {
     return '';
   }
   const hours = Math.floor(ticks / TICKS_PER_HOUR);

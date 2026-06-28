@@ -8,6 +8,11 @@ import type {
   LibrariesResponse,
   LibraryResponse,
   UserData,
+  AnyMediaItem,
+  Movie,
+  Series,
+  Season,
+  Episode,
 } from '../src/media';
 import type { PlaybackInfo, StreamInfo } from '../src/playback';
 import type { HeartbeatDto, ServerInfoDto } from '../src/hub';
@@ -101,6 +106,68 @@ describe('type-level construction smoke', () => {
       user_data: null,
     };
     expect(item.user_data).toBeNull();
+  });
+
+  it('narrows AnyMediaItem on the type discriminant exhaustively (F4)', () => {
+    // A function over the union that returns on each `type`. The `never`
+    // default makes this exhaustive: adding a member to AnyMediaItem without a
+    // case here is a compile error (the `_exhaustive: never` assignment fails).
+    function describeItem(item: AnyMediaItem): string {
+      switch (item.type) {
+        case 'movie': {
+          const movie: Movie = item;
+          return `movie:${movie.name}`;
+        }
+        case 'series': {
+          const series: Series = item;
+          return `series:${series.name}`;
+        }
+        case 'season': {
+          const season: Season = item;
+          // narrowed members keep their refined fields
+          return `season:${season.season_number}`;
+        }
+        case 'episode': {
+          const episode: Episode = item;
+          return `episode:${episode.season_number}x${episode.episode_number}`;
+        }
+        default: {
+          const _exhaustive: never = item;
+          return _exhaustive;
+        }
+      }
+    }
+
+    const movie: AnyMediaItem = { id: 'm1', name: 'Heat', type: 'movie' };
+    const series: AnyMediaItem = { id: 's1', name: 'Dr Stone', type: 'series' };
+    const season: AnyMediaItem = {
+      id: 'se1',
+      name: 'Season 1',
+      type: 'season',
+      season_number: 1,
+    };
+    const episode: AnyMediaItem = {
+      id: 'e1',
+      name: 'Stone World',
+      type: 'episode',
+      season_number: 1,
+      episode_number: 1,
+    };
+
+    expect(describeItem(movie)).toBe('movie:Heat');
+    expect(describeItem(series)).toBe('series:Dr Stone');
+    expect(describeItem(season)).toBe('season:1');
+    expect(describeItem(episode)).toBe('episode:1x1');
+
+    // Members inherit user_data from MediaItem (lands after B2).
+    const favMovie: Movie = {
+      id: 'm2',
+      name: 'Drive',
+      type: 'movie',
+      user_data: { favorite: true, rating: 9 },
+    };
+    const item: AnyMediaItem = favMovie;
+    expect(item.user_data?.rating).toBe(9);
   });
 
   it('constructs the library list/detail envelopes (B3)', () => {

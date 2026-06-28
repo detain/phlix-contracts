@@ -61,6 +61,15 @@ describe('ticksToHms', () => {
     expect(ticksToHms(secondsToTicks(3661))).toBe('1:01:01');
     expect(ticksToHms(secondsToTicks(7325))).toBe('2:02:05');
   });
+
+  it('returns the "0:00" fallback for NaN / Infinity / negative input (Q3)', () => {
+    expect(ticksToHms(NaN)).toBe('0:00');
+    expect(ticksToHms(Infinity)).toBe('0:00');
+    expect(ticksToHms(-Infinity)).toBe('0:00');
+    expect(ticksToHms(-1)).toBe('0:00');
+    expect(ticksToHms(secondsToTicks(-65))).toBe('0:00');
+    expect(ticksToHms(NaN)).not.toContain('NaN');
+  });
 });
 
 describe('formatRuntime (mobile parity)', () => {
@@ -75,12 +84,29 @@ describe('formatRuntime (mobile parity)', () => {
     expect(formatRuntime(TICKS_PER_MINUTE * 90)).toBe('1h 30m');
     expect(formatRuntime(TICKS_PER_MINUTE * 125)).toBe('2h 5m');
   });
+
+  it('returns the "0 min" fallback for NaN / Infinity / negative input (Q3)', () => {
+    expect(formatRuntime(NaN)).toBe('0 min');
+    expect(formatRuntime(Infinity)).toBe('0 min');
+    expect(formatRuntime(-Infinity)).toBe('0 min');
+    expect(formatRuntime(-1)).toBe('0 min');
+    expect(formatRuntime(-TICKS_PER_MINUTE * 45)).toBe('0 min');
+    expect(formatRuntime(NaN)).not.toContain('NaN');
+  });
 });
 
 describe('formatDuration (tizen parity)', () => {
   it('returns "" for falsy input', () => {
     expect(formatDuration(0)).toBe('');
     expect(formatDuration(NaN)).toBe('');
+  });
+
+  it('returns "" for Infinity / negative input (Q3)', () => {
+    expect(formatDuration(Infinity)).toBe('');
+    expect(formatDuration(-Infinity)).toBe('');
+    expect(formatDuration(-1)).toBe('');
+    expect(formatDuration(-TICKS_PER_HOUR)).toBe('');
+    expect(formatDuration(Infinity)).not.toContain('Infinity');
   });
 
   it('shows "<m>m" under an hour', () => {

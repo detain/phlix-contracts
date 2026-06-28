@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `GET /api/v1/libraries/{id}/items` (`getLibraryItems`) surface returns
   `{ items, limit, offset }` and OMITS `total`, so making `total` required on
   the base would break that consumer (B6).
+- `media`: new `AnyMediaItem = Movie | Series | Season | Episode` discriminated
+  union (discriminated on the `type` literal) so consumers can
+  `switch (item.type)` and narrow with `never`-default exhaustiveness. Lands
+  after B2, so all members inherit the `user_data` favorite/rating block (F4).
 
 ### Fixed
 
@@ -43,6 +47,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   docblocks from `MediaItemController::playbackInfo()` to the real
   `MediaItemController::getPlaybackInfo()` (the shape was already correct).
   Docs-only; no code or type change.
+- `ticks`: `ticksToHms`, `formatRuntime`, and `formatDuration` now guard against
+  `NaN`/`Infinity`/negative input. Previously `ticksToHms(NaN)` produced
+  `"NaN:NaN"` and `formatDuration(Infinity)`/negatives produced `"Infinitym"` /
+  negative labels. Non-finite or negative input is now clamped to 0, returning
+  each function's existing zero-fallback (`"0:00"` / `"0 min"` / `""`). All
+  valid-input output is unchanged (Q3).
 
 ### Changed
 
@@ -55,6 +65,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   each other (with `@see`), spelling out the differences — `"<n> min"` vs
   `"<m>m"` under an hour, and `"0 min"` vs `""` for zero/falsy input. Docs-only;
   no behavior change.
+- `playback`: B5 server-provenance audit (verified against `phlix-server`
+  2026-06-28). The only server playback route is `GET /api/v1/media/{id}/playback`
+  → `WebPortalRouter::getPlaybackInfo()`, returning
+  `{ playback_info: { id, name, type, media_sources, markers } }`. A repo-wide
+  grep for `Sessions/Play`, `start_position_ticks`, `play_session_id`, and a
+  session-creating `session_id` found NO matching endpoint, so the
+  client-originated descriptors — `PlaybackStartResponse` (`POST /Sessions/Play`),
+  `PlaybackBundle` (`play_session_id`), `PlaybackInfoResponse` (windows
+  `{ item, playback_info }` shape), `PlaybackProgress`, and `PlaybackSession` —
+  are now annotated `@experimental` ("client-originated; no confirmed server
+  endpoint"). The types are NOT removed (the windows client depends on them);
+  only their provenance docs changed. The module docblock also now cites the
+  real route + method (B5).
 
 ## [0.1.1] - 2026-06-26
 
