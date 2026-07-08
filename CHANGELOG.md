@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-07-08
+
+### Fixed
+
+- `playback`: `RenditionId` is no longer a strictly closed union. The server's
+  `AbrLadder` emits a single source-sized fallback rung (`` `${height}p` ``,
+  e.g. `'144p'`) for a source shorter than the 240p ladder floor — which the
+  old fixed union could never represent, contradicting its own "the server
+  emits exactly these" invariant. Split into `CanonicalRenditionId` (the
+  documented canonical rungs) and `RenditionId = CanonicalRenditionId |
+  `${number}p`` so the fallback id type-checks. Additive/widening only — no
+  breaking removal; runtime values (`AUTO_QUALITY`, `pickDefaultRendition`) are
+  unchanged (I1 cross-repo review finding).
+- `playback`: corrected the endpoint attribution in the module + `PlaybackInfo`
+  docblocks — the marker + `quality_ladder` shape is served by
+  `GET /api/v1/media/{id}/playback-info` (`MediaItemController::getPlaybackInfo`),
+  NOT `GET /api/v1/media/{id}/playback` (a distinct route returning a
+  `{playback_info:{…media_sources…}}` wrapper). Docs-only (I1 finding).
+
 ## [0.2.0] - 2026-07-08
 
 ### Added

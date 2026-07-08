@@ -146,6 +146,18 @@ describe('rendition wire-shape smoke', () => {
     expect(legacy.progress).toBe(42.5);
   });
 
+  it('accepts a sub-240p fallback rung id (`${number}p`, e.g. 144p) as a valid RenditionId', () => {
+    // A source shorter than the 240p ladder floor makes the server emit ONE
+    // source-sized fallback rung whose id is `${height}p` — outside the
+    // canonical set. RenditionId must admit it, and it must still round-trip
+    // through pickDefaultRendition as an opaque string.
+    const fallbackId: RenditionId = '144p';
+    const ladder: Rendition[] = [rung(fallbackId, 144)];
+    expect(pickDefaultRendition(ladder, fallbackId)?.id).toBe('144p');
+    // A persisted pin that matches no rung → median fallback (the sole rung here).
+    expect(pickDefaultRendition(ladder, '200p')?.id).toBe('144p');
+  });
+
   it('adds an optional quality_ladder preview to PlaybackInfo (additive)', () => {
     const withLadder: PlaybackInfo = {
       item_id: 'a1',
