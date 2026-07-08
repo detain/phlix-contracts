@@ -1,3 +1,9 @@
+/**
+ * types.test.
+ *
+ * @copyright 2026 Joe Huss <detain@interserver.net>
+ */
+
 import { describe, it, expect } from 'vitest';
 import type {
   MediaItem,

@@ -8,6 +8,7 @@
  *
  *   import type { MediaItem, PlaybackInfo } from '@phlix/contracts';
  *   import { buildPhlixHeaders, ticksToSeconds, formatRuntime, EVENT } from '@phlix/contracts';
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
 export * from './media';

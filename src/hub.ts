@@ -4,6 +4,7 @@
  * Field names are the camelCase payload keys the PHP `toPayload()` emits — NOT
  * snake_case. Mirrors `phlix-shared` `Phlix\Shared\Hub\{HeartbeatDto,
  * ServerInfoDto, ClaimRequest, ClaimResponse}`.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
 /** A library entry inside a heartbeat (snake_case, per the PHP payload). */

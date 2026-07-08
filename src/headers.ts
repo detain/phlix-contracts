@@ -4,6 +4,7 @@
  * The header names and `X-Phlix-Device-Type` values are verbatim from the
  * windows client (`api.ts`) and tizen client, which the server reads on every
  * authenticated request.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
 /** `X-Phlix-Device-ID` — stable per-install device identifier. */

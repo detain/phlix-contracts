@@ -10,6 +10,7 @@
  *  2. Webhook event types (`phlix-shared/schemas/webhook-events.json`) — the
  *     dotted vocabulary a webhook subscription may select. DISTINCT from the
  *     plugin aliases.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 /** Common base every PSR-14 event carries (`AbstractEvent::$timestamp`). */
 export interface PhlixEvent {

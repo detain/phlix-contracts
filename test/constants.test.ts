@@ -1,3 +1,9 @@
+/**
+ * constants.test.
+ *
+ * @copyright 2026 Joe Huss <detain@interserver.net>
+ */
+
 import { describe, it, expect } from 'vitest';
 import { PLUGIN_EVENT, WEBHOOK_EVENT, WEBHOOK_EVENT_RESERVED, EVENT } from '../src/events';
 import { JWT_ISS, JWT_AUD, JWT_TYPE } from '../src/auth';

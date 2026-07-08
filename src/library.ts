@@ -5,6 +5,7 @@
  * canonical `GET /api/v1/media` query shape). `ServerSettings` mirrors
  * `server-settings.schema.json` — the literal dotted setting keys the admin
  * settings endpoint accepts.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
 import type { ContentRating } from './media';
