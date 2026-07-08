@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-08
+
 ### Added
 
 - `media`: new `MediaItemUserData` interface (`{ favorite: boolean; rating:
@@ -157,5 +159,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
+[0.2.0]: https://github.com/detain/phlix-contracts/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/detain/phlix-contracts/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/detain/phlix-contracts/releases/tag/v0.1.0
