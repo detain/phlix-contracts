@@ -30,11 +30,35 @@ export declare function ticksToHms(ticks: number): string;
 /**
  * Format ticks as a coarse runtime label. Mirrors the mobile client's
  * `formatRuntime(ticks)` exactly: `"<n> min"` under an hour, else `"<h>h <m>m"`.
+ *
+ * NOTE — easy to confuse with {@link formatDuration}; they are NOT
+ * interchangeable:
+ *   - Under an hour: `formatRuntime` emits `"<n> min"` (e.g. `"45 min"`);
+ *     `formatDuration` emits `"<m>m"` (e.g. `"45m"`).
+ *   - Zero / falsy input: `formatRuntime(0)` returns `"0 min"` (never empty);
+ *     `formatDuration(0)` returns `""` (empty string).
+ *   - At/over an hour both emit the same `"<h>h <m>m"` form.
+ * Use `formatRuntime` for the mobile "45 min" style; use `formatDuration` for
+ * the tizen "45m" style that hides zero-length items.
+ *
+ * @see formatDuration
  */
 export declare function formatRuntime(ticks: number): string;
 /**
  * Format ticks as a duration label in the tizen `Helpers.formatDuration` style:
  * `"<h>h <m>m"` when >= 1 hour, else `"<m>m"`. Returns "" for falsy input
  * (0/NaN), matching the tizen implementation.
+ *
+ * NOTE — easy to confuse with {@link formatRuntime}; they are NOT
+ * interchangeable:
+ *   - Under an hour: `formatDuration` emits `"<m>m"` (e.g. `"45m"`);
+ *     `formatRuntime` emits `"<n> min"` (e.g. `"45 min"`).
+ *   - Zero / falsy input: `formatDuration(0)` returns `""` (empty string);
+ *     `formatRuntime(0)` returns `"0 min"` (never empty).
+ *   - At/over an hour both emit the same `"<h>h <m>m"` form.
+ * Use `formatDuration` for the tizen "45m" style that hides zero-length items;
+ * use `formatRuntime` for the mobile "45 min" style.
+ *
+ * @see formatRuntime
  */
 export declare function formatDuration(ticks: number): string;

@@ -58,6 +58,22 @@ export interface MediaStream {
     height: number | null;
 }
 /**
+ * Per-user favorite/rating block attached ONLY to the DETAIL endpoint
+ * (`GET /api/v1/media/{id}`) by `WebPortalRouter::resolveUserData()`.
+ *
+ * The server returns `array{favorite: bool, rating: int|null}|null`: the whole
+ * block is `null` when the request is unauthenticated or the favorites store is
+ * unwired; otherwise `favorite` defaults to `false` and `rating` to `null` when
+ * the user has no row yet. Rating is the user's 0-10 star value (`int|null`).
+ *
+ * NOTE: this is a DIFFERENT shape from `UserData` (which models resume/watch
+ * ticks). Do not conflate the two.
+ */
+export interface MediaItemUserData {
+    favorite: boolean;
+    rating: number | null;
+}
+/**
  * A single media item, as returned by the browse/list endpoints.
  *
  * Required fields per the schema are `id`, `name`, `type`. All other base
@@ -122,6 +138,12 @@ export interface MediaItem {
     streams?: MediaStream[];
     /** Signed direct-play URL minted on the detail response. */
     stream_url?: string;
+    /**
+     * Per-user favorite/rating block (detail only). `null` when the request is
+     * unauthenticated or the favorites store is unwired; absent on list
+     * responses. See `MediaItemUserData`.
+     */
+    user_data?: MediaItemUserData | null;
 }
 /**
  * Per-user playback/watch state for an item. Phlix records resume position in
@@ -161,16 +183,51 @@ export interface Library {
     item_count?: number;
 }
 /**
- * Paged media list envelope returned by `GET /api/v1/media`.
+ * Envelope for the library LIST endpoint `GET /api/v1/libraries`.
  *
- * The server's primary list responses are `{ items }`; paged/grid responses
- * add `total` (and may echo `limit`/`offset`). All optional except `items`.
+ * Verified: both `WebPortalRouter::getLibraries()` and
+ * `LibraryController::index()` return `json(['libraries' => $libraries])`.
+ */
+export interface LibrariesResponse {
+    libraries: Library[];
+}
+/**
+ * Envelope for the single-library detail endpoint
+ * `GET /api/v1/libraries/{id}`.
+ *
+ * Verified: `WebPortalRouter::getLibrary()` returns
+ * `json(['library' => $library])` — the library is WRAPPED (not bare). The
+ * single-library payload omits `item_count` (see `Library`).
+ */
+export interface LibraryResponse {
+    library: Library;
+}
+/**
+ * Base media list envelope. The server has TWO list surfaces with different
+ * shapes:
+ *  - `GET /api/v1/libraries/{id}/items` (`getLibraryItems`) returns
+ *    `{ items, limit, offset }` — NO `total`.
+ *  - `GET /api/v1/media` (`getMedia`) returns `{ items, total, limit, offset }`.
+ *
+ * Therefore `total`/`limit`/`offset` are OPTIONAL here (a bare `{ items }`
+ * surface must satisfy this type). For the paged grid path that always carries
+ * the page counters, prefer the tighter `PagedMediaItemsResponse`.
  */
 export interface MediaItemsResponse {
     items: MediaItem[];
     total?: number;
     limit?: number;
     offset?: number;
+}
+/**
+ * The paged grid response from `GET /api/v1/media` (`WebPortalRouter::getMedia()`),
+ * which ALWAYS includes `total`/`limit`/`offset` (unlike the bare
+ * `getLibraryItems` `{ items, limit, offset }` surface, which omits `total`).
+ */
+export interface PagedMediaItemsResponse extends MediaItemsResponse {
+    total: number;
+    limit: number;
+    offset: number;
 }
 /** A single-item detail envelope: `GET /api/v1/media/{id}` returns `{ item }`. */
 export interface MediaItemResponse {
@@ -195,3 +252,15 @@ export interface Episode extends MediaItem {
     season_number: number | null;
     episode_number: number | null;
 }
+/**
+ * Discriminated union over the four hierarchy item shapes, narrowable on the
+ * `type` discriminant. Consumers can `switch (item.type)` and let the compiler
+ * enforce exhaustiveness (a default branch typed `never` flags an unhandled
+ * variant).
+ *
+ * NOTE: this union covers the `movie`/`series`/`season`/`episode` discriminants
+ * only; the broader `MediaType` also includes `audio`/`image`, which have no
+ * dedicated interface yet (they surface as plain `MediaItem`). All members
+ * inherit the base `MediaItem` fields, including the detail-only `user_data`.
+ */
+export type AnyMediaItem = Movie | Series | Season | Episode;
