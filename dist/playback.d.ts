@@ -14,6 +14,7 @@
  *     `protocol`, …).
  *
  * Consolidates the mobile (`playback.ts`) and windows (`api.ts`) declarations.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 import type { MediaItem } from './media';
 /** Stream transport protocol. */

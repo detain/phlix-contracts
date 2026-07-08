@@ -8,6 +8,7 @@
  * Note: the PHP `JwtClaims` uses camelCase `serverId` in its payload (see
  * `JwtClaims::toPayload()`), so we keep `serverId` camelCase here. The REST
  * login response uses snake_case (`session_id`), so those stay snake_case.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 /** A local Phlix user, as returned in the login response. */
 export interface User {

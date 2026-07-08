@@ -10,6 +10,7 @@
  * Jellyfin-style `Id`/`Name`/`Type`). Neither matches the actual Phlix server
  * output. THIS module is the single correct union — it follows the server +
  * JSON Schema verbatim.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 /**
  * Media type discriminator. `series`/`season`/`episode` form the TV/anime

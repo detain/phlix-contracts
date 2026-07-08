@@ -1,3 +1,9 @@
+/**
+ * ticks.test.
+ *
+ * @copyright 2026 Joe Huss <detain@interserver.net>
+ */
+
 import { describe, it, expect } from 'vitest';
 import {
   TICKS_PER_SECOND,

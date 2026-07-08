@@ -6,6 +6,7 @@
  * by `10000000` (seconds), `600000000` (minutes), and `36000000000` (hours);
  * see mobile `src/utils/formatters.ts` and tizen `app/js/utils/Helpers.js`.
  * These helpers consolidate that math. All functions are pure.
+ * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 /** Ticks per second (100-ns ticks). */
 export declare const TICKS_PER_SECOND = 10000000;
