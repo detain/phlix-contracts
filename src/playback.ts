@@ -44,6 +44,142 @@ export interface MediaSource {
   bitrate: number;
 }
 
+/**
+ * Fixed rendition-rung id. The server emits exactly these stable lowercase
+ * strings; `'original'` IS a real rung (source passthrough / stream-copy), not
+ * a sentinel. Highest-first ordering in a `Rendition[]`.
+ */
+export type RenditionId =
+  | '240p'
+  | '360p'
+  | '480p'
+  | '720p'
+  | '1080p'
+  | '1440p'
+  | '2160p'
+  | 'original';
+
+/**
+ * UI-only "let ABR decide" sentinel. NOT a {@link RenditionId} — the server
+ * never sends it and no `Rendition.id` ever equals it; it exists purely so a
+ * client can persist/expose an "Auto" choice distinct from a pinned rung.
+ */
+export const AUTO_QUALITY = 'auto';
+
+/** The `'auto'` sentinel type. */
+export type AutoQuality = typeof AUTO_QUALITY;
+
+/**
+ * A persisted/exposed quality choice: a concrete rung id or the `'auto'`
+ * sentinel. Keeps the ABR-vs-pinned distinction explicit at the type level.
+ */
+export type QualitySelection = RenditionId | AutoQuality;
+
+/**
+ * One rung of the ABR quality ladder (or the Original passthrough descriptor).
+ * Mirrors the server's flat wire shape verbatim (snake_case), produced by
+ * `Phlix\Media\Streaming\Rendition::toArray()` and served on transcode
+ * start/status `variants[]` and on playback-info `quality_ladder[]`.
+ *
+ * `url` is a SIGNED path to this variant's own `media_v{id}.m3u8`; it is `null`
+ * in the playback-info preview (no job exists yet) and non-null on a real job's
+ * `variants[]`. All bitrates are in bits/second.
+ */
+export interface Rendition {
+  id: RenditionId;
+  label: string;
+  width: number;
+  height: number;
+  /** Advertised peak BANDWIDTH (bps) — video maxrate + audio allowance. */
+  bitrate: number;
+  /** HLS `CODECS` string (avc1.* + mp4a.40.2). */
+  codecs: string;
+  /** Signed media-playlist path, or `null` in the playback-info preview. */
+  url: string | null;
+  is_original: boolean;
+  is_copy: boolean;
+  /** Target video encode bitrate (`-b:v`) in bps. */
+  video_bitrate: number;
+}
+
+/**
+ * A soft subtitle track on a transcode job (`variants`-adjacent). Distinct from
+ * {@link SubtitleTrack}: the transcode pipeline emits `{index,language,label,
+ * default,url}` (matching `TranscodeManager` job readiness), not the
+ * `{id,codec,display_title}` library shape.
+ */
+export interface TranscodeSubtitleTrack {
+  index: number;
+  language: string;
+  label: string;
+  default: boolean;
+  url: string;
+}
+
+/**
+ * Response from `POST /api/v1/media/{id}/transcode` (start / ensure job).
+ * `variants` is the playable quality ladder; `null` only for a legacy pre-ABR
+ * job (explicit key, so a client checks `!= null` rather than key absence).
+ */
+export interface TranscodeStartResponse {
+  job_id: string;
+  master_url: string;
+  hls_url: string;
+  dash_url: string;
+  status: string;
+  reused: boolean;
+  subtitles: TranscodeSubtitleTrack[];
+  variants: Rendition[] | null;
+}
+
+/**
+ * Response from `GET /api/v1/transcode/{jobId}/status`. Same `variants` ladder
+ * as {@link TranscodeStartResponse} (`null` for a legacy job); adds on-disk
+ * readiness counters.
+ */
+export interface TranscodeStatusResponse {
+  job_id: string;
+  status: string;
+  segments: number;
+  playlist_ready: boolean;
+  progress: number;
+  master_url: string;
+  dash_url: string;
+  subtitles: TranscodeSubtitleTrack[];
+  variants: Rendition[] | null;
+}
+
+/**
+ * Pick a sensible bootstrap rendition before ABR takes over — deterministic and
+ * side-effect free.
+ *
+ *   1. Empty list → `undefined`.
+ *   2. A `preferredId` matching a rung's `id` → that rung (a user's pinned
+ *      quality). The `'auto'` sentinel never matches a {@link RenditionId}, so
+ *      an "Auto" preference correctly falls through to step 3.
+ *   3. Otherwise a mid-tier rung: `variants` is highest-first, so the median
+ *      index favours a conservative middle quality (and the sole rung when there
+ *      is only one), avoiding both a heavy top rung and a needlessly low one.
+ *
+ * @param variants    Highest-first rendition list (as the server orders it).
+ * @param preferredId Optional pinned rung id (or any persisted quality value).
+ */
+export function pickDefaultRendition(
+  variants: Rendition[],
+  preferredId?: string,
+): Rendition | undefined {
+  if (variants.length === 0) {
+    return undefined;
+  }
+  if (preferredId !== undefined) {
+    const preferred = variants.find((variant) => variant.id === preferredId);
+    if (preferred !== undefined) {
+      return preferred;
+    }
+  }
+  return variants[Math.floor(variants.length / 2)];
+}
+
 /** A subtitle track. `url` present when delivered as a soft track. */
 export interface SubtitleTrack {
   id: string;
@@ -155,6 +291,14 @@ export interface PlaybackInfo {
   outro_marker: TimeMarker | null;
   chapters: ChapterMarker[];
   skip_button_spec: SkipButtonSpec;
+  /**
+   * Pre-flight ABR ladder PREVIEW (D6): the quality rungs a play would produce,
+   * built from persisted source metadata with NO live probing and NO job — so
+   * every entry's `url` is `null`. The whole field is `null` when the item has
+   * not been scanned/backfilled with source metadata yet. Additive: older
+   * servers omit the key entirely, so it is optional.
+   */
+  quality_ladder?: Rendition[] | null;
 }
 
 /**
