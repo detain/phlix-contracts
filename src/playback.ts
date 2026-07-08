@@ -4,9 +4,12 @@
  * Field names are the server's snake_case verbatim. The two playback-related
  * server endpoints are:
  *
- *   - `GET /api/v1/media/{id}/playback` — the PlaybackInfo marker shape
- *     (`item_id`, `intro_marker`, `outro_marker`, `chapters[]`,
- *     `skip_button_spec`), produced by `MediaItemController::getPlaybackInfo()`.
+ *   - `GET /api/v1/media/{id}/playback-info` — the PlaybackInfo marker +
+ *     quality-ladder shape (`item_id`, `intro_marker`, `outro_marker`,
+ *     `chapters[]`, `skip_button_spec`, `quality_ladder[]`), produced by
+ *     `MediaItemController::getPlaybackInfo()`. (The distinct
+ *     `GET /api/v1/media/{id}/playback` route returns a differently-wrapped
+ *     `{playback_info:{…media_sources…}}` shape and is NOT this type.)
  *   - the play/stream descriptors the clients consume (`stream_url`, `url`,
  *     `protocol`, …).
  *
@@ -45,11 +48,11 @@ export interface MediaSource {
 }
 
 /**
- * Fixed rendition-rung id. The server emits exactly these stable lowercase
- * strings; `'original'` IS a real rung (source passthrough / stream-copy), not
- * a sentinel. Highest-first ordering in a `Rendition[]`.
+ * The canonical rendition-rung ids. The server's `AbrLadder` normally emits one
+ * of these stable lowercase strings; `'original'` IS a real rung (source
+ * passthrough / stream-copy), not a sentinel. Highest-first in a `Rendition[]`.
  */
-export type RenditionId =
+export type CanonicalRenditionId =
   | '240p'
   | '360p'
   | '480p'
@@ -58,6 +61,16 @@ export type RenditionId =
   | '1440p'
   | '2160p'
   | 'original';
+
+/**
+ * A rendition-rung id as it appears on the wire. Almost always a
+ * {@link CanonicalRenditionId}, but NOT a strictly closed set: for a source
+ * SHORTER than the 240p ladder floor the server emits a single source-sized
+ * fallback rung whose id is still `` `${height}p` `` (e.g. `'144p'`, `'200p'`)
+ * — hence the open `` `${number}p` `` member. Treat the id as an opaque string
+ * for equality/persistence; do not assume it is one of the canonical rungs.
+ */
+export type RenditionId = CanonicalRenditionId | `${number}p`;
 
 /**
  * UI-only "let ABR decide" sentinel. NOT a {@link RenditionId} — the server
@@ -281,9 +294,11 @@ export interface ChapterMarker {
 }
 
 /**
- * The marker/skip response from `GET /api/v1/media/{id}/playback`, produced by
+ * The marker/skip + quality-ladder response from
+ * `GET /api/v1/media/{id}/playback-info`, produced by
  * `MediaItemController::getPlaybackInfo()`. `intro_marker`/`outro_marker` are null
- * when no marker was detected.
+ * when no marker was detected. (Do not confuse with `GET …/playback`, a distinct
+ * route returning a `{playback_info:{…media_sources…}}` wrapper.)
  */
 export interface PlaybackInfo {
   item_id: string;
