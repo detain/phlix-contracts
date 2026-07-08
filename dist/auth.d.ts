@@ -78,6 +78,16 @@ export type JwtType = (typeof JWT_TYPE)[keyof typeof JWT_TYPE];
  * RFC 7519 required fields (`iss`, `aud`, `sub`, `iat`, `exp`, `type`) are
  * always present; `nbf`, `jti`, `scope`, `serverId` are optional and omitted
  * by the PHP `toPayload()` when null/empty.
+ *
+ * ⚠️ SECURITY — a *decoded* JWT is NOT a *verified* JWT. These fields describe
+ * the shape of the token's payload AFTER decoding (e.g. via `jwtDecode`), which
+ * performs **no** signature check. Anyone can forge a token with any `scope`,
+ * `sub`, or `serverId` they like. NEVER gate access or make any authorization
+ * decision on the client side from decoded claims — only the server, which
+ * holds the signing key, can verify a token. Treat decoded claims here as
+ * **display-only / hints** (e.g. showing the logged-in user's id, or an
+ * optimistic UI affordance the server will still re-check). The authoritative
+ * answer always comes from a server round-trip.
  */
 export interface JwtClaims {
     iss: string;

@@ -35,6 +35,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   so consumers can `switch (item.type)` with compiler-enforced exhaustiveness
   (a `never`-typed default branch flags unhandled variants). All members inherit
   the base `MediaItem` fields, including the detail-only `user_data` block (F4).
+- `playback`: contracts foundation for the multi-variant stream-quality / ABR
+  feature — the client-side mirror of the server's ABR ladder types, verified
+  field-for-field against `Phlix\Media\Streaming\Rendition::toArray()` and the
+  `TranscodeController::start()`/`status()` responses. Consumed by the upcoming
+  `phlix-ui` quality picker (E3) and native client rollouts (G1/G2/G3) (B1):
+  - `Rendition` — one rung of the ladder (or the Original passthrough
+    descriptor): snake_case wire shape `{id, label, width, height, bitrate,
+    codecs, url, is_original, is_copy, video_bitrate}`. `url` is a signed
+    per-variant media-playlist path, `null` in a playback-info preview (no job
+    yet) and non-null on a real job's `variants[]`.
+  - `RenditionId` — the 8 fixed lowercase rung ids (`'240p'` … `'2160p'`,
+    `'original'`); `'original'` is a real rung (source passthrough), not a
+    sentinel.
+  - `AUTO_QUALITY` constant (`'auto'`) + `AutoQuality`/`QualitySelection`
+    types — a UI-only "let ABR decide" sentinel kept provably distinct from a
+    pinned `RenditionId` at the type level.
+  - `TranscodeSubtitleTrack` — the transcode-job subtitle shape
+    (`{index, language, label, default, url}`), distinct from the existing
+    library `SubtitleTrack`.
+  - `TranscodeStartResponse` (`POST /api/v1/media/{id}/transcode`) and
+    `TranscodeStatusResponse` (`GET /api/v1/transcode/{jobId}/status`) — new
+    interfaces mirroring the two transcode controller endpoints exactly, each
+    carrying `variants: Rendition[] | null` (`null` only for a legacy pre-ABR
+    job).
+  - `PlaybackInfo.quality_ladder?: Rendition[] | null` — the pre-flight ABR
+    ladder preview from `GET /api/v1/media/{id}/playback` (every entry's `url`
+    is `null`; the whole field is `null` when the item lacks probed source
+    metadata, and absent entirely on pre-A7 servers).
+  - `pickDefaultRendition(variants, preferredId?)` — pure helper picking a
+    sensible bootstrap rendition before ABR takes over: empty list →
+    `undefined`; a matching `preferredId` → that rung; otherwise the median
+    rung of the highest-first list (a conservative mid-tier default, and the
+    sole rung when there is only one).
 
 ### Fixed
 

@@ -67,7 +67,7 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 | Module        | Exports |
 |---------------|---------|
 | `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `UserData`, `Library`, `MediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode` |
-| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `SubtitleTrack`, `AudioTrack`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `ChapterMarker`, `PlaybackInfo`, `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
+| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `ChapterMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
 | `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ type aliases) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
