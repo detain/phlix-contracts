@@ -57,6 +57,20 @@ export interface MaxRatingFilter {
 }
 
 /**
+ * A simple rating value for quick access / display.
+ *
+ * Used in media item cards and detail views where a single aggregated
+ * rating value is needed without the full Rating record metadata.
+ * Score is a 0.0 - 10.0 float, matching the aggregate scoring convention.
+ */
+export interface RatingValue {
+  score: number;
+  type: 'average' | 'user' | 'critic' | 'meta';
+  source?: 'tmdb' | 'imdb' | 'user';
+  votes?: number;
+}
+
+/**
  * All valid field names that can appear in a smart-rule filter expression.
  * Extend this union as new filter dimensions are added.
  */
