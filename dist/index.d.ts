@@ -28,4 +28,5 @@ export * from './Recommendation';
 export * from './Collection';
 export * from './AccessSchedule';
 export * from './ProfileTag';
+export * from './SyncPlay';
 export * from './StreamSession';
