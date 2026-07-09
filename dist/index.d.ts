@@ -23,3 +23,6 @@ export * from './Chapter';
 export * from './Marker';
 export * from './AudioTrack';
 export * from './SubtitleTrack';
+export * from './SimilarItem';
+export * from './Recommendation';
+export * from './Collection';
