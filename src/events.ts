@@ -147,6 +147,7 @@ export const WEBHOOK_EVENT = {
   DOWNLOAD_COMPLETE: 'download.complete',
   RECORDING_STARTED: 'recording.started',
   RECORDING_STOPPED: 'recording.stopped',
+  MEDIA_ADDED: 'media.added',
   ALERT: 'alert',
 } as const;
 export type WebhookEventType = (typeof WEBHOOK_EVENT)[keyof typeof WEBHOOK_EVENT];

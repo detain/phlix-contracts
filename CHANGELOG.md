@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.8] - 2026-07-09
+
+### Added
+
+- `events`: `WEBHOOK_EVENT.MEDIA_ADDED: 'media.added'` for P9-S1 media.played/added webhook events.
+
+## [0.3.7] - 2026-07-08
+
+### Added
+
+- `media`: `RatingValue` type for P1-S6 rating representation.
+- `playback`: `ChapterInfo`, `TrickplayInfo`, and `MarkerTimeline` types for P2-S3 enhanced playback markers.
+
+## [0.3.6] - 2026-07-08
+
+### Added
+
+- `library`: `MusicArtist`, `MusicAlbum`, `MusicTrack`, and `AudioPreferences` types for P7-S4 music library support.
+- `playback`: `SyncPlay` group and session types for P8-S2 collaborative playback.
+
+## [0.3.5] - 2026-07-08
+
+### Added
+
+- `media`: `AccessSchedule`, `ProfileTag`, and `StreamSession` types for P5-S4 access control and streaming sessions.
+
+## [0.3.4] - 2026-07-08
+
+### Added
+
+- `media`: `SimilarItem`, `Recommendation`, and `Collection` types for P4-S4 recommendations.
+
+## [0.3.3] - 2026-07-08
+
+### Updated
+
+- `playback`: `Chapter` and `Trickplay` types updated per P2-S3 spec.
+
+## [0.3.2] - 2026-07-08
+
+### Added
+
+- `playback`: `AudioTrack` and `SubtitleTrack` types for P3B-S4.
+
+## [0.3.1] - 2026-07-08
+
+### Added
+
+- `playback`: `Marker` and `PlayerPrefs` types for P3-S2.
+
+## [0.3.0] - 2026-07-08
+
+### Added
+
+- `media`: `RatingSet` types, smart-rule `min_rating` filter, and manual-match types for P1-S6.
+
 ## [0.2.1] - 2026-07-08
 
 ### Fixed
@@ -178,6 +234,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
+[0.3.7]: https://github.com/detain/phlix-contracts/compare/v0.3.6...v0.3.7
+[0.3.6]: https://github.com/detain/phlix-contracts/compare/v0.3.5...v0.3.6
+[0.3.5]: https://github.com/detain/phlix-contracts/compare/v0.3.4...v0.3.5
+[0.3.4]: https://github.com/detain/phlix-contracts/compare/v0.3.3...v0.3.4
+[0.3.3]: https://github.com/detain/phlix-contracts/compare/v0.3.2...v0.3.3
+[0.3.2]: https://github.com/detain/phlix-contracts/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/detain/phlix-contracts/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/detain/phlix-contracts/compare/v0.2.1...v0.3.0
 [0.2.0]: https://github.com/detain/phlix-contracts/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/detain/phlix-contracts/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/detain/phlix-contracts/releases/tag/v0.1.0
