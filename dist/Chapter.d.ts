@@ -23,20 +23,27 @@ export interface ChapterMarker {
 export interface TrickplaySprite {
     spritePath: string;
     timelinePath: string;
-    /** Number of thumbnails in the sprite sheet. */
-    count: number;
+    /** Width of each thumbnail cell in pixels. */
+    cellWidth: number;
+    /** Height of each thumbnail cell in pixels. */
+    cellHeight: number;
     /** Columns in the grid layout. */
     columns: number;
-    /** Width of each thumbnail in pixels. */
-    thumbWidth: number;
-    /** Height of each thumbnail in pixels. */
-    thumbHeight: number;
+    /** Rows in the grid layout. */
+    rows: number;
+}
+/**
+ * Configuration for skip behavior.
+ */
+export interface SkipConfig {
+    autoSkip: boolean;
+    showButtons: boolean;
 }
 /**
  * The full chapter + trickplay track for a media item.
  */
 export interface ChapterTrack {
     mediaItemId: string;
-    chapters: ChapterMarker[];
-    trickplay: TrickplaySprite | null;
+    markers: ChapterMarker[];
+    trickplay?: TrickplaySprite;
 }
