@@ -26,3 +26,6 @@ export * from './SubtitleTrack';
 export * from './SimilarItem';
 export * from './Recommendation';
 export * from './Collection';
+export * from './AccessSchedule';
+export * from './ProfileTag';
+export * from './StreamSession';
