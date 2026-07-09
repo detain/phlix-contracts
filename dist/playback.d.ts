@@ -17,6 +17,7 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 import type { MediaItem } from './media';
+import type { ChapterMarker, TrickplaySprite } from './Chapter';
 /** Stream transport protocol. */
 export type StreamProtocol = 'hls' | 'http';
 /** A direct-play / stream descriptor (mobile `StreamInfo`). */
@@ -239,16 +240,6 @@ export interface TimeMarker {
     end_seconds: number;
 }
 /**
- * A chapter marker in seconds. `MediaItemController::getPlaybackInfo()` ALWAYS
- * sets the `title` key but its value may be null, so the key is required and
- * the value is nullable (not an optional/absent key).
- */
-export interface ChapterMarker {
-    start_seconds: number;
-    end_seconds: number;
-    title: string | null;
-}
-/**
  * The marker/skip + quality-ladder response from
  * `GET /api/v1/media/{id}/playback-info`, produced by
  * `MediaItemController::getPlaybackInfo()`. `intro_marker`/`outro_marker` are null
@@ -259,7 +250,6 @@ export interface PlaybackInfo {
     item_id: string;
     intro_marker: TimeMarker | null;
     outro_marker: TimeMarker | null;
-    chapters: ChapterMarker[];
     skip_button_spec: SkipButtonSpec;
     /**
      * Pre-flight ABR ladder PREVIEW (D6): the quality rungs a play would produce,
@@ -269,6 +259,10 @@ export interface PlaybackInfo {
      * servers omit the key entirely, so it is optional.
      */
     quality_ladder?: Rendition[] | null;
+    /** Chapter markers enriched with index (from ChapterTrack). */
+    chapters?: ChapterMarker[];
+    /** Trickplay sprite metadata for visual scrubbing. */
+    trickplay?: TrickplaySprite | null;
 }
 /**
  * The mobile client's richer PlaybackInfo bundle (media source + tracks +

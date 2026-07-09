@@ -231,9 +231,8 @@ describe('type-level construction smoke', () => {
       intro_marker: { start_seconds: 0, end_seconds: 30 },
       outro_marker: null,
       chapters: [
-        { start_seconds: 0, end_seconds: 600, title: 'Cold open' },
-        // `title` key is always present but may be null (server emits it verbatim).
-        { start_seconds: 600, end_seconds: 1200, title: null },
+        { index: 0, startSeconds: 0, endSeconds: 600, title: 'Cold open' },
+        { index: 1, startSeconds: 600, endSeconds: 1200, title: 'Main content' },
       ],
       skip_button_spec: {
         skip_intro_start: 0,
@@ -244,7 +243,7 @@ describe('type-level construction smoke', () => {
     };
     expect(pb.outro_marker).toBeNull();
     expect(pb.skip_button_spec.skip_intro_end).toBe(30);
-    expect(pb.chapters[1].title).toBeNull();
+    expect(pb.chapters?.[1]?.title).toBe('Main content');
   });
 
   it('constructs camelCase hub DTOs', () => {
