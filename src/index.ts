@@ -20,3 +20,4 @@ export * from './events';
 export * from './headers';
 export * from './ticks';
 export * from './Rating';
+export * from './Chapter';
