@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.10] - 2026-07-10
+
+### Added
+
+- `Audio`: `pickDefaultAudio` helper function to auto-select a audio track based on user's preferred BCP47 language tags.
+
 ## [0.3.8] - 2026-07-09
 
 ### Added
