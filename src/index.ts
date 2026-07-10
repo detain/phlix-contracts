@@ -22,6 +22,7 @@ export * from './ticks';
 export * from './Rating';
 export * from './Chapter';
 export * from './Marker';
+export * from './Audio';
 export * from './AudioTrack';
 export * from './SubtitleTrack';
 export * from './SimilarItem';

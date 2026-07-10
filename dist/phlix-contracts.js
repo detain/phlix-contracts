@@ -94,6 +94,16 @@ function w(e) {
 	return typeof t == "number" ? t : null;
 }
 //#endregion
-export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, o as PLUGIN_EVENT, a as SERVER_STATUS, _ as TICKS_PER_HOUR, g as TICKS_PER_MINUTE, h as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, u as X_PHLIX_DEVICE_ID, d as X_PHLIX_DEVICE_NAME, f as X_PHLIX_DEVICE_TYPE, p as X_PHLIX_SESSION_ID, m as buildPhlixHeaders, C as formatDuration, S as formatRuntime, t as pickDefaultRendition, w as pickDisplayRating, y as secondsToTicks, x as ticksToHms, b as ticksToMinutes, v as ticksToSeconds };
+//#region src/Audio.ts
+function T(e, t) {
+	if (!e.length || !t.length) return 0;
+	for (let n of t) {
+		let t = n.toLowerCase().split("-")[0], r = e.findIndex((e) => e.language?.toLowerCase().startsWith(t));
+		if (r !== -1) return r;
+	}
+	return 0;
+}
+//#endregion
+export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, o as PLUGIN_EVENT, a as SERVER_STATUS, _ as TICKS_PER_HOUR, g as TICKS_PER_MINUTE, h as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, u as X_PHLIX_DEVICE_ID, d as X_PHLIX_DEVICE_NAME, f as X_PHLIX_DEVICE_TYPE, p as X_PHLIX_SESSION_ID, m as buildPhlixHeaders, C as formatDuration, S as formatRuntime, T as pickDefaultAudio, t as pickDefaultRendition, w as pickDisplayRating, y as secondsToTicks, x as ticksToHms, b as ticksToMinutes, v as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map
