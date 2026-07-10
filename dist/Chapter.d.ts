@@ -6,6 +6,7 @@
  * sheet used for scrubbing preview.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
+import type { Marker } from './Marker';
 /**
  * A chapter marker. `index` is the display order (0-based). `startSeconds`
  * and `endSeconds` are floats (e.g. 30.0) denoting the chapter boundaries.
@@ -46,4 +47,36 @@ export interface ChapterTrack {
     mediaItemId: string;
     markers: ChapterMarker[];
     trickplay?: TrickplaySprite;
+}
+/**
+ * A chapter with full metadata including optional thumbnail image.
+ * This is the client-facing type for chapter information.
+ */
+export interface ChapterInfo {
+    index: number;
+    title: string;
+    startSeconds: number;
+    endSeconds: number;
+    imageUrl?: string;
+}
+/**
+ * Trickplay preview data - client-facing alias for TrickplaySprite.
+ */
+export interface TrickplayInfo {
+    spritePath: string;
+    timelinePath: string;
+    cellWidth: number;
+    cellHeight: number;
+    columns: number;
+    rows: number;
+}
+/**
+ * Timeline of all markers for a media item.
+ * Groups intro, outro, and general markers with skip configuration.
+ */
+export interface MarkerTimeline {
+    markers: Marker[];
+    introMarker?: Marker;
+    outroMarker?: Marker;
+    skipButtonSpec?: SkipConfig;
 }

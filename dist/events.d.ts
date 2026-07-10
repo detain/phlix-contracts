@@ -126,6 +126,7 @@ export declare const WEBHOOK_EVENT: {
     readonly DOWNLOAD_COMPLETE: "download.complete";
     readonly RECORDING_STARTED: "recording.started";
     readonly RECORDING_STOPPED: "recording.stopped";
+    readonly MEDIA_ADDED: "media.added";
     readonly ALERT: "alert";
 };
 export type WebhookEventType = (typeof WEBHOOK_EVENT)[keyof typeof WEBHOOK_EVENT];
@@ -162,6 +163,7 @@ export declare const EVENT: {
         readonly DOWNLOAD_COMPLETE: "download.complete";
         readonly RECORDING_STARTED: "recording.started";
         readonly RECORDING_STOPPED: "recording.stopped";
+        readonly MEDIA_ADDED: "media.added";
         readonly ALERT: "alert";
     };
     readonly webhookReserved: {
