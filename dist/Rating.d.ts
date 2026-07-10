@@ -51,10 +51,54 @@ export interface MaxRatingFilter {
     threshold: number;
 }
 /**
+ * A simple rating value for quick access / display.
+ *
+ * Used in media item cards and detail views where a single aggregated
+ * rating value is needed without the full Rating record metadata.
+ * Score is a 0.0 - 10.0 float, matching the aggregate scoring convention.
+ */
+export interface RatingValue {
+    score: number;
+    type: 'average' | 'user' | 'critic' | 'meta';
+    source?: 'tmdb' | 'imdb' | 'user';
+    votes?: number;
+}
+/**
  * All valid field names that can appear in a smart-rule filter expression.
  * Extend this union as new filter dimensions are added.
  */
 export type SmartRuleField = 'actor' | 'director' | 'decade' | 'rating_range' | 'tmdb_score' | 'studio' | 'network' | 'min_rating' | 'max_rating';
+/**
+ * Raw media item shape accepted by `pickDisplayRating`.
+ *
+ * Covers both the legacy shape (rating stored inside `metadata_json`) and the
+ * P1-S1 shape (denormalized `rating_score` column).  The `metadata_json` is
+ * typed loosely so this works with the server's associative-array rows without
+ * requiring a full MediaItem re-declaration here.
+ */
+export interface MediaItemRatingSource {
+    rating_score?: number | null;
+    metadata_json?: {
+        rating?: number | string | null;
+        [key: string]: unknown;
+    } | null;
+}
+/**
+ * Pick the best numeric display rating for a media item.
+ *
+ * Resolution order:
+ *   1. `rating_score` — the denormalized P1-S1 column (indexed, fast)
+ *   2. `metadata_json.rating` — legacy fallback, only used when
+ *      `rating_score` is absent/null (e.g. pre-existing items not yet
+ *      backfilled).  Only numeric values are accepted; MPAA content ratings
+ *      ('PG-13', 'R', etc.) are strings and are skipped.
+ *
+ * Returns null when neither source yields a numeric value.
+ *
+ * @param item Raw media item row (associative array / object with
+ *             `rating_score` and/or `metadata_json` keys)
+ */
+export declare function pickDisplayRating(item: MediaItemRatingSource): number | null;
 /**
  * A manual match override records when a provider ID (TMDB, IMDb, AniDB) was
  * manually linked to a local media item by a user or the system.
