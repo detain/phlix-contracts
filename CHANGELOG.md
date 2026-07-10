@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.11] - 2026-07-10
+
+### Added
+
+- `events`: `WEBHOOK_EVENT.MEDIA_PLAYED: 'media.played'` for P9-S1 media.played webhook events.
+
 ## [0.3.10] - 2026-07-10
 
 ### Added
