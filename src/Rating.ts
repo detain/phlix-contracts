@@ -86,6 +86,53 @@ export type SmartRuleField =
   | 'max_rating';
 
 /**
+ * Raw media item shape accepted by `pickDisplayRating`.
+ *
+ * Covers both the legacy shape (rating stored inside `metadata_json`) and the
+ * P1-S1 shape (denormalized `rating_score` column).  The `metadata_json` is
+ * typed loosely so this works with the server's associative-array rows without
+ * requiring a full MediaItem re-declaration here.
+ */
+export interface MediaItemRatingSource {
+  rating_score?: number | null;
+  metadata_json?: {
+    rating?: number | string | null;
+    [key: string]: unknown;
+  } | null;
+}
+
+/**
+ * Pick the best numeric display rating for a media item.
+ *
+ * Resolution order:
+ *   1. `rating_score` — the denormalized P1-S1 column (indexed, fast)
+ *   2. `metadata_json.rating` — legacy fallback, only used when
+ *      `rating_score` is absent/null (e.g. pre-existing items not yet
+ *      backfilled).  Only numeric values are accepted; MPAA content ratings
+ *      ('PG-13', 'R', etc.) are strings and are skipped.
+ *
+ * Returns null when neither source yields a numeric value.
+ *
+ * @param item Raw media item row (associative array / object with
+ *             `rating_score` and/or `metadata_json` keys)
+ */
+export function pickDisplayRating(item: MediaItemRatingSource): number | null {
+  // P1-S1 denormalized column — preferred path, indexed for sort/filter
+  if (item.rating_score !== undefined && item.rating_score !== null) {
+    return item.rating_score;
+  }
+
+  // Legacy fallback: numeric rating stored inside metadata_json
+  // Guard against MPAA content ratings (strings like 'PG-13')
+  const legacy = item.metadata_json?.rating;
+  if (typeof legacy === 'number') {
+    return legacy;
+  }
+
+  return null;
+}
+
+/**
  * A manual match override records when a provider ID (TMDB, IMDb, AniDB) was
  * manually linked to a local media item by a user or the system.
  */

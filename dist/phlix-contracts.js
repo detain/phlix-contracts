@@ -46,6 +46,7 @@ var n = {
 	DOWNLOAD_COMPLETE: "download.complete",
 	RECORDING_STARTED: "recording.started",
 	RECORDING_STOPPED: "recording.stopped",
+	MEDIA_ADDED: "media.added",
 	ALERT: "alert"
 }, c = { TEST: "webhook.test" }, l = {
 	plugin: o,
@@ -86,6 +87,13 @@ function C(e) {
 	return t > 0 ? `${t}h ${n}m` : `${n}m`;
 }
 //#endregion
-export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, o as PLUGIN_EVENT, a as SERVER_STATUS, _ as TICKS_PER_HOUR, g as TICKS_PER_MINUTE, h as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, u as X_PHLIX_DEVICE_ID, d as X_PHLIX_DEVICE_NAME, f as X_PHLIX_DEVICE_TYPE, p as X_PHLIX_SESSION_ID, m as buildPhlixHeaders, C as formatDuration, S as formatRuntime, t as pickDefaultRendition, y as secondsToTicks, x as ticksToHms, b as ticksToMinutes, v as ticksToSeconds };
+//#region src/Rating.ts
+function w(e) {
+	if (e.rating_score !== void 0 && e.rating_score !== null) return e.rating_score;
+	let t = e.metadata_json?.rating;
+	return typeof t == "number" ? t : null;
+}
+//#endregion
+export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, o as PLUGIN_EVENT, a as SERVER_STATUS, _ as TICKS_PER_HOUR, g as TICKS_PER_MINUTE, h as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, u as X_PHLIX_DEVICE_ID, d as X_PHLIX_DEVICE_NAME, f as X_PHLIX_DEVICE_TYPE, p as X_PHLIX_SESSION_ID, m as buildPhlixHeaders, C as formatDuration, S as formatRuntime, t as pickDefaultRendition, w as pickDisplayRating, y as secondsToTicks, x as ticksToHms, b as ticksToMinutes, v as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map
