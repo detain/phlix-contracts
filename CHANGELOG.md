@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `media`: corrected the `MediaItem.poster_srcset` doc-comment (and the
+  `test/types.test.ts` fixture) to describe the server's SV-3.4 local artwork
+  cache. Once artwork is downloaded and resized on match, the server now emits
+  a LOCAL sized-variant srcset pointing at its own
+  `/api/v1/artwork/{id}?size=…` route (widths 185/342/500/780 + an `original`
+  variant, served with cache headers), so offline/LAN installs get posters
+  without reaching TMDB; the shaper only falls back to the `image.tmdb.org` CDN
+  width-swap srcset (or `null`) when no local variant is cached. The
+  `poster_srcset` TYPE is unchanged (`string | null`) — only the documented
+  value shape and example fixture were stale (they described only the old TMDB
+  CDN srcset). Producer-side sync point for the UI's responsive-poster support
+  (U-N7).
+
 ## [0.3.11] - 2026-07-10
 
 ### Added

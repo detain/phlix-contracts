@@ -40,7 +40,11 @@ describe('type-level construction smoke', () => {
       episode_title: null,
       path: '/media/blade.mkv',
       poster_url: 'https://img/p.jpg',
-      poster_srcset: 'https://img/p_w342.jpg 342w, https://img/p_w500.jpg 500w',
+      // SV-3.4: the server now emits a LOCAL artwork srcset (its own sized
+      // variants served from /api/v1/artwork/{id}?size=…), not a TMDB CDN srcset.
+      poster_srcset:
+        '/api/v1/artwork/a1?size=w185 185w, /api/v1/artwork/a1?size=w342 342w, ' +
+        '/api/v1/artwork/a1?size=w500 500w, /api/v1/artwork/a1?size=w780 780w',
       genres: ['Sci-Fi'],
       year: 1982,
       rating: 'R',
@@ -76,6 +80,8 @@ describe('type-level construction smoke', () => {
     expect(item.sort_title).toBe('Blade Runner');
     expect(item.duration).toBe(7020);
     expect(item.poster_srcset).toContain('342w');
+    // Local artwork route, not a TMDB CDN URL (SV-3.4).
+    expect(item.poster_srcset).toContain('/api/v1/artwork/');
   });
 
   it('allows a poster_srcset/duration null when unprobed', () => {

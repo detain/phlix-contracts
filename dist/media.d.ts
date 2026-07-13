@@ -103,9 +103,24 @@ export interface MediaItem {
     path?: string;
     poster_url?: string | null;
     /**
-     * Responsive poster `srcset` (TMDB width variants), emitted on EVERY row by
-     * `MediaItemShaper::shape()` (`'poster_srcset' => PosterSrcset::forPosterUrl(...)`).
-     * Null for non-TMDB posters → the card falls back to `poster_url`.
+     * Responsive poster `srcset`, emitted on EVERY row by
+     * `MediaItemShaper::shape()`. Its value has one of two shapes depending on
+     * whether the server has cached the artwork locally (SV-3.4 `ArtworkStorage`):
+     *
+     * - **Local artwork srcset (preferred).** Once the poster is downloaded and
+     *   resized on match, this carries the server's own sized-variant URLs
+     *   pointing at its local artwork route, e.g.
+     *   `"/api/v1/artwork/{id}?size=w185 185w, /api/v1/artwork/{id}?size=w342 342w, /api/v1/artwork/{id}?size=w500 500w, /api/v1/artwork/{id}?size=w780 780w"`
+     *   (widths 185/342/500/780, plus an `original` full-size variant). These are
+     *   relative paths served by the server's `/api/v1/artwork/{id}?size=…` route
+     *   with cache headers (SV-2.5), so offline/LAN installs get posters without
+     *   reaching TMDB. The srcset entries are unsigned relative paths (the
+     *   artwork route accepts session auth or a signed URL); the companion
+     *   `poster_url` carries the signed `w500` variant.
+     * - **TMDB width-swap fallback.** When no local variant is cached, the shaper
+     *   falls back to `PosterSrcset::forPosterUrl($poster_url)` — an
+     *   `image.tmdb.org` CDN width srcset — or `null` for non-TMDB posters (the
+     *   card then falls back to `poster_url`).
      */
     poster_srcset?: string | null;
     genres?: string[];
