@@ -6,6 +6,7 @@
 
 import { describe, it, expect } from 'vitest';
 import type {
+  ContentRating,
   MediaItem,
   MediaItemUserData,
   MediaItemsResponse,
@@ -59,6 +60,11 @@ describe('type-level construction smoke', () => {
       crew: [{ name: 'Ridley Scott', job: 'Director', profile_url: null }],
       production_companies: [{ name: 'Warner Bros.', logo_url: null, origin_country: 'US' }],
       studio: 'Warner Bros.',
+      // Phase C detail-only extras.
+      trailer_url: 'https://www.youtube.com/watch?v=abcd1234',
+      trailer_key: 'abcd1234',
+      trailer_site: 'YouTube',
+      logo_url: '/api/v1/artwork/a1?size=logo',
       streams: [
         {
           id: 's1',
@@ -82,6 +88,62 @@ describe('type-level construction smoke', () => {
     expect(item.poster_srcset).toContain('342w');
     // Local artwork route, not a TMDB CDN URL (SV-3.4).
     expect(item.poster_srcset).toContain('/api/v1/artwork/');
+    // Phase C detail-only extras.
+    expect(item.trailer_key).toBe('abcd1234');
+    expect(item.trailer_site).toBe('YouTube');
+    expect(item.logo_url).toContain('size=logo');
+  });
+
+  it('accepts both the film and TV content-rating scales (Phase C)', () => {
+    // MPAA film scale PLUS the US TV Parental Guidelines scale. `NR` is
+    // normalized to `UNRATED` server-side and is not part of the union.
+    const ratings: ContentRating[] = [
+      'G',
+      'PG',
+      'PG-13',
+      'R',
+      'NC-17',
+      'X',
+      'UNRATED',
+      'TV-Y',
+      'TV-Y7',
+      'TV-G',
+      'TV-PG',
+      'TV-14',
+      'TV-MA',
+    ];
+    const items: MediaItem[] = ratings.map((rating, i) => ({
+      id: `r${i}`,
+      name: `Item ${rating}`,
+      type: 'movie',
+      rating,
+    }));
+    expect(items).toHaveLength(13);
+    expect(items.map((it) => it.rating)).toContain('TV-MA');
+    expect(items.map((it) => it.rating)).toContain('UNRATED');
+  });
+
+  it('constructs an episode with a detail-only still_url (Phase C)', () => {
+    const episode: Episode = {
+      id: 'ep-still',
+      name: 'Pilot',
+      type: 'episode',
+      season_number: 1,
+      episode_number: 1,
+      still_url: '/api/v1/artwork/ep-still?size=still',
+    };
+    expect(episode.still_url).toContain('size=still');
+
+    // still_url is optional/nullable — absent or null are both valid.
+    const noStill: Episode = {
+      id: 'ep-nostill',
+      name: 'No Still',
+      type: 'episode',
+      season_number: 1,
+      episode_number: 2,
+      still_url: null,
+    };
+    expect(noStill.still_url).toBeNull();
   });
 
   it('allows a poster_srcset/duration null when unprobed', () => {

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `media`: Phase C metadata sync. `ContentRating` now covers the US TV Parental
+  Guidelines scale (`TV-Y`, `TV-Y7`, `TV-G`, `TV-PG`, `TV-14`, `TV-MA`) alongside
+  the existing MPAA film scale — matching the server's expanded `ContentRating`
+  vocabulary and the `rating`/`ratings[]` enums in phlix-shared. `NR` is
+  normalized to `UNRATED` server-side and is deliberately absent. Purely additive.
+- `media`: four new OPTIONAL, nullable detail-only fields on `MediaItem`
+  (`trailer_url`, `trailer_key`, `trailer_site`, `logo_url`) plus `still_url`
+  (episodes only, on `Episode`). These appear on `GET /api/v1/media/{id}` and are
+  absent from the lean list shape; null when unavailable. Regenerated
+  `dist/media.d.ts`. Backward-compatible — existing consumers are unaffected.
+
 ### Changed
 
 - `media`: corrected the `MediaItem.poster_srcset` doc-comment (and the

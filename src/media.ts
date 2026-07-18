@@ -20,10 +20,28 @@
 export type MediaType = 'movie' | 'series' | 'season' | 'episode' | 'audio' | 'image';
 
 /**
- * MPAA-style content rating, as returned in `rating` and accepted by the
- * `ratings[]` query filter.
+ * Content rating, as returned in `rating` and accepted by the `ratings[]` query
+ * filter. Covers BOTH the MPAA film scale (`G`…`UNRATED`) and the US TV Parental
+ * Guidelines scale (`TV-Y`…`TV-MA`), matching the server's `ContentRating`
+ * vocabulary and the `rating` enum in media-item.schema.json.
+ *
+ * Landmine: `NR` (not rated) is normalized to `UNRATED` server-side and is NEVER
+ * emitted — do not add it here.
  */
-export type ContentRating = 'G' | 'PG' | 'PG-13' | 'R' | 'NC-17' | 'X' | 'UNRATED';
+export type ContentRating =
+  | 'G'
+  | 'PG'
+  | 'PG-13'
+  | 'R'
+  | 'NC-17'
+  | 'X'
+  | 'UNRATED'
+  | 'TV-Y'
+  | 'TV-Y7'
+  | 'TV-G'
+  | 'TV-PG'
+  | 'TV-14'
+  | 'TV-MA';
 
 /**
  * A person in the rich `cast[]`/`crew[]` blocks the DETAIL endpoint adds (via
@@ -159,6 +177,29 @@ export interface MediaItem {
   production_companies?: ProductionCompany[];
   /** Studio name (detail only), or null. */
   studio?: string | null;
+  /**
+   * Primary trailer URL (detail only), captured at scan time from TMDB `videos`
+   * — e.g. a YouTube watch URL. Absent on list responses; null when no trailer
+   * is available.
+   */
+  trailer_url?: string | null;
+  /**
+   * Provider-native trailer key (detail only) accompanying `trailer_url` — e.g.
+   * a YouTube video id — so a client can embed the player directly. Absent on
+   * list responses; null when unavailable.
+   */
+  trailer_key?: string | null;
+  /**
+   * Hosting site for the trailer (detail only) — e.g. `"YouTube"` — accompanying
+   * `trailer_url`/`trailer_key`. Absent on list responses; null when unavailable.
+   */
+  trailer_site?: string | null;
+  /**
+   * Transparent title-logo URL (detail only, PNG) for overlaying the title
+   * treatment on the hero backdrop. Localized/cached server-side when possible.
+   * Absent on list responses; null when unavailable.
+   */
+  logo_url?: string | null;
   /** Media streams (detail only). */
   streams?: MediaStream[];
   /** Signed direct-play URL minted on the detail response. */
@@ -287,6 +328,12 @@ export interface Episode extends MediaItem {
   type: 'episode';
   season_number: number | null;
   episode_number: number | null;
+  /**
+   * Episode still-frame URL (detail only, episodes only) — a landscape thumbnail
+   * from TMDB. Absent on list responses; null when TMDB has no still for the
+   * episode (the client then falls back to the season/series poster).
+   */
+  still_url?: string | null;
 }
 
 /**
