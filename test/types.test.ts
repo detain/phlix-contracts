@@ -16,6 +16,8 @@ import type {
   LibraryResponse,
   UserData,
   AnyMediaItem,
+  OtherMediaItem,
+  MediaType,
   Movie,
   Series,
   Season,
@@ -212,9 +214,11 @@ describe('type-level construction smoke', () => {
   });
 
   it('narrows AnyMediaItem exhaustively on the type discriminant (F4)', () => {
-    // A function over the union that returns on each `type`. The `never`-typed
-    // default branch makes the compiler enforce exhaustiveness: adding a member
-    // to AnyMediaItem without a case here would be a typecheck error.
+    // A function over the union that returns on each `type`. Exhaustiveness is
+    // still compiler-enforced, but the four hierarchy cases do NOT exhaust the
+    // union — real responses also carry track/music/album/artist/video/audio/
+    // book/photo/audiobook rows, which narrow to OtherMediaItem in `default`.
+    // Assigning that branch to `never` would (correctly) fail to compile.
     function describeItem(item: AnyMediaItem): string {
       switch (item.type) {
         case 'movie': {
@@ -235,8 +239,10 @@ describe('type-level construction smoke', () => {
           return `episode:S${e.season_number ?? '?'}E${e.episode_number ?? '?'}`;
         }
         default: {
-          const _exhaustive: never = item;
-          return _exhaustive;
+          // Narrows to OtherMediaItem, NOT never — the catch-all keeps the
+          // union total, so adding a MediaType member cannot silently escape.
+          const other: OtherMediaItem = item;
+          return `${other.type}:${other.name}`;
         }
       }
     }
@@ -252,10 +258,33 @@ describe('type-level construction smoke', () => {
       episode_number: 1,
     };
 
+    // The kinds that used to fall outside the union entirely — a photo row is
+    // exactly what phlix-server#527 was relabelling as "movie".
+    const photo: OtherMediaItem = { id: 'p1', name: 'Beach.jpg', type: 'photo' };
+    const book: OtherMediaItem = { id: 'b1', name: 'Dune', type: 'book' };
+    const track: OtherMediaItem = { id: 't1', name: 'Bird On The Wire', type: 'track' };
+
     expect(describeItem(movie)).toBe('movie:Blade Runner');
     expect(describeItem(series)).toBe('series:Foundation');
     expect(describeItem(season)).toBe('season:1');
     expect(describeItem(episode)).toBe('episode:S1E1');
+    expect(describeItem(photo)).toBe('photo:Beach.jpg');
+    expect(describeItem(book)).toBe('book:Dune');
+    expect(describeItem(track)).toBe('track:Bird On The Wire');
+  });
+
+  it('MediaType covers the full media_items.type ENUM and excludes `image` (server#527)', () => {
+    // Guards the drift this fix closed: the union tracks the column ENUM /
+    // media-item.schema.json exactly. `image` is a scanner-side label, never a
+    // wire value — the photo kind is `photo`.
+    const all: MediaType[] = [
+      'movie', 'series', 'season', 'episode', 'track', 'music', 'album',
+      'artist', 'video', 'audio', 'book', 'photo', 'audiobook',
+    ];
+    expect(all).toHaveLength(13);
+    // @ts-expect-error `image` is not a MediaType — it never reaches the wire.
+    const bogus: MediaType = 'image';
+    expect(bogus).toBe('image');
   });
 
   it('AnyMediaItem members inherit MediaItem.user_data (F4 + B2)', () => {
