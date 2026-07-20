@@ -13,10 +13,23 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 /**
- * Media type discriminator. `series`/`season`/`episode` form the TV/anime
- * hierarchy. Matches the `type` enum in media-item.schema.json.
+ * Media type discriminator — the full `media_items.type` column ENUM, in schema
+ * order. Authoritative sources, which this MUST track verbatim: the server
+ * migrations (001 → 011 → 034), `MediaItemShaper::VALID_TYPES`, and the `type`
+ * enum in `phlix-shared/schemas/media-item.schema.json`.
+ *
+ * Roughly grouped: video hierarchy (`movie`…`episode`), music hierarchy
+ * (`track`…`artist`), and standalone kinds (`video`…`audiobook`).
+ *
+ * Landmine: the photo kind is named `photo`, NOT `image`. `image` is a
+ * scanner-side label keying the media scanner's file-extension set and is never
+ * emitted on the wire — this union carried a bogus `image` member for a long
+ * time, as did the `phlix-ui` and `phlix-mobile-client` copies (now re-exported
+ * from here) and `MediaItemShaper::VALID_TYPES`, where it caused real
+ * photo/book/audiobook/track rows to be relabelled `"movie"` in API responses
+ * (phlix-server#527). Do not reintroduce it.
  */
-export type MediaType = 'movie' | 'series' | 'season' | 'episode' | 'audio' | 'image';
+export type MediaType = 'movie' | 'series' | 'season' | 'episode' | 'track' | 'music' | 'album' | 'artist' | 'video' | 'audio' | 'book' | 'photo' | 'audiobook';
 /**
  * Content rating, as returned in `rating` and accepted by the `ratings[]` query
  * filter. Covers BOTH the MPAA film scale (`G`…`UNRATED`) and the US TV Parental
@@ -303,14 +316,30 @@ export interface Episode extends MediaItem {
     still_url?: string | null;
 }
 /**
- * Discriminated union over the four hierarchy item shapes, narrowable on the
- * `type` discriminant. Consumers can `switch (item.type)` and let the compiler
- * enforce exhaustiveness (a default branch typed `never` flags an unhandled
- * variant).
+ * Any item whose `type` has no dedicated interface — everything outside the
+ * `movie`/`series`/`season`/`episode` video hierarchy (`track`, `music`,
+ * `album`, `artist`, `video`, `audio`, `book`, `photo`, `audiobook`). These
+ * surface as a plain `MediaItem` with the discriminant narrowed.
  *
- * NOTE: this union covers the `movie`/`series`/`season`/`episode` discriminants
- * only; the broader `MediaType` also includes `audio`/`image`, which have no
- * dedicated interface yet (they surface as plain `MediaItem`). All members
- * inherit the base `MediaItem` fields, including the detail-only `user_data`.
+ * Deriving the type via `Exclude` rather than listing the members keeps this
+ * automatically correct when `MediaType` gains a member: the new member lands
+ * here until it earns its own interface, so `AnyMediaItem` stays total.
  */
-export type AnyMediaItem = Movie | Series | Season | Episode;
+export interface OtherMediaItem extends MediaItem {
+    type: Exclude<MediaType, 'movie' | 'series' | 'season' | 'episode'>;
+}
+/**
+ * Discriminated union over every item shape the server can emit, narrowable on
+ * the `type` discriminant. `Movie`/`Series`/`Season`/`Episode` carry the
+ * hierarchy-specific fields; everything else is an `OtherMediaItem`. All members
+ * inherit the base `MediaItem` fields, including the detail-only `user_data`.
+ *
+ * Exhaustiveness: a `switch (item.type)` that handles the four hierarchy cases
+ * does NOT exhaust this union, and a `default` branch typed `never` will not
+ * compile — which is the point. Real responses contain `photo`/`book`/`track`
+ * rows, so a `never` default was always a lie about the runtime data; it merely
+ * failed to say so while `MediaType` was missing those members. Narrow the
+ * `default` branch to `OtherMediaItem` and handle it, or switch on the specific
+ * discriminants you support and fall through for the rest.
+ */
+export type AnyMediaItem = Movie | Series | Season | Episode | OtherMediaItem;
