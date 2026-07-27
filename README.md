@@ -81,6 +81,14 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
   `1 second = 10,000,000 ticks`. `runtime` on `MediaItem` is in **minutes**
   (TMDB), `duration` is the probed length in **seconds** — neither is ticks;
   playback positions are in ticks.
+- `MediaType` mirrors the full `media_items.type` column ENUM (13 members, in
+  schema order) and must track the server migrations,
+  `MediaItemShaper::VALID_TYPES`, and `media-item.schema.json` verbatim. The
+  photo kind is `photo`, never `image` — `image` is a scanner-side label that
+  never reaches the wire.
+- `AnyMediaItem` is total: `Movie`/`Series`/`Season`/`Episode` plus the
+  `OtherMediaItem` catch-all (derived with `Exclude`), so a `switch (item.type)`
+  `default` branch narrows to `OtherMediaItem` rather than `never`.
 - `MediaItem.actors` is a flat `string[]` and stays flat. The rich cast objects
   live on the detail-only `cast[]`.
 - Detail-only fields (`cast`, `crew`, `production_companies`, `studio`,
