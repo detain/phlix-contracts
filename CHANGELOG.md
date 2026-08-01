@@ -1,4 +1,5 @@
 # Changelog
+<!-- markdownlint-disable MD024 -->
 
 All notable changes to `@phlix/contracts` are documented here.
 

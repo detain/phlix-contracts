@@ -246,18 +246,18 @@ export interface WindowsDeviceProfile {
   MaxStreamingBitrate: number;
   MaxStaticBitrate: number;
   SupportedMediaTypes: string[];
-  DirectPlayProfiles: Array<{
+  DirectPlayProfiles: {
     Container: string;
     Type: string;
     VideoCodec?: string;
     AudioCodec?: string;
-  }>;
-  TranscodingProfiles: Array<{
+  }[];
+  TranscodingProfiles: {
     Container: string;
     Type: string;
     VideoCodec: string;
     AudioCodec: string;
-  }>;
+  }[];
 }
 
 /**
