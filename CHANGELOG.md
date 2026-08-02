@@ -8,6 +8,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- 🔴 **BREAKING** — `music`: `MusicArtist.mediaItemId`, `MusicAlbum.mediaItemId`
+  and `MusicTrack.mediaItemId` are now `string | null`. They were
+  `number | null`, `number | null` and `number` respectively. The column is
+  `media_items.id`, a **`CHAR(36)` UUID** — it was never a number.
+  - This is the type-level half of phlix-server **S121**, where the same wrong
+    assumption was encoded as an `is_numeric()` test against a UUID. That test
+    can never pass, so the field was silently `null` on `MusicArtist` /
+    `MusicAlbum` and silently `0` on `MusicTrack` for the whole life of the bug.
+    phlix-server corrected all three PHP DTOs to `?string`; this aligns the
+    contract to them.
+  - `MusicTrack.mediaItemId` additionally becomes **nullable**. `0` was never a
+    real id — it was the coercion's fallback masquerading as one — so consumers
+    must now handle the absent case explicitly rather than reading a plausible
+    integer.
+  - `id`, `artistId` and `albumId` are unchanged and remain `number`: those are
+    the music tables' own AUTO_INCREMENT keys, a genuinely different key space
+    from the `media_items` UUID.
+  - **Impact today: none observed.** No client in the estate reads
+    `mediaItemId` off these three interfaces, and the server does not emit the
+    field in these payloads (S121 shipped zero payload change deliberately).
+    The risk this closes is the first consumer to read it inheriting a wrong
+    type. `phlix-windows-client` imports `MusicArtist` / `MusicAlbum` but pins
+    `@phlix/contracts` to the `v0.3.12` tag, so it is unaffected until that pin
+    is deliberately bumped — at which point its two music test fixtures
+    (`tests/unit/MusicAlbumCard.test.tsx:15` `mediaItemId: 100` and `:55`, and
+    `tests/unit/MusicArtistCard.test.tsx:15` `mediaItemId: null`) need the
+    numeric literal replaced with a UUID string. `phlix-ui` does not use these
+    interfaces at all.
+
 ### Added
 
 - `media`: Phase C metadata sync. `ContentRating` now covers the US TV Parental
