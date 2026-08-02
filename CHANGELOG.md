@@ -8,6 +8,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- 🔴 **BREAKING** — `playback`: `dash_url` is gone from both
+  `TranscodeStartResponse` and `TranscodeStatusResponse`. It was declared
+  **required** (`dash_url: string`) on both, but the server has never sent it
+  since phlix-server **S11** — real DASH is unbuilt (tracked as S56-S60), so the
+  advertised `/dash/{job}/manifest.mpd` always 404'd.
+  - Declaring it was strictly worse than omitting it: a consumer trusting the
+    type got a compile-time guarantee of a field that is `undefined` at runtime,
+    with no `strictNullChecks` warning to catch the difference.
+  - Removed outright rather than relaxed to `dash_url?: string`. An optional
+    member invites every consumer to keep testing for a key that is never
+    emitted. When DASH actually ships it returns as a required field, in
+    lockstep with the server payload.
+  - The absence is pinned at the type level in `test/renditions.test.ts`
+    ("declares no dash_url on either transcode shape") using the same
+    `Exact<A, B>` invariant helper as `test/music.test.ts`, via
+    `Exact<HasKey<T, 'dash_url'>, false>`. Because `keyof` includes optional
+    members, re-adding `dash_url?: string` is just as RED as re-adding it
+    required. ⚠ The killing gate is `tsc --noEmit` (`npm run typecheck`, and
+    again inside `npm run build`) — vitest transpiles without type-checking and
+    stays green on the mutant.
+  - **Impact today: none observed.** Repo-wide greps found no reader of
+    `dash_url` in `phlix-ui`, `phlix-windows-client` or `phlix-console-client`.
+    `phlix-mobile-client` keeps its own local copy of these shapes plus a
+    fixture that sets the key; it does not import them from here yet, so it is
+    unaffected until it switches over. The clients pin `@phlix/contracts` by
+    **git tag**, so this change is inert for each of them until that pin is
+    deliberately bumped.
+
 ### Changed
 
 - 🔴 **BREAKING** — `music`: `MusicArtist.mediaItemId`, `MusicAlbum.mediaItemId`

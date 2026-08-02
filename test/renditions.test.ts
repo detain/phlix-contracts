@@ -18,6 +18,33 @@ import type {
   PlaybackInfo,
 } from '../src/playback';
 
+/**
+ * `true` only when `A` and `B` are the SAME type, not merely assignable to one
+ * another. Assignability is too weak for an absence pin: `false` is assignable
+ * to `boolean`, so a widened result would slip through a subtype check.
+ * (Same helper as `test/music.test.ts`.)
+ */
+type Exact<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
+
+/**
+ * `true` iff `K` is a member of `keyof T`. `keyof` includes OPTIONAL members,
+ * so this is RED for `dash_url?: string` just as it is for `dash_url: string` —
+ * which a value-level/assignability check would not catch.
+ */
+type HasKey<T, K extends PropertyKey> = K extends keyof T ? true : false;
+
+/**
+ * Compile-time assertion. The type argument must resolve to exactly `true`;
+ * anything else is a typecheck error, which fails `npm run typecheck` and
+ * `npm run build`. NOTE: vitest transpiles without type-checking, so a broken
+ * assertion here still shows GREEN under `vitest run` — `tsc --noEmit` is the
+ * executor that kills the mutant.
+ */
+function assertExact<T extends true>(value: T): T {
+  return value;
+}
+
 /** Build a minimal Rendition rung for helper tests. */
 function rung(id: RenditionId, height: number, url: string | null = null): Rendition {
   return {
@@ -130,7 +157,6 @@ describe('rendition wire-shape smoke', () => {
       job_id: 'j1',
       master_url: '/hls/j1/master.m3u8?sig=x',
       hls_url: '/hls/j1/media.m3u8?sig=x',
-      dash_url: '/dash/j1/manifest.mpd?sig=x',
       status: 'completed',
       reused: false,
       subtitles: [{ index: 0, language: 'eng', label: 'English', default: true, url: '/hls/j1/s0.vtt?sig=x' }],
@@ -143,7 +169,6 @@ describe('rendition wire-shape smoke', () => {
       playlist_ready: true,
       progress: 42.5,
       master_url: '/hls/j0/master.m3u8?sig=y',
-      dash_url: '/dash/j0/manifest.mpd?sig=y',
       subtitles: [],
       variants: null,
     };
@@ -162,6 +187,23 @@ describe('rendition wire-shape smoke', () => {
     expect(pickDefaultRendition(ladder, fallbackId)?.id).toBe('144p');
     // A persisted pin that matches no rung → median fallback (the sole rung here).
     expect(pickDefaultRendition(ladder, '200p')?.id).toBe('144p');
+  });
+
+  it('declares no dash_url on either transcode shape (S11 absence pin)', () => {
+    // phlix-server S11 removed `dash_url` from every transcode payload: real
+    // DASH is unbuilt (S56-S60), so `/dash/{job}/manifest.mpd` always 404'd.
+    // Declaring the key here would hand consumers a compile-time guarantee of
+    // a field that is `undefined` at runtime — strictly worse than omitting it.
+    //
+    // `Exact<…, false>` (not a bare assignability check) so that re-adding the
+    // member as `dash_url?: string` is just as RED as `dash_url: string`.
+    expect(assertExact<Exact<HasKey<TranscodeStartResponse, 'dash_url'>, false>>(true)).toBe(true);
+    expect(assertExact<Exact<HasKey<TranscodeStatusResponse, 'dash_url'>, false>>(true)).toBe(true);
+
+    // Counterweight: the helper must be capable of reporting `true`, otherwise
+    // the two assertions above would pass against any type at all.
+    expect(assertExact<Exact<HasKey<TranscodeStartResponse, 'master_url'>, true>>(true)).toBe(true);
+    expect(assertExact<Exact<HasKey<TranscodeStatusResponse, 'master_url'>, true>>(true)).toBe(true);
   });
 
   it('adds an optional quality_ladder preview to PlaybackInfo (additive)', () => {
