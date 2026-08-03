@@ -115,12 +115,20 @@ export interface TranscodeSubtitleTrack {
  * Response from `POST /api/v1/media/{id}/transcode` (start / ensure job).
  * `variants` is the playable quality ladder; `null` only for a legacy pre-ABR
  * job (explicit key, so a client checks `!= null` rather than key absence).
+ *
+ * ⚠ There is deliberately NO `dash_url`. The server stopped emitting it
+ * (phlix-server S11) because real DASH is unbuilt — the advertised
+ * `/dash/{job}/manifest.mpd` always 404'd. Do not re-add it, not even as an
+ * optional member: an optional key invites every consumer to keep checking
+ * for something that is never sent. When DASH actually ships (S56-S60) it
+ * gets added back as a required field in lockstep with the server. The
+ * absence is pinned by `test/renditions.test.ts` ("transcode wire shapes
+ * declare no dash_url").
  */
 export interface TranscodeStartResponse {
     job_id: string;
     master_url: string;
     hls_url: string;
-    dash_url: string;
     status: string;
     reused: boolean;
     subtitles: TranscodeSubtitleTrack[];
@@ -130,6 +138,8 @@ export interface TranscodeStartResponse {
  * Response from `GET /api/v1/transcode/{jobId}/status`. Same `variants` ladder
  * as {@link TranscodeStartResponse} (`null` for a legacy job); adds on-disk
  * readiness counters.
+ *
+ * ⚠ No `dash_url` here either — see {@link TranscodeStartResponse}.
  */
 export interface TranscodeStatusResponse {
     job_id: string;
@@ -138,7 +148,6 @@ export interface TranscodeStatusResponse {
     playlist_ready: boolean;
     progress: number;
     master_url: string;
-    dash_url: string;
     subtitles: TranscodeSubtitleTrack[];
     variants: Rendition[] | null;
 }
@@ -206,18 +215,18 @@ export interface WindowsDeviceProfile {
     MaxStreamingBitrate: number;
     MaxStaticBitrate: number;
     SupportedMediaTypes: string[];
-    DirectPlayProfiles: Array<{
+    DirectPlayProfiles: {
         Container: string;
         Type: string;
         VideoCodec?: string;
         AudioCodec?: string;
-    }>;
-    TranscodingProfiles: Array<{
+    }[];
+    TranscodingProfiles: {
         Container: string;
         Type: string;
         VideoCodec: string;
         AudioCodec: string;
-    }>;
+    }[];
 }
 /**
  * Flat skip-marker boundaries, the legacy `skip_button_spec` shape that both

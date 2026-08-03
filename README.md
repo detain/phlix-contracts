@@ -102,6 +102,7 @@ npm run lint        # eslint (no-explicit-any)
 npm run typecheck   # tsc --noEmit (strict)
 npm run build       # typecheck + vite lib (ES+CJS) + d.ts emit
 npm run test:run    # vitest run
+npm run test:run -- --coverage   # + v8 coverage; writes ./coverage/lcov.info (CI uploads it to Codacy)
 ```
 
 ## License

@@ -1,4 +1,5 @@
 # Changelog
+<!-- markdownlint-disable MD024 -->
 
 All notable changes to `@phlix/contracts` are documented here.
 
@@ -6,6 +7,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Removed
+
+- 🔴 **BREAKING** — `playback`: `dash_url` is gone from both
+  `TranscodeStartResponse` and `TranscodeStatusResponse`. It was declared
+  **required** (`dash_url: string`) on both, but the server has never sent it
+  since phlix-server **S11** — real DASH is unbuilt (tracked as S56-S60), so the
+  advertised `/dash/{job}/manifest.mpd` always 404'd.
+  - Declaring it was strictly worse than omitting it: a consumer trusting the
+    type got a compile-time guarantee of a field that is `undefined` at runtime,
+    with no `strictNullChecks` warning to catch the difference.
+  - Removed outright rather than relaxed to `dash_url?: string`. An optional
+    member invites every consumer to keep testing for a key that is never
+    emitted. When DASH actually ships it returns as a required field, in
+    lockstep with the server payload.
+  - The absence is pinned at the type level in `test/renditions.test.ts`
+    ("declares no dash_url on either transcode shape") using the same
+    `Exact<A, B>` invariant helper as `test/music.test.ts`, via
+    `Exact<HasKey<T, 'dash_url'>, false>`. Because `keyof` includes optional
+    members, re-adding `dash_url?: string` is just as RED as re-adding it
+    required. ⚠ The killing gate is `tsc --noEmit` (`npm run typecheck`, and
+    again inside `npm run build`) — vitest transpiles without type-checking and
+    stays green on the mutant.
+  - **Impact today: none observed.** Repo-wide greps found no reader of
+    `dash_url` in `phlix-ui`, `phlix-windows-client` or `phlix-console-client`.
+    `phlix-mobile-client` keeps its own local copy of these shapes plus a
+    fixture that sets the key; it does not import them from here yet, so it is
+    unaffected until it switches over. The clients pin `@phlix/contracts` by
+    **git tag**, so this change is inert for each of them until that pin is
+    deliberately bumped.
+
+### Changed
+
+- 🔴 **BREAKING** — `music`: `MusicArtist.mediaItemId`, `MusicAlbum.mediaItemId`
+  and `MusicTrack.mediaItemId` are now `string | null`. They were
+  `number | null`, `number | null` and `number` respectively. The column is
+  `media_items.id`, a **`CHAR(36)` UUID** — it was never a number.
+  - This is the type-level half of phlix-server **S121**, where the same wrong
+    assumption was encoded as an `is_numeric()` test against a UUID. That test
+    can never pass, so the field was silently `null` on `MusicArtist` /
+    `MusicAlbum` and silently `0` on `MusicTrack` for the whole life of the bug.
+    phlix-server corrected all three PHP DTOs to `?string`; this aligns the
+    contract to them.
+  - `MusicTrack.mediaItemId` additionally becomes **nullable**. `0` was never a
+    real id — it was the coercion's fallback masquerading as one — so consumers
+    must now handle the absent case explicitly rather than reading a plausible
+    integer.
+  - `id`, `artistId` and `albumId` are unchanged and remain `number`: those are
+    the music tables' own AUTO_INCREMENT keys, a genuinely different key space
+    from the `media_items` UUID.
+  - **Impact today: none observed.** No client in the estate reads
+    `mediaItemId` off these three interfaces, and the server does not emit the
+    field in these payloads (S121 shipped zero payload change deliberately).
+    The risk this closes is the first consumer to read it inheriting a wrong
+    type. `phlix-windows-client` imports `MusicArtist` / `MusicAlbum` but pins
+    `@phlix/contracts` to the `v0.3.12` tag, so it is unaffected until that pin
+    is deliberately bumped — at which point its two music test fixtures
+    (`tests/unit/MusicAlbumCard.test.tsx:15` `mediaItemId: 100` and `:55`, and
+    `tests/unit/MusicArtistCard.test.tsx:15` `mediaItemId: null`) need the
+    numeric literal replaced with a UUID string. `phlix-ui` does not use these
+    interfaces at all.
 
 ### Added
 
