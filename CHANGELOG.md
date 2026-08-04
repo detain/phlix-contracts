@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **syncplay**: Rename `SyncPlayRoom` → `SyncPlayGroup` with deprecated alias. Align all field names with server's actual `/syncplay/groups` routes including `member_count`, `has_password`, `current_media`, `is_playing`, `playback_position`. Add five-route comment block. (C1.0)
+
 - 🔴 **BREAKING** — `music`: `MusicArtist.mediaItemId`, `MusicAlbum.mediaItemId`
   and `MusicTrack.mediaItemId` are now `string | null`. They were
   `number | null`, `number | null` and `number` respectively. The column is
