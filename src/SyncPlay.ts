@@ -1,8 +1,15 @@
 /**
  * SyncPlay collaborative playback wire types.
  *
- * Mirrors server-side SyncPlay session/room DTOs for coordinated
+ * Mirrors server-side SyncPlay session/group DTOs for coordinated
  * multi-user playback with roles, permissions, and chat.
+ *
+ * Server routes (all under /api/v1/syncplay):
+ *   GET    /api/v1/syncplay/groups
+ *   POST   /api/v1/syncplay/groups
+ *   GET    /api/v1/syncplay/groups/{id}
+ *   POST   /api/v1/syncplay/groups/{id}/join
+ *   POST   /api/v1/syncplay/groups/{id}/leave     <- POST, not DELETE
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
@@ -36,39 +43,66 @@ export interface SyncPlayUser {
   lastSeen: string; // ISO 8601
 }
 
-export interface SyncPlayRoom {
+/**
+ * A SyncPlay group — the server route is /syncplay/groups.
+ * Lightweight summary shape returned by GET /groups (list).
+ */
+export interface SyncPlayGroupListItem {
   id: string;
   name: string;
-  description?: string;
-  isPublic: boolean;
-  currentSession?: SyncPlaySession;
-  memberCount: number;
-  // Wire protocol fields (server-to-client full room state)
-  roomId?: string;
-  serverId?: string;
-  hostUserId?: string;
-  createdAt?: string; // ISO 8601
-  participants?: SyncPlayParticipant[];
+  member_count: number;
+  has_password: boolean;
+  current_media: string | null;
+  is_playing: boolean;
 }
+
+/**
+ * Full SyncPlay group state returned by GET /groups/{id}, join, and leave.
+ * Contains all sync state including members, playback position, queue, etc.
+ */
+export interface SyncPlayGroup extends SyncPlayGroupListItem {
+  members: SyncPlayMember[];
+  host_id: string;
+  current_media_id: string | null;
+  current_media_duration: number | null;
+  playback_position: number;
+  playback_state: string;
+  queue: unknown[];
+  created_at: number; // unix timestamp
+  last_activity_at: number; // unix timestamp
+}
+
+/**
+ * A member within a SyncPlay group.
+ */
+export interface SyncPlayMember {
+  id: string;
+  name: string;
+  is_host: boolean;
+  joined_at: number; // unix timestamp
+}
+
+/** @deprecated Use SyncPlayGroup. The server route is /syncplay/groups. */
+export type SyncPlayRoom = SyncPlayGroup;
 
 export interface SyncPlayChatMessage {
   id: string;
-  roomId: string;
-  userId: string;
-  userName: string;
+  group_id: string;
+  user_id: string;
+  user_name: string;
   content: string;
   timestamp: string; // ISO 8601
 }
 
 /**
- * A participant in a SyncPlay room, including sync state and latency.
+ * A participant in a SyncPlay group, including sync state and latency.
  */
 export interface SyncPlayParticipant {
-  userId: string;
+  user_id: string;
   username: string;
   role: SyncPlayRole;
-  isSynced: boolean;
-  lastPosition: number; // seconds
+  is_synced: boolean;
+  last_position: number; // seconds
   latency: number; // ms
 }
 
@@ -81,14 +115,14 @@ export interface SyncPlayMessage {
   type: 'play' | 'pause' | 'seek' | 'sync';
   timestamp: string; // ISO 8601
   position: number; // seconds
-  roomId: string;
+  group_id: string;
 }
 
 export interface SyncPlayStateUpdate {
-  sessionId: string;
-  playbackPosition: number;
-  playbackRate: number;
-  serverTime: number;
+  session_id: string;
+  playback_position: number;
+  playback_rate: number;
+  server_time: number;
   timestamp: string;
 }
 
@@ -96,6 +130,6 @@ export interface SyncPlayPlaybackCommand {
   type: 'play' | 'pause' | 'seek' | 'sync';
   position?: number;
   rate?: number;
-  issuedBy: string; // userId
-  issuedAt: string; // ISO 8601
+  issued_by: string; // userId
+  issued_at: string; // ISO 8601
 }
