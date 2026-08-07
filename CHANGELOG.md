@@ -6,6 +6,55 @@ All notable changes to `@phlix/contracts` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+> **⚠ Tag-order note — `v0.3.13` and `v0.4.1` are the same commit.** Both tags
+> point at `8b355ce`. `v0.3.13` was published first (2026-08-04) but numbers
+> *below* `v0.4.0` (published 2026-08-02), whose entire content it contains, so
+> the same commit was re-published unchanged as `v0.4.1` (2026-08-05). Both tags
+> are live on the remote and **must not be deleted, moved or re-pointed** — the
+> clients pin this package by git tag (`github:detain/phlix-contracts#<tag>`),
+> so retagging breaks their installs and lockfiles. The sections below are
+> ordered by **publication date**, which is why the version numbers are not
+> monotonic between `0.4.1` and `0.4.0`. Details in the `0.3.13` section below.
+
+## [Unreleased]
+
+Nothing yet.
+
+## [0.4.3] - 2026-08-07
+
+Changelog-accuracy release. **Zero runtime change**: nothing under `src/`
+changed, and the built `dist/` is byte-identical to `v0.4.2` (verified —
+`git diff --stat v0.4.2 HEAD -- dist` is empty). The only tracked changes are
+this file and the `version` field in `package.json`. Consumers gain nothing by
+bumping their pin from `v0.4.2`, and lose nothing by staying on it.
+
+### Fixed
+
+- `CHANGELOG.md`: the `[Unreleased]` section described **six changes that had
+  already shipped** — the oldest of them (`poster_srcset`, commit `4b7ffd2`) in
+  `v0.3.12`, four tags before `v0.4.2` — while four
+  published tags (`v0.3.12`, `v0.3.13`, `v0.4.0`, `v0.4.1`) had no section at
+  all. Every bullet has been moved to the release that actually contains it.
+  The attribution was derived per bullet from `git log -S'<string>' -- src` for
+  the introducing commit, then `git tag --contains <sha>` combined with each
+  tag's own creation date (`%(taggerdate)`) for the first release that carried
+  it — not from the bullet's position in the file or from commit dates alone,
+  which disagree here because `v0.3.13` was tagged after `v0.4.0`.
+- `CHANGELOG.md`: two "impact today" assessments that were accurate when written
+  in early August had since gone stale — `phlix-mobile-client`'s local copy has
+  dropped `dash_url` of its own accord, and `phlix-windows-client` both moved
+  its pin to `v0.4.1` and deleted the two music fixtures named. Corrected in
+  place, with each correction dated — see the ⚠ follow-ups under `0.4.0`.
+- `CHANGELOG.md`: the `[…]` compare links at the foot of the file were missing
+  for eight versions with a section (`0.4.1`, `0.3.13`, `0.4.0`, `0.3.12`,
+  `0.3.11`, `0.3.10`, `0.3.8`, `0.2.1`); links are now present for all of them
+  except `0.3.10`, which has no tag to link to.
+  - ⚠ Two numbering anomalies are left as-is because fixing either would mean
+    moving a published tag: there is **no `v0.3.10` tag** even though this file
+    has a `## [0.3.10]` section (that work is inside the `v0.3.11` tag), and
+    there is a **`v0.3.9` tag with no section**. `0.3.10` therefore gets no
+    compare link rather than a link that would 404.
+
 ## [0.4.2] - 2026-08-07
 
 ### Added
@@ -48,7 +97,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (someone edited `src/mcp.ts` and skipped the build) is a RED, not a wrong
   vocabulary the hub then gates against.
 
-## [Unreleased]
+## [0.4.1] - 2026-08-04
+
+Commit `8b355ce`, tag published 2026-08-05. Byte-identical to `v0.3.13` — see
+the next section for why the same commit carries two tags.
+
+### Changed
+
+- **syncplay**: Rename `SyncPlayRoom` → `SyncPlayGroup`, keeping `SyncPlayRoom`
+  as a `@deprecated` alias (`src/SyncPlay.ts`). Field names aligned with the
+  server's actual `/syncplay/groups` routes — `member_count`, `has_password`,
+  `current_media`, `is_playing`, `playback_position` — and a five-route comment
+  block added. (C1.0)
+  - ⚠ `package.json` at this commit still reads `0.4.0`: the version field was
+    not bumped for either `v0.3.13` or `v0.4.1`, so an install from either tag
+    self-reports `0.4.0`. Corrected from `v0.4.2` onward; not retro-fixable
+    without moving a published tag.
+
+## [0.3.13] - 2026-08-04
+
+**Superseded numbering — not a distinct release.** This tag points at the exact
+same commit as `v0.4.1` (`8b355ce`) and ships identical bytes. It contains
+nothing that `v0.4.1` does not.
+
+It was tagged 2026-08-04, *after* `v0.4.0` had been published on 2026-08-02, so
+its number sorts below a release whose entire content it contains — a consumer
+resolving "latest" by version order would have gone backwards. The same commit
+was therefore re-published unchanged as `v0.4.1` on 2026-08-05.
+
+Both tags stay on the remote deliberately. The clients pin this package by git
+tag (`github:detain/phlix-contracts#<tag>`), so deleting or re-pointing a
+published tag breaks their installs and lockfiles. **Do not "fix" this by
+retagging or by deleting `v0.3.13`.** New pins should use `v0.4.1` or later.
+
+## [0.4.0] - 2026-08-02
+
+Two breaking type corrections. Both are type-level only — the server payloads
+were already what these types now say.
+
+### Added
+
+- The missing MIT `LICENSE` file at the repo root. `package.json` had declared
+  `"license": "MIT"` since `v0.1.0` with no license text in the tree.
 
 ### Removed
 
@@ -79,10 +169,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     unaffected until it switches over. The clients pin `@phlix/contracts` by
     **git tag**, so this change is inert for each of them until that pin is
     deliberately bumped.
+  - ⚠ **Follow-up, verified 2026-08-07** (correction filed in `0.4.3`): the
+    mobile-client sentence above is now out of date. `phlix-mobile-client` has
+    since removed `dash_url` from its own `src/types/playback.ts` and pins the
+    absence in `src/types/__tests__/playback.test.ts` ("declares no dash_url on
+    either transcode shape"), matching this package. Re-grepped for the literal
+    `dash_url` across the five sibling client checkouts under `/home/sites/phlix`
+    (`phlix-ui`, `phlix-windows-client`, `phlix-console-client`,
+    `phlix-mobile-client`, `phlix-tizen-client`, excluding
+    `node_modules`/`.git`/`dist`): the only hits are those mobile-client
+    comments and absence-pins. No repo reads the field.
 
 ### Changed
-
-- **syncplay**: Rename `SyncPlayRoom` → `SyncPlayGroup` with deprecated alias. Align all field names with server's actual `/syncplay/groups` routes including `member_count`, `has_password`, `current_media`, `is_playing`, `playback_position`. Add five-route comment block. (C1.0)
 
 - 🔴 **BREAKING** — `music`: `MusicArtist.mediaItemId`, `MusicAlbum.mediaItemId`
   and `MusicTrack.mediaItemId` are now `string | null`. They were
@@ -112,9 +210,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `tests/unit/MusicArtistCard.test.tsx:15` `mediaItemId: null`) need the
     numeric literal replaced with a UUID string. `phlix-ui` does not use these
     interfaces at all.
+  - ⚠ **Follow-up, verified 2026-08-07** (correction filed in `0.4.3`): the
+    windows-client sentence above is now out of date and its action item is
+    moot. `phlix-windows-client` has moved its pin to `v0.4.1` (which contains
+    this change) and separately deleted both named fixtures along with the local
+    `MusicAlbumCard`/`MusicArtistCard` components in favour of `@phlix/ui`
+    (commit `8e52a08`). A repo-wide grep for `mediaItemId` in
+    `phlix-windows-client` now returns **zero** hits. Current pins across the
+    four sibling repos that declare a `@phlix/contracts` dependency in
+    `package.json`: `phlix-ui` `v0.4.2`, `phlix-windows-client` `v0.4.1`,
+    `phlix-mobile-client` `v0.4.0`, `phlix-tizen-client` `v0.3.12` — so only
+    tizen still predates this change.
+
+## [0.3.12] - 2026-07-20
+
+⚠ Numbered as a patch, but the `MediaType` change below is **breaking** for any
+consumer that had exhaustively switched on the old six-member union. The number
+understates it; it is not retro-fixable without moving a published tag.
 
 ### Added
 
+- `media`: `MediaType` widened from a stale six members to the **full 13-member
+  `media_items.type` column ENUM, in schema order** — `movie`, `series`,
+  `season`, `episode`, `track`, `music`, `album`, `artist`, `video`, `audio`,
+  `book`, `photo`, `audiobook`. Eight members were missing (`track`, `music`,
+  `album`, `artist`, `video`, `book`, `photo`, `audiobook`). The authoritative
+  sources this must track verbatim are the server migrations (001 → 011 → 034),
+  `MediaItemShaper::VALID_TYPES`, and the `type` enum in
+  `phlix-shared/schemas/media-item.schema.json`.
+- `media`: new `OtherMediaItem` interface — any item whose `type` has no
+  dedicated interface, i.e. everything outside the
+  `movie`/`series`/`season`/`episode` video hierarchy. Its discriminant is
+  **derived** as `Exclude<MediaType, 'movie'|'series'|'season'|'episode'>`
+  rather than listed by hand, so a future `MediaType` member lands here
+  automatically and cannot silently escape the union.
 - `media`: Phase C metadata sync. `ContentRating` now covers the US TV Parental
   Guidelines scale (`TV-Y`, `TV-Y7`, `TV-G`, `TV-PG`, `TV-14`, `TV-MA`) alongside
   the existing MPAA film scale — matching the server's expanded `ContentRating`
@@ -128,6 +257,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- 🔴 **BREAKING** — `media`: `AnyMediaItem` is now
+  `Movie | Series | Season | Episode | OtherMediaItem` and is **total**. It
+  previously covered only the four hierarchy discriminants while the wire could
+  carry `photo`/`book`/`track` rows, so the old docblock's advice to
+  `switch (item.type)` with a `default` branch typed `never` was a lie about the
+  runtime data — it just could not say so while `MediaType` omitted those
+  members. A `default: never` over the widened union no longer compiles, which
+  is the point: narrow `default` to `OtherMediaItem` and handle it, or switch on
+  the specific discriminants you support and fall through for the rest.
 - `media`: corrected the `MediaItem.poster_srcset` doc-comment (and the
   `test/types.test.ts` fixture) to describe the server's SV-3.4 local artwork
   cache. Once artwork is downloaded and resized on match, the server now emits
@@ -140,6 +278,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   value shape and example fixture were stale (they described only the old TMDB
   CDN srcset). Producer-side sync point for the UI's responsive-poster support
   (U-N7).
+
+### Removed
+
+- 🔴 **BREAKING** — `media`: the bogus `'image'` member of `MediaType`. The
+  photo kind is named **`photo`**; `image` is a scanner-side label keying the
+  media scanner's file-extension set and is never emitted on the wire. The same
+  stale list in `MediaItemShaper::VALID_TYPES` was silently relabelling real
+  photo/book/audiobook/track rows as `"movie"` in API responses
+  (phlix-server#527). These client-side unions are unchecked casts, so nothing
+  failed at runtime — they were simply wrong. Do not reintroduce it. The same
+  bogus member existed in the `phlix-ui` and `phlix-mobile-client` copies; this
+  release was cut so they could repin and import from here instead of keeping a
+  third and fourth divergent copy. Verified 2026-08-07: both now do
+  (`phlix-ui/src/types/media-item.ts:19` and
+  `phlix-mobile-client/src/types/media.ts:41` each
+  `import type { MediaType } from '@phlix/contracts'`).
 
 ## [0.3.11] - 2026-07-10
 
@@ -380,7 +534,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
+[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/detain/phlix-contracts/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/detain/phlix-contracts/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/detain/phlix-contracts/compare/v0.4.0...v0.4.1
+[0.3.13]: https://github.com/detain/phlix-contracts/compare/v0.4.0...v0.3.13
+[0.4.0]: https://github.com/detain/phlix-contracts/compare/v0.3.12...v0.4.0
+[0.3.12]: https://github.com/detain/phlix-contracts/compare/v0.3.11...v0.3.12
+[0.3.11]: https://github.com/detain/phlix-contracts/compare/v0.3.9...v0.3.11
+[0.3.8]: https://github.com/detain/phlix-contracts/compare/v0.3.7...v0.3.8
 [0.3.7]: https://github.com/detain/phlix-contracts/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/detain/phlix-contracts/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/detain/phlix-contracts/compare/v0.3.4...v0.3.5
@@ -389,6 +551,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.3.2]: https://github.com/detain/phlix-contracts/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/detain/phlix-contracts/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/detain/phlix-contracts/compare/v0.2.1...v0.3.0
+[0.2.1]: https://github.com/detain/phlix-contracts/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/detain/phlix-contracts/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/detain/phlix-contracts/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/detain/phlix-contracts/releases/tag/v0.1.0
