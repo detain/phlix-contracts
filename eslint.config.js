@@ -20,4 +20,12 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
+  {
+    // Build-time scripts run under Node, not in a bundle. Declared inline
+    // rather than pulling in the `globals` package for two names.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: { console: 'readonly', process: 'readonly' },
+    },
+  },
 );

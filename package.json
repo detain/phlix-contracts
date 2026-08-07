@@ -1,6 +1,6 @@
 {
   "name": "@phlix/contracts",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "description": "Framework-agnostic TypeScript REST/wire DTO types + tiny pure helpers for Phlix — the single source of truth for media, playback, auth, hub, library, and event shapes shared across the JS clients (mobile, windows, tizen). Mirrors detain/phlix-shared and the server's JSON response shapes. No Vue/React/axios.",
   "type": "module",
   "main": "./dist/phlix-contracts.umd.cjs",
@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --noEmit -p tsconfig.json && vite build && tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
+    "build": "tsc --noEmit -p tsconfig.json && vite build && tsc --declaration --emitDeclarationOnly -p tsconfig.build.json && node scripts/emit-mcp-scopes.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest",
     "test:run": "vitest run",

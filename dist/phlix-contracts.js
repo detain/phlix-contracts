@@ -52,50 +52,60 @@ var n = {
 	plugin: o,
 	webhook: s,
 	webhookReserved: c
-}, u = "X-Phlix-Device-ID", d = "X-Phlix-Device-Name", f = "X-Phlix-Device-Type", p = "X-Phlix-Session-ID";
-function m(e) {
+}, u = {
+	SERVERS_READ: "mcp:servers:read",
+	LIBRARY_READ: "mcp:library:read",
+	PLAYBACK_READ: "mcp:playback:read",
+	PLAYBACK_CONTROL: "mcp:playback:control"
+}, d = [
+	u.SERVERS_READ,
+	u.LIBRARY_READ,
+	u.PLAYBACK_READ,
+	u.PLAYBACK_CONTROL
+], f = "phlix-mcp-", p = "X-Phlix-Device-ID", m = "X-Phlix-Device-Name", h = "X-Phlix-Device-Type", g = "X-Phlix-Session-ID";
+function _(e) {
 	let t = {
-		[u]: e.deviceId,
-		[d]: e.deviceName,
-		[f]: e.deviceType
+		[p]: e.deviceId,
+		[m]: e.deviceName,
+		[h]: e.deviceType
 	};
-	return e.sessionId !== void 0 && e.sessionId !== "" && (t[p] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
+	return e.sessionId !== void 0 && e.sessionId !== "" && (t[g] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
 }
 //#endregion
 //#region src/ticks.ts
-var h = 1e7, g = 6e8, _ = 36e9;
-function v(e) {
-	return e / h;
-}
-function y(e) {
-	return Math.floor(e * h);
-}
-function b(e) {
-	return Math.floor(e / g);
-}
+var v = 1e7, y = 6e8, b = 36e9;
 function x(e) {
-	let t = Math.floor(v(Number.isFinite(e) && e > 0 ? e : 0)), n = Math.floor(t / 3600), r = Math.floor(t % 3600 / 60), i = Math.floor(t % 60);
-	return n > 0 ? `${n}:${r.toString().padStart(2, "0")}:${i.toString().padStart(2, "0")}` : `${r}:${i.toString().padStart(2, "0")}`;
+	return e / v;
 }
 function S(e) {
-	let t = b(Number.isFinite(e) && e > 0 ? e : 0);
-	return t < 60 ? `${t} min` : `${Math.floor(t / 60)}h ${t % 60}m`;
+	return Math.floor(e * v);
 }
 function C(e) {
+	return Math.floor(e / y);
+}
+function w(e) {
+	let t = Math.floor(x(Number.isFinite(e) && e > 0 ? e : 0)), n = Math.floor(t / 3600), r = Math.floor(t % 3600 / 60), i = Math.floor(t % 60);
+	return n > 0 ? `${n}:${r.toString().padStart(2, "0")}:${i.toString().padStart(2, "0")}` : `${r}:${i.toString().padStart(2, "0")}`;
+}
+function T(e) {
+	let t = C(Number.isFinite(e) && e > 0 ? e : 0);
+	return t < 60 ? `${t} min` : `${Math.floor(t / 60)}h ${t % 60}m`;
+}
+function E(e) {
 	if (!e || !Number.isFinite(e) || e < 0) return "";
-	let t = Math.floor(e / _), n = Math.floor(e % _ / g);
+	let t = Math.floor(e / b), n = Math.floor(e % b / y);
 	return t > 0 ? `${t}h ${n}m` : `${n}m`;
 }
 //#endregion
 //#region src/Rating.ts
-function w(e) {
+function D(e) {
 	if (e.rating_score !== void 0 && e.rating_score !== null) return e.rating_score;
 	let t = e.metadata_json?.rating;
 	return typeof t == "number" ? t : null;
 }
 //#endregion
 //#region src/Audio.ts
-function T(e, t) {
+function O(e, t) {
 	if (!e.length || !t.length) return 0;
 	for (let n of t) {
 		let t = n.toLowerCase().split("-")[0], r = e.findIndex((e) => e.language?.toLowerCase().startsWith(t));
@@ -104,6 +114,6 @@ function T(e, t) {
 	return 0;
 }
 //#endregion
-export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, o as PLUGIN_EVENT, a as SERVER_STATUS, _ as TICKS_PER_HOUR, g as TICKS_PER_MINUTE, h as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, u as X_PHLIX_DEVICE_ID, d as X_PHLIX_DEVICE_NAME, f as X_PHLIX_DEVICE_TYPE, p as X_PHLIX_SESSION_ID, m as buildPhlixHeaders, C as formatDuration, S as formatRuntime, T as pickDefaultAudio, t as pickDefaultRendition, w as pickDisplayRating, y as secondsToTicks, x as ticksToHms, b as ticksToMinutes, v as ticksToSeconds };
+export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, u as MCP_SCOPE, d as MCP_SCOPES, f as MCP_TOKEN_PREFIX, o as PLUGIN_EVENT, a as SERVER_STATUS, b as TICKS_PER_HOUR, y as TICKS_PER_MINUTE, v as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, p as X_PHLIX_DEVICE_ID, m as X_PHLIX_DEVICE_NAME, h as X_PHLIX_DEVICE_TYPE, g as X_PHLIX_SESSION_ID, _ as buildPhlixHeaders, E as formatDuration, T as formatRuntime, O as pickDefaultAudio, t as pickDefaultRendition, D as pickDisplayRating, S as secondsToTicks, w as ticksToHms, C as ticksToMinutes, x as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map
