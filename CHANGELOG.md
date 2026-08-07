@@ -6,6 +6,48 @@ All notable changes to `@phlix/contracts` are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2] - 2026-08-07
+
+### Added
+
+- `mcp`: **new module** — the MCP personal-access-token vocabulary, so the hub
+  and the JS clients can pin against a shared third party instead of against
+  each other's working trees. Exports `MCP_SCOPE` (the four constants, keyed by
+  the hub's PHP constant names), `MCP_SCOPES` (the full list in
+  `McpScopes::all()` order), the `McpScope` union, and `MCP_TOKEN_PREFIX`.
+  - Authored **from** `phlix-hub/src/Mcp/McpScopes.php` and
+    `McpTokenService.php`, which remain the source of truth. It is deliberately
+    NOT generated from any client's copy — a vocabulary derived from its own
+    consumer can never disagree with that consumer.
+  - Includes **`mcp:playback:control`** (hub S63), the write scope, which
+    phlix-ui's local copy did not carry.
+  - **Why (phlix-ui S249):** phlix-ui pinned its `MCP_SCOPES` by reading the
+    hub's PHP file off the filesystem under
+    `it.runIf(existsSync(<sibling phlix-hub path>))`. CI has no `phlix-hub`
+    checkout, so the assertion never ran and reported as **passing** — while on
+    a developer box it went red whenever the sibling tree moved. Measured on
+    phlix-ui `6efe3588`: with the sibling present the suite is `1 failed |
+    5101 passed | 10 skipped`; with it absent (CI's situation, same commit,
+    same live drift) it is `259 files passed, 5100 passed | 12 skipped` — fully
+    green.
+  - ⚠ Consumers must compare the whole list **exactly and in order**.
+    `'mcp:playback'` is a prefix of `'mcp:playback:control'`, so any
+    `includes` / `startsWith` check silently accepts a rename. The order is
+    part of the stored representation (`McpScopes::parse()` emits in this order
+    into `mcp_tokens.scopes`), so appending is safe and reordering is not.
+  - ⚠ Anti-vacuity: an equality check against an export that resolves to
+    `undefined` or `[]` passes trivially. Assert a floor on the length;
+    `test/mcp.test.ts` pins `MCP_SCOPES.length >= 4`.
+
+- `dist/mcp-scopes.json` — the same vocabulary as plain JSON, emitted by
+  `scripts/emit-mcp-scopes.mjs` during `npm run build`. **phlix-hub is PHP with
+  no `package.json` and no npm step in its CI**, so it cannot import this
+  package the way the JS clients do; it can `json_decode()` a file. Generated
+  from the built bundle rather than hand-maintained, and `test/mcp.test.ts`
+  asserts the committed artifact still equals `MCP_SCOPES` — so a stale file
+  (someone edited `src/mcp.ts` and skipped the build) is a RED, not a wrong
+  vocabulary the hub then gates against.
+
 ## [Unreleased]
 
 ### Removed
@@ -338,6 +380,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
+[0.4.2]: https://github.com/detain/phlix-contracts/compare/v0.4.1...v0.4.2
 [0.3.7]: https://github.com/detain/phlix-contracts/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/detain/phlix-contracts/compare/v0.3.5...v0.3.6
 [0.3.5]: https://github.com/detain/phlix-contracts/compare/v0.3.4...v0.3.5
