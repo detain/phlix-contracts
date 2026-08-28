@@ -28,6 +28,12 @@ export interface AccessSchedule {
   /**
    * CHAR(36) UUID — `user_profiles.id` on the server. Was wrongly typed
    * `number` (an `(int)` cast of a UUID is 0 or a leading digit-run).
+   *
+   * NOTE (S234 scope): the interface keeps the historical `profileId` name —
+   * the step's fix is the number→string TYPE correction, not a rename. The
+   * server's wire emission for this key is `profile_id` (snake_case, per
+   * `Phlix\Access\AccessSchedule::toArray()`); a client reading a list
+   * response should map `profile_id` here.
    */
   profileId: string;
   name: string;

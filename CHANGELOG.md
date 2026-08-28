@@ -58,9 +58,6 @@ the named W18 follow-up. `dist/` is rebuilt and committed.
   fails on the pre-fix shape. `Rendition` still declares no `dash_url` (a
   ladder rung is never a DASH endpoint).
 
-[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.4.4...HEAD
-[0.4.4]: https://github.com/detain/phlix-contracts/compare/v0.4.3...v0.4.4
-
 ## [0.4.3] - 2026-08-07
 
 Changelog-accuracy release. **Zero runtime change**: nothing under `src/`
@@ -575,7 +572,8 @@ understates it; it is not retro-fixable without moving a published tag.
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
-[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.4.4...HEAD
+[0.4.4]: https://github.com/detain/phlix-contracts/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/detain/phlix-contracts/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/detain/phlix-contracts/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/detain/phlix-contracts/compare/v0.4.0...v0.4.1
