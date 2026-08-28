@@ -116,19 +116,21 @@ export interface TranscodeSubtitleTrack {
  * `variants` is the playable quality ladder; `null` only for a legacy pre-ABR
  * job (explicit key, so a client checks `!= null` rather than key absence).
  *
- * ⚠ There is deliberately NO `dash_url`. The server stopped emitting it
- * (phlix-server S11) because real DASH is unbuilt — the advertised
- * `/dash/{job}/manifest.mpd` always 404'd. Do not re-add it, not even as an
- * optional member: an optional key invites every consumer to keep checking
- * for something that is never sent. When DASH actually ships (S56-S60) it
- * gets added back as a required field in lockstep with the server. The
- * absence is pinned by `test/renditions.test.ts` ("transcode wire shapes
- * declare no dash_url").
+ * `dash_url` (S325): phlix-server S59 restored what S11 removed. The key is
+ * ALWAYS present, `string | null` — a signed `/dash/{job}/manifest.mpd` when
+ * the job actually published a manifest, null otherwise (an `mpegts` job —
+ * the rollback — and jobs created before S60 flipped the shipped default to
+ * `fmp4`, which always publishes one). A client branching on `dash_url !=
+ * null` must treat a populated value as the DASH endpoint and a null as
+ * "no DASH for this job". The presence (and null-admittance) is pinned by
+ * `test/renditions.test.ts` ("declares dash_url on both transcode shapes").
  */
 export interface TranscodeStartResponse {
     job_id: string;
     master_url: string;
     hls_url: string;
+    /** Signed DASH manifest URL, or null when the job published no manifest. */
+    dash_url: string | null;
     status: string;
     reused: boolean;
     subtitles: TranscodeSubtitleTrack[];
@@ -139,7 +141,8 @@ export interface TranscodeStartResponse {
  * as {@link TranscodeStartResponse} (`null` for a legacy job); adds on-disk
  * readiness counters.
  *
- * ⚠ No `dash_url` here either — see {@link TranscodeStartResponse}.
+ * `dash_url` here is gated exactly like the start response: always present,
+ * `string | null` — see {@link TranscodeStartResponse}.
  */
 export interface TranscodeStatusResponse {
     job_id: string;
@@ -148,6 +151,8 @@ export interface TranscodeStatusResponse {
     playlist_ready: boolean;
     progress: number;
     master_url: string;
+    /** Signed DASH manifest URL, or null when the job published no manifest. */
+    dash_url: string | null;
     subtitles: TranscodeSubtitleTrack[];
     variants: Rendition[] | null;
 }
