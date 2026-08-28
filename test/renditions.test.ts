@@ -157,6 +157,8 @@ describe('rendition wire-shape smoke', () => {
       job_id: 'j1',
       master_url: '/hls/j1/master.m3u8?sig=x',
       hls_url: '/hls/j1/media.m3u8?sig=x',
+      // S325: the key is always present — null for a job with no manifest.
+      dash_url: '/dash/j1/manifest.mpd?sig=x',
       status: 'completed',
       reused: false,
       subtitles: [{ index: 0, language: 'eng', label: 'English', default: true, url: '/hls/j1/s0.vtt?sig=x' }],
@@ -169,12 +171,16 @@ describe('rendition wire-shape smoke', () => {
       playlist_ready: true,
       progress: 42.5,
       master_url: '/hls/j0/master.m3u8?sig=y',
+      // mpegts rollback / pre-S60 job → no manifest → null, never absent.
+      dash_url: null,
       subtitles: [],
       variants: null,
     };
     expect(start.variants?.[0].id).toBe('1080p');
     expect(legacy.variants).toBeNull();
     expect(legacy.progress).toBe(42.5);
+    expect(start.dash_url).toContain('/dash/j1/manifest.mpd');
+    expect(legacy.dash_url).toBeNull();
   });
 
   it('accepts a sub-240p fallback rung id (`${number}p`, e.g. 144p) as a valid RenditionId', () => {
@@ -189,21 +195,32 @@ describe('rendition wire-shape smoke', () => {
     expect(pickDefaultRendition(ladder, '200p')?.id).toBe('144p');
   });
 
-  it('declares no dash_url on either transcode shape (S11 absence pin)', () => {
-    // phlix-server S11 removed `dash_url` from every transcode payload: real
-    // DASH is unbuilt (S56-S60), so `/dash/{job}/manifest.mpd` always 404'd.
-    // Declaring the key here would hand consumers a compile-time guarantee of
-    // a field that is `undefined` at runtime — strictly worse than omitting it.
+  it('declares dash_url on both transcode shapes, absent on Rendition (S325)', () => {
+    // phlix-server S59 restored what S11 removed: the transcode start/status
+    // responses carry `dash_url` ALWAYS, typed `string | null` — a signed URL
+    // when the job published a `manifest.mpd` (every fMP4 job, the shipped
+    // default since S60), null for the `mpegts` rollback and pre-flip jobs.
     //
-    // `Exact<…, false>` (not a bare assignability check) so that re-adding the
-    // member as `dash_url?: string` is just as RED as `dash_url: string`.
-    expect(assertExact<Exact<HasKey<TranscodeStartResponse, 'dash_url'>, false>>(true)).toBe(true);
-    expect(assertExact<Exact<HasKey<TranscodeStatusResponse, 'dash_url'>, false>>(true)).toBe(true);
+    // S325 pins the PRESENCE (this test reddens against the pre-S325 shape,
+    // where the key did not exist). The rung-level `Rendition` stays without
+    // one: a rendition is a ladder rung, never a DASH endpoint — a playback
+    // preview rung has no job at all.
+    //
+    // `Exact<…, true>` (not a bare assignability check) so that re-declaring
+    // the member as optional is just as RED as removing it.
+    expect(assertExact<Exact<HasKey<TranscodeStartResponse, 'dash_url'>, true>>(true)).toBe(true);
+    expect(assertExact<Exact<HasKey<TranscodeStatusResponse, 'dash_url'>, true>>(true)).toBe(true);
+    expect(assertExact<Exact<HasKey<Rendition, 'dash_url'>, false>>(true)).toBe(true);
 
-    // Counterweight: the helper must be capable of reporting `true`, otherwise
-    // the two assertions above would pass against any type at all.
+    // The value admits null: an mpegts rollback job has no manifest to point at.
+    expect(assertExact<Exact<null extends TranscodeStartResponse['dash_url'] ? true : false, true>>(true)).toBe(true);
+    expect(assertExact<Exact<null extends TranscodeStatusResponse['dash_url'] ? true : false, true>>(true)).toBe(true);
+
+    // Counterweight: the helper must be capable of reporting both answers,
+    // otherwise the assertions above would pass against any type at all.
     expect(assertExact<Exact<HasKey<TranscodeStartResponse, 'master_url'>, true>>(true)).toBe(true);
     expect(assertExact<Exact<HasKey<TranscodeStatusResponse, 'master_url'>, true>>(true)).toBe(true);
+    expect(assertExact<Exact<HasKey<Rendition, 'url'>, true>>(true)).toBe(true);
   });
 
   it('adds an optional quality_ladder preview to PlaybackInfo (additive)', () => {

@@ -20,6 +20,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [0.4.4] - 2026-08-28
+
+Wire-shape correction release (S234 + the S325 half of the coordinated
+contracts release). **Consumers must bump deliberately**: the mobile client
+bumps in this step (S234); the ui/tizen/console bumps for the S325 half are
+the named W18 follow-up. `dist/` is rebuilt and committed.
+
+### Changed (S234 — parental-controls create shapes)
+
+- `ProfileTag`: the tag-type wire key is now `tag_type` (the server's
+  snake_case emission, `Phlix\Access\ProfileTag::toArray()`, and the DB
+  column name). The previous `tagType` declaration mirrored the mobile/roku
+  create bodies instead of the server, so every create those clients posted
+  400'd (accepted by neither S233 spelling). The server has accepted
+  `tagType` additively since S234 so shipped clients keep working, but the
+  declared shape is the server's. `tagType` is gone from the interface;
+  re-adding it reddens `test/profiletag.test.ts`.
+- `ProfileTag.profileId` / `AccessSchedule.profileId`: `number` → `string`
+  (CHAR(36) `user_profiles.id` UUID; an `(int)` cast of a UUID is 0 or a
+  leading digit-run).
+- `AccessSchedule`: the schedule keys are now snake_case (`start_time`,
+  `end_time`, `days_of_week`, `is_active`), matching the server's
+  `AccessSchedule::toArray()` emission. The camelCase spellings
+  (`startTime`/`endTime`/`daysOfWeek`/`isActive`) that mobile/roku posted
+  are accepted additively by the server since S234 but are not the declared
+  shape; re-adding them reddens `test/profiletag.test.ts`.
+
+### Changed (S325 — `dash_url` on the transcode shapes)
+
+- `TranscodeStartResponse` / `TranscodeStatusResponse`: `dash_url:
+  string | null` is now declared on both (always present, null when the job
+  published no `manifest.mpd`). phlix-server S59 restored what S11 removed;
+  the previous absence pin was itself the regression. The presence and
+  null-admittance are pinned by `test/renditions.test.ts` ("declares
+  dash_url on both transcode shapes, absent on Rendition (S325)") — the test
+  fails on the pre-fix shape. `Rendition` still declares no `dash_url` (a
+  ladder rung is never a DASH endpoint).
+
+[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.4.4...HEAD
+[0.4.4]: https://github.com/detain/phlix-contracts/compare/v0.4.3...v0.4.4
+
 ## [0.4.3] - 2026-08-07
 
 Changelog-accuracy release. **Zero runtime change**: nothing under `src/`

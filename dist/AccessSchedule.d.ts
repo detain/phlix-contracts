@@ -10,19 +10,31 @@
 export type DayOfWeek = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 /**
  * A time window during which a profile's streaming access is active.
- * `daysOfWeek` is an array of day literals (e.g. `['mon','wed','fri']`).
- * `startTime` / `endTime` are "HH:MM:SS" in 24-hour local server time.
+ * `days_of_week` is an array of day literals (e.g. `['mon','wed','fri']`).
+ * `start_time` / `end_time` are "HH:MM:SS" in 24-hour local server time.
+ *
+ * S234: the keys are the server's snake_case emission
+ * (`Phlix\Access\AccessSchedule::toArray()`). The earlier camelCase
+ * declaration (`startTime`/`endTime`/`daysOfWeek`/`isActive`) mirrored the
+ * mobile/roku create bodies instead of the server, so every create those
+ * clients posted 400'd. The server has accepted the camelCase spellings
+ * additively since S234 so shipped clients keep working, but the declared
+ * shape is the server's: snake_case.
  */
 export interface AccessSchedule {
     id: number;
-    profileId: number;
+    /**
+     * CHAR(36) UUID — `user_profiles.id` on the server. Was wrongly typed
+     * `number` (an `(int)` cast of a UUID is 0 or a leading digit-run).
+     */
+    profileId: string;
     name: string;
     /** Start of the window in "HH:MM:SS" (24-hour). */
-    startTime: string;
+    start_time: string;
     /** End of the window in "HH:MM:SS" (24-hour). */
-    endTime: string;
+    end_time: string;
     /** Ordered list of days this window applies. Empty = never active. */
-    daysOfWeek: DayOfWeek[];
+    days_of_week: DayOfWeek[];
     /** Whether this schedule is currently enabled. */
-    isActive: boolean;
+    is_active: boolean;
 }
