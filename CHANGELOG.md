@@ -18,7 +18,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Nothing yet.
+### Added — S280: the canonical server route manifest export
+
+- `scripts/generate-server-route-manifest.mjs` derives the UNION of the two
+  phlix-server `ROUTE_MANIFEST` constants (`Application` 364 + `WebPortal` 47,
+  11 shared) — **400 `[method, pathTemplate]` tuples at server commit
+  `8f72faec`** — into the checked-in `src/routeManifest.generated.ts`
+  (`SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE`). The manifest
+  is derived from the SERVER, never from any client it checks. Generalises the
+  phlix-ui s280ui prototype (`phlix-ui/scripts/generate-server-route-manifest.mjs`).
+- `scripts/emit-server-route-manifest.mjs` (wired into `npm run build`) emits
+  `dist/server-route-manifest.json`, the JSON projection non-TS clients vendor
+  — same staleness-test pattern as `dist/mcp-scopes.json` (S249).
+- `test/routeManifest.test.ts` pins the count, provenance sha, structural
+  invariants, the known-unserved syncplay/rooms + notifications negatives, the
+  hub-addressed negatives, and TS↔JSON agreement.
+- **No tag in this wave** (coordinator decision): clients vendor the JSON copy
+  from master; their manifest-vending and gates ship in the same wave
+  (mobile, roku); tizen/console gates + hub manifest gate follow in W19.
 
 ## [0.4.4] - 2026-08-28
 

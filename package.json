@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --noEmit -p tsconfig.json && vite build && tsc --declaration --emitDeclarationOnly -p tsconfig.build.json && node scripts/emit-mcp-scopes.mjs",
+    "build": "tsc --noEmit -p tsconfig.json && vite build && tsc --declaration --emitDeclarationOnly -p tsconfig.build.json && node scripts/emit-mcp-scopes.mjs && node scripts/emit-server-route-manifest.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest",
     "test:run": "vitest run",
