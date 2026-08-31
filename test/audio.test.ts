@@ -2,16 +2,30 @@
  * audio.test.
  *
  * Tests for pickDefaultAudio helper function.
+ *
+ * S404: the helper is typed against the playback-info WIRE `AudioTrack`
+ * (StreamTrackShaper shape) — the fixtures below carry that full shape (an
+ * honest fixture is a full server row, not a hand-trimmed one).
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
 import { describe, it, expect } from 'vitest';
 import { pickDefaultAudio } from '../src/Audio';
-import type { StreamAudioTrack } from '../src/AudioTrack';
+import type { AudioTrack } from '../src/playback';
 
-/** Build a minimal StreamAudioTrack for testing. */
-function track(id: string, language: string): StreamAudioTrack {
-  return { id, codec: 'aac', language, channels: 2 };
+/** Build a full wire-shaped AudioTrack (StreamTrackShaper::audioTracks row). */
+function track(id: string, language: string, index = 0): AudioTrack {
+  return {
+    id,
+    index,
+    stream_index: index + 1,
+    codec: 'aac',
+    language,
+    channels: 2,
+    bitrate: 128000,
+    title: null,
+    default: index === 0,
+  };
 }
 
 describe('pickDefaultAudio', () => {
@@ -19,10 +33,10 @@ describe('pickDefaultAudio', () => {
 
   it('returns index of matching track when language matches preferred', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      track('t1', 'en-US'),
-      track('t2', 'es-ES'),
-      track('t3', 'fr-FR'),
+    const tracks: AudioTrack[] = [
+      track('t1', 'en-US', 0),
+      track('t2', 'es-ES', 1),
+      track('t3', 'fr-FR', 2),
     ];
 
     // Act
@@ -34,10 +48,10 @@ describe('pickDefaultAudio', () => {
 
   it('returns index of second track when first preferred language matches second track', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      track('t1', 'fr-FR'),
-      track('t2', 'de-DE'),
-      track('t3', 'en-US'),
+    const tracks: AudioTrack[] = [
+      track('t1', 'fr-FR', 0),
+      track('t2', 'de-DE', 1),
+      track('t3', 'en-US', 2),
     ];
 
     // Act
@@ -49,10 +63,10 @@ describe('pickDefaultAudio', () => {
 
   it('returns index of first match when multiple preferred languages are tried in order', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      track('t1', 'ja-JP'),
-      track('t2', 'ko-KR'),
-      track('t3', 'zh-CN'),
+    const tracks: AudioTrack[] = [
+      track('t1', 'ja-JP', 0),
+      track('t2', 'ko-KR', 1),
+      track('t3', 'zh-CN', 2),
     ];
 
     // Act - tries en-US first (not found), then ja-JP (found at index 0)
@@ -64,9 +78,9 @@ describe('pickDefaultAudio', () => {
 
   it('handles BCP47 primary language tag extraction (en-US matches en)', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      track('t1', 'en'),
-      track('t2', 'es'),
+    const tracks: AudioTrack[] = [
+      track('t1', 'en', 0),
+      track('t2', 'es', 1),
     ];
 
     // Act - passing 'en-US' should match track with language 'en'
@@ -78,9 +92,9 @@ describe('pickDefaultAudio', () => {
 
   it('handles case-insensitive language matching', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      track('t1', 'EN-US'),
-      track('t2', 'ES-ES'),
+    const tracks: AudioTrack[] = [
+      track('t1', 'EN-US', 0),
+      track('t2', 'ES-ES', 1),
     ];
 
     // Act
@@ -94,7 +108,7 @@ describe('pickDefaultAudio', () => {
 
   it('returns 0 when tracks array is empty', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [];
+    const tracks: AudioTrack[] = [];
 
     // Act
     const result = pickDefaultAudio(tracks, ['en-US']);
@@ -105,7 +119,7 @@ describe('pickDefaultAudio', () => {
 
   it('returns 0 when preferredLanguages array is empty', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
+    const tracks: AudioTrack[] = [
       track('t1', 'en-US'),
     ];
 
@@ -118,9 +132,9 @@ describe('pickDefaultAudio', () => {
 
   it('returns 0 when no track language matches any preferred language', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      track('t1', 'fr-FR'),
-      track('t2', 'de-DE'),
+    const tracks: AudioTrack[] = [
+      track('t1', 'fr-FR', 0),
+      track('t2', 'de-DE', 1),
     ];
 
     // Act
@@ -130,15 +144,15 @@ describe('pickDefaultAudio', () => {
     expect(result).toBe(0);
   });
 
-  it('returns 0 (fallback to first track) when track language is null/undefined', () => {
-    // Arrange - track with undefined language
-    const tracksWithUndefined: StreamAudioTrack[] = [
-      { id: 't1', codec: 'aac', language: undefined as unknown as string, channels: 2 },
-      track('t2', 'en-US'),
-    ];
+  it('skips a track whose language is runtime-null (typed `string`, but JS can lie)', () => {
+    // Arrange - track with undefined language (the server coerces 'und', so
+    // this state is off-contract; the helper must not crash on it).
+    const holes = track('t1', 'und', 0);
+    delete (holes as Partial<AudioTrack>).language;
+    const tracks: AudioTrack[] = [holes, track('t2', 'en-US', 1)];
 
     // Act
-    const result = pickDefaultAudio(tracksWithUndefined, ['en-US']);
+    const result = pickDefaultAudio(tracks, ['en-US']);
 
     // Assert - should find 'en-US' at index 1, not 0
     expect(result).toBe(1);
@@ -146,9 +160,9 @@ describe('pickDefaultAudio', () => {
 
   it('handles tracks with null language gracefully (skips to next)', () => {
     // Arrange
-    const tracks: StreamAudioTrack[] = [
-      { id: 't1', codec: 'aac', language: null as unknown as string, channels: 2 },
-      track('t2', 'en-US'),
+    const tracks: AudioTrack[] = [
+      { ...track('t1', 'und', 0), language: null as unknown as string },
+      track('t2', 'en-US', 1),
     ];
 
     // Act

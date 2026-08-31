@@ -9,24 +9,45 @@ function t(e, t) {
 		return e[Math.floor(e.length / 2)];
 	}
 }
-//#endregion
-//#region src/auth.ts
-var n = {
+var n = [
+	"id",
+	"index",
+	"stream_index",
+	"language",
+	"label",
+	"codec",
+	"source",
+	"hearing_impaired",
+	"url"
+], r = [
+	"id",
+	"index",
+	"stream_index",
+	"codec",
+	"language",
+	"channels",
+	"bitrate",
+	"title",
+	"default"
+], i = {
+	subtitle: !0,
+	audio: !0
+}, a = {
 	PHLIX: "phlix",
 	PHLIX_HUB: "phlix-hub"
-}, r = {
+}, o = {
 	SERVER: "server",
 	HUB: "hub",
 	CLIENT: "client"
-}, i = {
+}, s = {
 	ACCESS: "access",
 	REFRESH: "refresh"
-}, a = {
+}, c = {
 	ONLINE: "online",
 	OFFLINE: "offline",
 	CLAIMING: "claiming",
 	DISABLED: "disabled"
-}, o = {
+}, l = {
 	PLAYBACK_STARTED: "phlix.playback.started",
 	PLAYBACK_PAUSED: "phlix.playback.paused",
 	PLAYBACK_RESUMED: "phlix.playback.resumed",
@@ -39,7 +60,7 @@ var n = {
 	USER_CREATED: "phlix.user.created",
 	USER_LOGGED_IN: "phlix.user.logged_in",
 	USER_LOGGED_OUT: "phlix.user.logged_out"
-}, s = {
+}, u = {
 	PLAYBACK_STARTED: "playback.started",
 	PLAYBACK_ENDED: "playback.ended",
 	LIBRARY_UPDATED: "library.updated",
@@ -48,64 +69,64 @@ var n = {
 	RECORDING_STOPPED: "recording.stopped",
 	MEDIA_ADDED: "media.added",
 	ALERT: "alert"
-}, c = { TEST: "webhook.test" }, l = {
-	plugin: o,
-	webhook: s,
-	webhookReserved: c
-}, u = {
+}, d = { TEST: "webhook.test" }, f = {
+	plugin: l,
+	webhook: u,
+	webhookReserved: d
+}, p = {
 	SERVERS_READ: "mcp:servers:read",
 	LIBRARY_READ: "mcp:library:read",
 	PLAYBACK_READ: "mcp:playback:read",
 	PLAYBACK_CONTROL: "mcp:playback:control"
-}, d = [
-	u.SERVERS_READ,
-	u.LIBRARY_READ,
-	u.PLAYBACK_READ,
-	u.PLAYBACK_CONTROL
-], f = "phlix-mcp-", p = "X-Phlix-Device-ID", m = "X-Phlix-Device-Name", h = "X-Phlix-Device-Type", g = "X-Phlix-Session-ID";
-function _(e) {
+}, m = [
+	p.SERVERS_READ,
+	p.LIBRARY_READ,
+	p.PLAYBACK_READ,
+	p.PLAYBACK_CONTROL
+], h = "phlix-mcp-", g = "X-Phlix-Device-ID", _ = "X-Phlix-Device-Name", v = "X-Phlix-Device-Type", y = "X-Phlix-Session-ID";
+function b(e) {
 	let t = {
-		[p]: e.deviceId,
-		[m]: e.deviceName,
-		[h]: e.deviceType
+		[g]: e.deviceId,
+		[_]: e.deviceName,
+		[v]: e.deviceType
 	};
-	return e.sessionId !== void 0 && e.sessionId !== "" && (t[g] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
+	return e.sessionId !== void 0 && e.sessionId !== "" && (t[y] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
 }
 //#endregion
 //#region src/ticks.ts
-var v = 1e7, y = 6e8, b = 36e9;
-function x(e) {
-	return e / v;
-}
-function S(e) {
-	return Math.floor(e * v);
-}
-function C(e) {
-	return Math.floor(e / y);
-}
+var x = 1e7, S = 6e8, C = 36e9;
 function w(e) {
-	let t = Math.floor(x(Number.isFinite(e) && e > 0 ? e : 0)), n = Math.floor(t / 3600), r = Math.floor(t % 3600 / 60), i = Math.floor(t % 60);
-	return n > 0 ? `${n}:${r.toString().padStart(2, "0")}:${i.toString().padStart(2, "0")}` : `${r}:${i.toString().padStart(2, "0")}`;
+	return e / x;
 }
 function T(e) {
-	let t = C(Number.isFinite(e) && e > 0 ? e : 0);
-	return t < 60 ? `${t} min` : `${Math.floor(t / 60)}h ${t % 60}m`;
+	return Math.floor(e * x);
 }
 function E(e) {
+	return Math.floor(e / S);
+}
+function D(e) {
+	let t = Math.floor(w(Number.isFinite(e) && e > 0 ? e : 0)), n = Math.floor(t / 3600), r = Math.floor(t % 3600 / 60), i = Math.floor(t % 60);
+	return n > 0 ? `${n}:${r.toString().padStart(2, "0")}:${i.toString().padStart(2, "0")}` : `${r}:${i.toString().padStart(2, "0")}`;
+}
+function O(e) {
+	let t = E(Number.isFinite(e) && e > 0 ? e : 0);
+	return t < 60 ? `${t} min` : `${Math.floor(t / 60)}h ${t % 60}m`;
+}
+function k(e) {
 	if (!e || !Number.isFinite(e) || e < 0) return "";
-	let t = Math.floor(e / b), n = Math.floor(e % b / y);
+	let t = Math.floor(e / C), n = Math.floor(e % C / S);
 	return t > 0 ? `${t}h ${n}m` : `${n}m`;
 }
 //#endregion
 //#region src/Rating.ts
-function D(e) {
+function A(e) {
 	if (e.rating_score !== void 0 && e.rating_score !== null) return e.rating_score;
 	let t = e.metadata_json?.rating;
 	return typeof t == "number" ? t : null;
 }
 //#endregion
 //#region src/Audio.ts
-function O(e, t) {
+function j(e, t) {
 	if (!e.length || !t.length) return 0;
 	for (let n of t) {
 		let t = n.toLowerCase().split("-")[0], r = e.findIndex((e) => e.language?.toLowerCase().startsWith(t));
@@ -115,7 +136,7 @@ function O(e, t) {
 }
 //#endregion
 //#region src/routeManifest.generated.ts
-var k = [
+var M = [
 	["DELETE", "/api/v1/admin/backup/{id}"],
 	["DELETE", "/api/v1/admin/livetv/recordings/{id}"],
 	["DELETE", "/api/v1/admin/livetv/series-rules/{id}"],
@@ -516,7 +537,7 @@ var k = [
 	["PUT", "/api/v1/profiles/{profileId}/schedules/{scheduleId}"],
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
-], A = {
+], N = {
 	serverSha: "8f72faec6ef85c9df1382148d4f294a450d71bed",
 	generatedAt: "2026-08-31T06:34:23Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
@@ -531,6 +552,6 @@ var k = [
 	total: 400
 };
 //#endregion
-export { e as AUTO_QUALITY, l as EVENT, r as JWT_AUD, n as JWT_ISS, i as JWT_TYPE, u as MCP_SCOPE, d as MCP_SCOPES, f as MCP_TOKEN_PREFIX, o as PLUGIN_EVENT, k as SERVER_ROUTE_MANIFEST, A as SERVER_ROUTE_MANIFEST_PROVENANCE, a as SERVER_STATUS, b as TICKS_PER_HOUR, y as TICKS_PER_MINUTE, v as TICKS_PER_SECOND, s as WEBHOOK_EVENT, c as WEBHOOK_EVENT_RESERVED, p as X_PHLIX_DEVICE_ID, m as X_PHLIX_DEVICE_NAME, h as X_PHLIX_DEVICE_TYPE, g as X_PHLIX_SESSION_ID, _ as buildPhlixHeaders, E as formatDuration, T as formatRuntime, O as pickDefaultAudio, t as pickDefaultRendition, D as pickDisplayRating, S as secondsToTicks, w as ticksToHms, C as ticksToMinutes, x as ticksToSeconds };
+export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, M as SERVER_ROUTE_MANIFEST, N as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map

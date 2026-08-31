@@ -14,8 +14,13 @@
  * Mirrors the server's `media_streams` row where `stream_type = 'audio'`.
  * Language is a BCP 47 tag (e.g., "en-US", "ja-JP", "de-DE").
  *
- * Distinct from the playback.ts `AudioTrack` type which carries `display_title`
- * and `url` (用于 playback bundle).
+ * TWO VOCABULARIES (S404 ruling): this `Stream*` pair models DATABASE rows
+ * (`media_streams` columns, camelCase app fields). The playback-info WIRE shape
+ * — what `GET /api/v1/media/{id}/playback-info` emits through the server's
+ * `StreamTrackShaper` — is the playback.ts `AudioTrack`/`SubtitleTrack` pair
+ * (snake_case, incl. `index`/`stream_index`/`default`, `bitrate` always
+ * present). A client reading a playback-info response MUST type it as the
+ * playback.ts wire shape, never as this DB mirror.
  */
 export interface StreamAudioTrack {
     id: string;

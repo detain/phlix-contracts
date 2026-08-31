@@ -37,6 +37,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from master; their manifest-vending and gates ship in the same wave
   (mobile, roku); tizen/console gates + hub manifest gate follow in W19.
 
+## [0.4.5] - 2026-08-31
+
+Track-shape authority release (S404). **Consumers must bump deliberately**:
+the playback-info track pair changed shape (a type-level correction of a
+long-standing fiction), so tizen/mobile/ui pins move to this tag in the same
+wave. `dist/` is rebuilt and committed; `dist/server-route-manifest.json` is
+byte-identical to 0.4.4 (the S280 export was NOT regenerated here).
+
+### Fixed (S404 — playback.ts track shapes := the honest wire)
+
+- `AudioTrack` (src/playback.ts) now declares exactly what
+  `Phlix\Media\Library\StreamTrackShaper::audioTracks()` emits at server
+  `01340633`: `id, index, stream_index, codec, language, channels,
+  bitrate (ALWAYS present, nullable), title (nullable), default (stored
+  disposition else first-track promotion)`. The pre-fix declaration carried
+  a REQUIRED `display_title` and an optional `url` — no server endpoint has
+  ever emitted either (`display_title`: zero hits in phlix-server `src/`).
+- `SubtitleTrack` now declares the shaper's emission: `id, index,
+  stream_index, language, label (= title ?? language ?? 'Subtitle N'),
+  codec, source, hearing_impaired, url (signed path, null without an
+  itemId)`. `display_title` gone; the display string is the server-derived
+  `label`.
+- `pickDefaultAudio` (src/Audio.ts) retyped from the `StreamAudioTrack` DB
+  mirror to the wire `AudioTrack` — its docblock always said "tracks from
+  playback-info" while the signature lied. No estate caller exists
+  (grep-verified), so the retype strands nobody.
+- New exported ordered key-list consts `AUDIO_TRACK_KEYS` /
+  `SUBTITLE_TRACK_KEYS` plus a compile-time interface↔const tie — a rename
+  on one side without the other is a `tsc` error.
+- New cross-language golden-vector gate:
+  `scripts/dump-server-track-vectors.php` captures the REAL server shaper's
+  output (fixture provenance records the server sha; minted subtitle URLs
+  are asserted to the signed shape then stored path-only),
+  `test/fixtures/stream-track-vectors.json` is that capture, and
+  `test/trackShapeParity.test.ts` asserts every vector's key set equals the
+  TS consts — exact, ordered, never substring. The gate was
+  mutation-verified in both directions: a fixture `title`→`display_title`
+  rename turns the suite red; an interface rename turns `tsc` red.
+- `StreamAudioTrack`/`StreamSubtitleTrack` (AudioTrack.ts / SubtitleTrack.ts)
+  are KEPT — they are `media_streams` DATABASE mirrors, not wire shapes —
+  with docblocks now stating the two-vocabulary split explicitly.
+
 ## [0.4.4] - 2026-08-28
 
 Wire-shape correction release (S234 + the S325 half of the coordinated
