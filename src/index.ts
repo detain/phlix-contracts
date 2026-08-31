@@ -34,3 +34,4 @@ export * from './ProfileTag';
 export * from './SyncPlay';
 export * from './StreamSession';
 export * from './Music';
+export * from './routeManifest.generated';
