@@ -13,6 +13,12 @@
  *   - the play/stream descriptors the clients consume (`stream_url`, `url`,
  *     `protocol`, …).
  *
+ * The {@link AudioTrack}/{@link SubtitleTrack} pair models the
+ * `audio_tracks[]`/`subtitle_tracks[]` arrays exactly as the server's
+ * `Media/Library/StreamTrackShaper.php` emits them (S404 authority ruling);
+ * the DB-row mirrors live in `AudioTrack.ts`/`SubtitleTrack.ts` as the
+ * `Stream*` types — do not conflate the two vocabularies.
+ *
  * Consolidates the mobile (`playback.ts`) and windows (`api.ts`) declarations.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
@@ -121,7 +127,8 @@ export interface Rendition {
  * A soft subtitle track on a transcode job (`variants`-adjacent). Distinct from
  * {@link SubtitleTrack}: the transcode pipeline emits `{index,language,label,
  * default,url}` (matching `TranscodeManager` job readiness), not the
- * `{id,codec,display_title}` library shape.
+ * playback-info {@link SubtitleTrack} wire shape (which carries
+ * `id/index/stream_index/language/label/codec/source/hearing_impaired/url`).
  */
 export interface TranscodeSubtitleTrack {
   index: number;
@@ -209,24 +216,126 @@ export function pickDefaultRendition(
   return variants[Math.floor(variants.length / 2)];
 }
 
-/** A subtitle track. `url` present when delivered as a soft track. */
+/**
+ * Ordered wire keys of {@link SubtitleTrack} — exported so
+ * `test/trackShapeParity.test.ts` can compare them, EXACTLY and in order,
+ * against the golden vectors captured from the server's
+ * `StreamTrackShaper::subtitleTracks()`. Keep in lockstep with the interface
+ * (the type-level tie below is a compile error if they diverge).
+ */
+export const SUBTITLE_TRACK_KEYS = [
+  'id',
+  'index',
+  'stream_index',
+  'language',
+  'label',
+  'codec',
+  'source',
+  'hearing_impaired',
+  'url',
+] as const;
+
+/**
+ * A subtitle track on the `GET /api/v1/media/{id}/playback-info` wire —
+ * one element of `subtitle_tracks[]`, emitted verbatim (snake_case) by the
+ * server's authoritative `Phlix\Media\Library\StreamTrackShaper::
+ * subtitleTracks()`.
+ *
+ * S404 authority ruling (2026-08-31, verified at server `01340633`): this is
+ * the REAL wire shape. The pre-S404 declaration here carried a required
+ * `display_title` and optional `url` — a fiction no endpoint ever emitted
+ * (`git grep display_title` in phlix-server `src/`: ZERO hits). `label` is the
+ * display string the server derives (`title ?? language ?? 'Subtitle N'`).
+ *
+ * - `index` — 0-based PER-TYPE ordinal in ffmpeg's `0:s:N` selector space
+ *   (counts every subtitle row, including bitmap rows the extraction endpoint
+ *   can't serve and that are therefore NOT emitted here).
+ * - `stream_index` — the global ffprobe index from `media_streams.stream_index`.
+ * - `language` — BCP 47 tag; `'und'` when the row stores none.
+ * - `label` — always a non-empty display string (server-coerced).
+ * - `source` — `null` for embedded rows; provenance for downloaded external
+ *   subtitle rows (`media_streams.storage_path` rows).
+ * - `hearing_impaired` — stored-flag boolean (never "forced": the wire has no
+ *   forced concept).
+ * - `url` — SIGNED path to the extraction endpoint
+ *   (`/api/v1/media/{itemId}/subtitles/{index}`, external rows:
+ *   `/subtitles/external/{rowId}`) carrying `?exp&sig`; `null` when the server
+ *   has no itemId to mint against.
+ */
 export interface SubtitleTrack {
   id: string;
-  codec: string;
+  index: number;
+  stream_index: number;
   language: string;
-  display_title: string;
-  url?: string;
+  label: string;
+  codec: string;
+  source: string | null;
+  hearing_impaired: boolean;
+  url: string | null;
 }
 
-/** An audio track. */
+/**
+ * Ordered wire keys of {@link AudioTrack} — exported for the golden-vector
+ * parity test; keep in lockstep with the interface.
+ */
+export const AUDIO_TRACK_KEYS = [
+  'id',
+  'index',
+  'stream_index',
+  'codec',
+  'language',
+  'channels',
+  'bitrate',
+  'title',
+  'default',
+] as const;
+
+/**
+ * An audio track on the `GET /api/v1/media/{id}/playback-info` wire — one
+ * element of `audio_tracks[]`, emitted verbatim (snake_case) by the server's
+ * authoritative `Phlix\Media\Library\StreamTrackShaper::audioTracks()`.
+ *
+ * S404 authority ruling: this is the REAL wire shape (see {@link SubtitleTrack}
+ * for the `display_title` fiction this replaces). The audio wire carries NO
+ * `url` (playback is the container stream; there is no per-audio-track
+ * endpoint), NO `label`, and `bitrate` is ALWAYS present (nullable).
+ *
+ * - `index` — 0-based PER-TYPE ordinal in ffmpeg's `0:a:N` selector space.
+ * - `stream_index` — the global ffprobe index.
+ * - `language` — BCP 47 tag; `'und'` when the row stores none.
+ * - `title` — raw stored track title or `null` (a display string is the
+ *   consumer's call — mirror of the DB column, unlike the subtitle `label`).
+ * - `default` — stored disposition when present, else the FIRST track is
+ *   promoted so exactly one track is `default` whenever any exist.
+ */
 export interface AudioTrack {
   id: string;
+  index: number;
+  stream_index: number;
   codec: string;
   language: string;
-  display_title: string;
   channels: number;
-  url?: string;
+  bitrate: number | null;
+  title: string | null;
+  default: boolean;
 }
+
+/**
+ * Compile-time tie between the interfaces and their ordered key-list consts:
+ * every interface key is in the const and vice versa, so a field rename on ONE
+ * side is a `tsc` error even where the runtime parity test (which compares the
+ * consts against the golden server vectors) cannot see the type.
+ */
+type WireKeysExact<T, K extends readonly string[]> =
+  [Exclude<keyof T & string, K[number]>, Exclude<K[number], keyof T & string>] extends [never, never] ? true : false;
+export type SubtitleTrackKeysTied = WireKeysExact<SubtitleTrack, typeof SUBTITLE_TRACK_KEYS>;
+export type AudioTrackKeysTied = WireKeysExact<AudioTrack, typeof AUDIO_TRACK_KEYS>;
+const _subtitleTrackKeysTied: SubtitleTrackKeysTied = true;
+const _audioTrackKeysTied: AudioTrackKeysTied = true;
+export const TRACK_KEY_TIES = {
+  subtitle: _subtitleTrackKeysTied,
+  audio: _audioTrackKeysTied,
+} as const;
 
 /**
  * Client device profile driving direct-play vs transcode decisions. This is
