@@ -135,8 +135,49 @@ function j(e, t) {
 	return 0;
 }
 //#endregion
-//#region src/routeManifest.generated.ts
+//#region src/SyncPlay.ts
 var M = [
+	"id",
+	"name",
+	"is_host",
+	"joined_at"
+], N = [
+	"media_id",
+	"media_info",
+	"added_at",
+	"added_by"
+], P = [
+	"group_id",
+	"group_name",
+	"member_count",
+	"members",
+	"host_id",
+	"current_media_id",
+	"current_media_duration",
+	"playback_position",
+	"playback_state",
+	"queue",
+	"created_at",
+	"last_activity_at"
+], F = [
+	"id",
+	"name",
+	"member_count",
+	"has_password",
+	"current_media",
+	"is_playing"
+], I = ["groups"], L = ["success", "group"], R = ["group"], z = ["success", "group"], B = ["success", "message"], V = ["error"], H = {
+	member: !0,
+	queueItem: !0,
+	group: !0,
+	groupListItem: !0,
+	listGroupsResponse: !0,
+	createGroupResponse: !0,
+	getGroupResponse: !0,
+	joinGroupResponse: !0,
+	leaveGroupResponse: !0,
+	errorResponse: !0
+}, U = [
 	["DELETE", "/api/v1/admin/backup/{id}"],
 	["DELETE", "/api/v1/admin/livetv/recordings/{id}"],
 	["DELETE", "/api/v1/admin/livetv/series-rules/{id}"],
@@ -537,7 +578,7 @@ var M = [
 	["PUT", "/api/v1/profiles/{profileId}/schedules/{scheduleId}"],
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
-], N = {
+], W = {
 	serverSha: "0134063318bf601dcc152c6c175368cdf9168378",
 	generatedAt: "2026-09-01T02:32:23Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
@@ -552,6 +593,6 @@ var M = [
 	total: 400
 };
 //#endregion
-export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, M as SERVER_ROUTE_MANIFEST, N as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };
+export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, U as SERVER_ROUTE_MANIFEST, W as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, L as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, V as SYNC_PLAY_ERROR_RESPONSE_KEYS, R as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, P as SYNC_PLAY_GROUP_KEYS, F as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, z as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, H as SYNC_PLAY_KEY_TIES, B as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, I as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, M as SYNC_PLAY_MEMBER_KEYS, N as SYNC_PLAY_QUEUE_ITEM_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map

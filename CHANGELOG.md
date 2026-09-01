@@ -44,6 +44,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from master; their manifest-vending and gates ship in the same wave
   (mobile, roku); tizen/console gates + hub manifest gate follow in W19.
 
+## [0.4.6] - 2026-09-01
+
+SyncPlay type-truth release (S415, part of the S279 collapse). **Breaking for
+type consumers**: `SyncPlayGroup` changed vocabulary to the server's real
+group-state emission and seven never-emitted types were retired. The only
+estate consumer of any of these names is phlix-tizen-client's sync-play store
+(enumerated estate-wide at the tips — ui/mobile/roku/console import none);
+it retypes in the same wave, pinned to this tag. `dist/` is rebuilt and
+committed; `dist/server-route-manifest.json` is byte-identical to 0.4.5 — the
+route-manifest generator did NOT run (its regen remains its own wave).
+
+### Fixed (S415 — SyncPlay.ts := the honest wire, ruling at server `01340633`)
+
+- `SyncPlayGroup` now declares EXACTLY the twelve keys
+  `GroupState::getState()` emits, in emission order: `group_id, group_name,
+  member_count, members (DICTIONARY keyed by member id — not an array),
+  host_id (nullable), current_media_id (nullable), current_media_duration,
+  playback_position, playback_state, queue, created_at, last_activity_at`.
+  The pre-fix type extended the LIST-ROW interface and claimed
+  `id/name/has_password/current_media/is_playing` + array members on the full
+  state — keys the server emits on list rows only (and `has_password` exists
+  NOWHERE on the state rail). `members` values are `{id, name, is_host,
+  joined_at}`; queue entries are `{media_id, media_info, added_at, added_by}`
+  (new `SyncPlayQueueItem`).
+- `SyncPlayGroupListItem` keeps the list-row vocabulary — verified exact —
+  and is now the ONLY type carrying `id/name/has_password/current_media/
+  is_playing`.
+- New wrapper types for the five REST envelopes + the error arm, per
+  `SyncPlayController`: `SyncPlayListGroupsResponse` (`{groups}`),
+  `SyncPlayCreateGroupResponse` / `SyncPlayJoinGroupResponse`
+  (`{success:true, group}`), `SyncPlayGetGroupResponse` (`{group}` — NO
+  success key on that rail), `SyncPlayLeaveGroupResponse`
+  (`{success:true, message}` — message ALWAYS present, nullable), and
+  `SyncPlayErrorResponse` (`{error}` @400/@404).
+- New exported ordered key-list consts for every type above plus
+  compile-time interface↔const ties — a rename on one side without the
+  other is a `tsc` error.
+- New cross-language golden-vector gate:
+  `scripts/dump-server-syncplay-vectors.php` drives the REAL server
+  controller + manager + snapshot service (reads exercised against a real
+  MySQL scratch DB seeded from the server's own migration; the script
+  refuses to run at any server sha other than the ruling commit) and the
+  REAL `getState()`; the capture is
+  `test/fixtures/syncplay-envelope-vectors.json`;
+  `test/syncPlayShapeParity.test.ts` asserts every vector's key list equals
+  the TS consts — exact, ordered, never substring. Mutation-verified in
+  both directions at ship time.
+- **RETIRING THE GHOSTS (S415)** — these exported interfaces described
+  shapes the live server never emits (each verified by field-shape grep at
+  `01340633`; the only historical hosts were two dead classes,
+  `src/Server/WebSocket/SyncPlay/SyncPlayRoom.php` and `.../Protocol.php`,
+  which have zero live callers — re-enumerated at this release):
+  - `SyncPlaySession` — no live emitter; the group state supersedes it.
+  - `SyncPlayUser` — no live emitter; `SyncPlayMember` is the emitted
+    participant shape.
+  - `SyncPlayParticipant` — no live emitter; superseded by `SyncPlayMember`.
+  - `SyncPlayChatMessage` — chat rows are internal to `GroupState` and are
+    NOT part of `getState()`; no REST rail emits them.
+  - `SyncPlayMessage` — no live emitter; the WS frame vocabulary is owned by
+    the `@phlix/syncplay` lib's SPEC, not by phantom shapes here.
+  - `SyncPlayStateUpdate` — no live emitter (`session_id` appears only in
+    the dead Protocol class).
+  - `SyncPlayPlaybackCommand` — no live emitter on any REST rail; the
+    server's inbound WS command vocabulary is validated by
+    `Messages.php`, whose shapes differ entirely.
+  All seven had ZERO estate importers outside tizen's store (which drops
+  them in the paired cascade); `@deprecated` shims were rejected as
+  roadkill-fuel — delete, and let the compiler find anyone who ever
+  materializes a live emitter.
+- `SyncPlayRole` / `SyncPlayPermission` are KEPT unchanged (WS-side
+  vocabulary; no wire claim made for them). `SyncPlayRoom` remains a
+  `@deprecated` alias of `SyncPlayGroup`.
+
 ## [0.4.5] - 2026-08-31
 
 Track-shape authority release (S404). **Consumers must bump deliberately**:
