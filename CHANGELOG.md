@@ -18,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W22: manifest provenance re-pin (no route change)
+
+- Regenerated `src/routeManifest.generated.ts` + `dist/server-route-manifest.json`
+  against server master `01340633` (one CI-only commit above the previous
+  provenance `8f72faec`). All 400 tuples are byte-identical; only provenance
+  (serverSha + generatedAt) moves. `test/routeManifest.test.ts` sha pins follow.
+
 ### Added — S280: the canonical server route manifest export
 
 - `scripts/generate-server-route-manifest.mjs` derives the UNION of the two
