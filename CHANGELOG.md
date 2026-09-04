@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W26 (cs16): manifest provenance re-pin (no route change)
+
+- Regenerated `src/routeManifest.generated.ts` + `dist/server-route-manifest.json`
+  against server master `888a42b2` (one commit above the previous provenance
+  `01340633` — S415 touched SyncPlay envelope sources only, zero route sources).
+  All 400 tuples are byte-identical; only provenance (serverSha + generatedAt)
+  moves. `test/routeManifest.test.ts` sha pins follow. The stream-track and
+  syncplay-envelope vector-authority pins deliberately stay at `01340633` —
+  that is when their vectors were dumped, and their sources are unchanged.
+
 ### Changed — W22: manifest provenance re-pin (no route change)
 
 - Regenerated `src/routeManifest.generated.ts` + `dist/server-route-manifest.json`
