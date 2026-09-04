@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W29 (cs17): manifest provenance re-pin (no route change) — 2026-09-04
+
+- **cs#17 currency cascade.** Regenerated `src/routeManifest.generated.ts` +
+  `dist/server-route-manifest.json` against server master `4b620f59` (two
+  commits above the previous provenance `888a42b2` — S423 auth-posture and
+  S271 `jsonBody` adoption, neither moving a route tuple). All 400 tuples are
+  byte-identical; only provenance (serverSha + generatedAt) moves.
+  `test/routeManifest.test.ts` sha pins follow. **UN-TAGGED regen — `v0.4.6`
+  is unchanged**: no consumer takes a tag this wave; the seven consumers
+  re-vendored the JSON copy from master in lock-step.
+
 ### Changed — W26 (cs16): manifest provenance re-pin (no route change)
 
 - Regenerated `src/routeManifest.generated.ts` + `dist/server-route-manifest.json`
