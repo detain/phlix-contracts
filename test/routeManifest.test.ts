@@ -51,11 +51,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 4b620f59 (s81 profiles + cs13 hub-link included)', () => {
+  it('is derived from phlix-server master e74cdc88 (s81 profiles + cs13 hub-link included)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '4b620f59152ccc04e0ec365f3a91c2d8fab885c0',
+      'e74cdc884358e3b8f1ab6e9dbdc357d5471dff48',
     );
   });
 
