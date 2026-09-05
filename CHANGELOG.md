@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W34 (cs20retag): manifest provenance re-pin (no route change) — 2026-09-05
+
+- **cs#20 combined re-tag + currency cascade.** Regenerated `src/routeManifest.generated.ts` +
+  `dist/server-route-manifest.json` against server master `f35a5742` (one commit above the previous
+  provenance `3a253991` — the web-ui `@phlix/ui` v0.99.0→v0.99.1 re-pin: package.json + lockfile +
+  CHANGELOG only, zero PHP, zero route hunks). All 400 tuples are byte-identical; only provenance
+  (serverSha + generatedAt) moves. `test/routeManifest.test.ts` sha pins follow.
+  **UN-TAGGED regen — fifth by design**: consumers vendor the JSON bytes from master, not a tag;
+  the six downstream copies re-vendor in lock-step.
+
 ### Changed — W33 (cs19): manifest provenance re-pin (no route change) — 2026-09-05
 
 - **cs#19 currency cascade.** Regenerated `src/routeManifest.generated.ts` +
