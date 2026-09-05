@@ -67,13 +67,28 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 | Module        | Exports |
 |---------------|---------|
 | `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `UserData`, `Library`, `MediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
-| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `ChapterMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
+| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `ChapterMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
 | `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ type aliases) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
 | `events.ts`   | event payload interfaces + `PLUGIN_EVENT`, `WEBHOOK_EVENT`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
+| `mcp.ts`      | `MCP_SCOPE`, `McpScope`, `MCP_SCOPES`, `MCP_TOKEN_PREFIX` (mirrored to `dist/mcp-scopes.json`) |
 | `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `buildPhlixHeaders` |
 | `ticks.ts`    | `TICKS_PER_SECOND`/`_MINUTE`/`_HOUR`, `ticksToSeconds`, `secondsToTicks`, `ticksToMinutes`, `ticksToHms`, `formatRuntime`, `formatDuration` |
+| `Rating.ts`   | `Rating`, `MediaRatings`, `RatingValue`, `RatingSortKey`, `MinRatingFilter`, `MaxRatingFilter`, `SmartRuleField`, `MediaItemRatingSource`, `pickDisplayRating`, `ManualMatchOverride` |
+| `Chapter.ts`  | `ChapterMarker`, `ChapterTrack`, `ChapterInfo`, `TrickplaySprite`, `TrickplayInfo`, `SkipConfig`, `MarkerTimeline` |
+| `Marker.ts`   | `MarkerType`, `Marker`, `PlayerPrefs` |
+| `Audio.ts`    | `pickDefaultAudio` (takes the wire `AudioTrack` from `playback.ts`) |
+| `AudioTrack.ts` / `SubtitleTrack.ts` | `StreamAudioTrack`, `StreamSubtitleTrack` (DB-row mirrors, not the playback-info wire) |
+| `SimilarItem.ts` | `SimilarItem` |
+| `Recommendation.ts` | `UserRecommendation`, `RecommendationList` |
+| `Collection.ts` | `CollectionBoxSet`, `CollectionMember` |
+| `AccessSchedule.ts` | `DayOfWeek`, `AccessSchedule` |
+| `ProfileTag.ts` | `ProfileTag` |
+| `StreamSession.ts` | `ProfileStreamLimit`, `StreamType`, `ActiveStream` |
+| `Music.ts`    | `MusicArtist`, `MusicAlbum`, `MusicTrack`, `AudioPreferences` |
+| `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup`/`SyncPlayRoom`, `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` |
+| `routeManifest.generated.ts` | `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` (generated — see `scripts/generate-server-route-manifest.mjs`) |
 
 ## Conventions
 
@@ -93,6 +108,11 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
   live on the detail-only `cast[]`.
 - Detail-only fields (`cast`, `crew`, `production_companies`, `studio`,
   `streams`, `stream_url`) appear only on `GET /api/v1/media/{id}`.
+- `src/routeManifest.generated.ts`, `dist/mcp-scopes.json` and
+  `dist/server-route-manifest.json` are generated — regenerate them, never
+  hand-edit. Wire shapes with an exported key-list const (`AUDIO_TRACK_KEYS`,
+  `SUBTITLE_TRACK_KEYS`, `SYNC_PLAY_*_KEYS`) are gated against the captured
+  server fixtures in `test/fixtures/`.
 
 ## Development
 
@@ -100,9 +120,12 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 npm install
 npm run lint        # eslint (no-explicit-any)
 npm run typecheck   # tsc --noEmit (strict)
-npm run build       # typecheck + vite lib (ES+CJS) + d.ts emit
+npm run build       # typecheck + vite lib (ES+CJS) + d.ts + dist/mcp-scopes.json + dist/server-route-manifest.json
 npm run test:run    # vitest run
 npm run test:run -- --coverage   # + v8 coverage; writes ./coverage/lcov.info (CI uploads it to Codacy)
+
+# regenerate src/routeManifest.generated.ts from a phlix-server checkout
+node scripts/generate-server-route-manifest.mjs <phlix-server-checkout>
 ```
 
 ## License
