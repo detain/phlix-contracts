@@ -18,6 +18,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W37 (cs21): manifest provenance re-pin (no route change) — 2026-09-05
+
+- **cs#21 currency cascade.** Regenerated `src/routeManifest.generated.ts` +
+  `dist/server-route-manifest.json` against server master `55625dd4` (previous
+  provenance `f35a5742` → `55625dd4`, spanning S433–S437). The only route-surface
+  change in that span is S437's `[] → [AuthMiddleware]` pin on the two health
+  routes: it lands in the ROUTE column of the guard test, which
+  `generate-server-route-manifest.mjs` strips, so the `[method, path]` tuple set
+  is untouched. All 400 tuples are byte-identical; only provenance (serverSha +
+  generatedAt) moves. `test/routeManifest.test.ts` sha pins follow.
+  **UN-TAGGED regen — sixth by design**: consumers vendor the JSON bytes from
+  master, not a tag; the six downstream re-vendor in lock-step.
+
 ### Changed — W34 (cs20retag): manifest provenance re-pin (no route change) — 2026-09-05
 
 - **cs#20 combined re-tag + currency cascade.** Regenerated `src/routeManifest.generated.ts` +
