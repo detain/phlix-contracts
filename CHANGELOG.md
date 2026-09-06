@@ -18,6 +18,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W38 (cs22): manifest provenance re-pin (no route change) — 2026-09-06
+
+- **cs#22 currency cascade.** Regenerated `src/routeManifest.generated.ts` +
+  `dist/server-route-manifest.json` against server master `e4853f0f` (previous
+  provenance `e729d48a` → `e4853f0f`, spanning S438 `f17cafe6` — markWatched
+  finalize path + real-DB finish tests — and S439 `e4853f0f` — test-suite
+  zero-residue close-out). S439 touched one generator-source file,
+  `ApplicationRouterWirePathGuardTest.php`, but only its `tearDown()` residue
+  sweep — zero `ROUTE_MANIFEST` entries added or removed; S438 touched no guard
+  test. All 400 `[method, path]` tuples are byte-identical (provenance-stripped
+  deep-equal, added=[] removed=[], order-preserving list equality); only
+  provenance (serverSha + generatedAt) moves. New manifest md5
+  `791235d4b9dde49dfc3b85853238446a` (was `7accd31d1d4d180c5c1c59ea87cbcc96`).
+  `test/routeManifest.test.ts` short- and full-sha pins follow; vector-authority
+  `01340633` fixture pins deliberately untouched (cs21b precedent). **UN-TAGGED
+  regen — eighth by design**: consumers vendor the JSON bytes from master, not a
+  tag; the six downstream re-vendor in lock-step.
+
 ### Changed — W37 (cs21): manifest provenance re-pin (no route change) — 2026-09-05
 
 - **cs#21 currency cascade.** Regenerated `src/routeManifest.generated.ts` +
