@@ -30,6 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generatedAt) moves. `test/routeManifest.test.ts` sha pins follow.
   **UN-TAGGED regen — sixth by design**: consumers vendor the JSON bytes from
   master, not a tag; the six downstream re-vendor in lock-step.
+- **cs#21b micro-re-pin to server `e729d48a` (caliber-sync tip; routes byte-identical,
+  400 tuples).** A direct-to-master owner-authorized Caliber doc-sync commit moved server
+  master from `55625dd4` to `e729d48a`; the delta is doc/mirror `.md` files only — zero
+  route, generator or guard-test change. Hub currency compares the fixture `source_sha`
+  against server tip, so the whole cascade follows `e729d48a`. Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` at that tip; all
+  400 `[method, path]` tuples are byte-identical (provenance-stripped deep-equal, added/removed
+  empty), only provenance (serverSha + generatedAt) moves. `test/routeManifest.test.ts`
+  short- and full-sha pins follow. **UN-TAGGED regen — seventh by design**: consumers vendor
+  the JSON bytes from master, not a tag; the six downstream re-vendor in lock-step.
 
 ### Changed — W34 (cs20retag): manifest provenance re-pin (no route change) — 2026-09-05
 
