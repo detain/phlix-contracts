@@ -18,6 +18,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import {
   SERVER_ROUTE_MANIFEST,
@@ -51,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master e729d48a (s81 profiles + cs13 hub-link included)', () => {
+  it('is derived from phlix-server master e4853f0f (s81 profiles + cs13 hub-link included)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      'e729d48a74c2962c9269ab512b76151221ec96fd',
+      'e4853f0f1f1fdaea228dae640710ff6a939e5a21',
     );
   });
 
@@ -172,9 +173,8 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // so it can go stale — someone regenerates the TS artifact and skips
   // `npm run build`. This is the detector: the JSON must agree with the TS
   // manifest, tuple-for-tuple, order-for-order, provenance-for-provenance.
-  const artifact = JSON.parse(
-    readFileSync(resolve(__dirname, '..', 'dist', 'server-route-manifest.json'), 'utf8'),
-  ) as {
+  const artifactPath = resolve(__dirname, '..', 'dist', 'server-route-manifest.json');
+  const artifact = JSON.parse(readFileSync(artifactPath, 'utf8')) as {
     provenance: { serverSha: string; total: number; generatedAt: string };
     routes: [string, string][];
   };
@@ -193,5 +193,16 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
     expect(artifact.provenance.serverSha).toBe(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha);
     expect(artifact.provenance.generatedAt).toBe(SERVER_ROUTE_MANIFEST_PROVENANCE.generatedAt);
     expect(artifact.provenance.total).toBe(SERVER_ROUTE_MANIFEST_PROVENANCE.total);
+  });
+
+  // cs#22 cascade figure of record: downstream consumers (ui/tizen/mobile/
+  // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
+  // Structural equality above cannot catch a formatting-only re-emit; this
+  // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
+  const CS22_MANIFEST_MD5 = '791235d4b9dde49dfc3b85853238446a';
+
+  it('is byte-frozen at the cs#22 cascade md5', () => {
+    const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
+    expect(bytes).toBe(CS22_MANIFEST_MD5);
   });
 });
