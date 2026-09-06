@@ -18,6 +18,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W38 (cs23): manifest provenance re-pin (no route change) — 2026-09-06
+
+- **cs#23 currency cascade (lane cs23a re-pin).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  server master `bab33ff2` (spanning S289 `4555dce3` — one SyncPlay identity
+  across REST and WS —, S291 `de32575f` — reported-position semantics —, and
+  S443 `bab33ff2` — `Uuid::v4` CSPRNG entropy + order-seed fuzz / real-DB
+  dup-PK proof). Both generator-source guard-test files are byte-identical
+  across `8a90e20e` → `bab33ff2`, so the 400 `[method, path]` tuples are
+  byte-identical (provenance-stripped deep-equal, added=[] removed=[]); only
+  serverSha + generatedAt move. `test/routeManifest.test.ts` short- and full-sha
+  pins + byte-freeze md5 gate follow; vector-authority `01340633` fixture pins
+  deliberately untouched. **UN-TAGGED regen — tenth by design**: consumers vendor
+  the JSON bytes from master, not a tag; the six downstream re-vendor in lock-step.
+
 ### Changed — W38 (cs22): manifest provenance re-pin (no route change) — 2026-09-06
 
 - **cs#22 currency cascade.** Regenerated `src/routeManifest.generated.ts` +
