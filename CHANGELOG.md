@@ -35,6 +35,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `01340633` fixture pins deliberately untouched (cs21b precedent). **UN-TAGGED
   regen — eighth by design**: consumers vendor the JSON bytes from master, not a
   tag; the six downstream re-vendor in lock-step.
+- **cs#22 continuation (lane cs22f re-pin).** Same regen re-run at server master
+  `8a90e20e` (spanning S215 `1ff724a7` — auto-collection sync enqueue — and
+  S252+S220 `8a90e20e` — badge live/enabled signals). Both generator-source
+  guard-test files are byte-identical across `e4853f0f` → `8a90e20e`, so the
+  400 `[method, path]` tuples are byte-identical (provenance-stripped
+  deep-equal, added=[] removed=[]); only serverSha + generatedAt move.
+  `test/routeManifest.test.ts` sha pins + byte-freeze md5 gate follow;
+  vector-authority `01340633` fixture pins untouched. **UN-TAGGED regen —
+  ninth by design.**
 
 ### Changed — W37 (cs21): manifest provenance re-pin (no route change) — 2026-09-05
 
