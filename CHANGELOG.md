@@ -18,6 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W38 (cs24): manifest provenance re-pin (no route change) — 2026-09-07
+
+- **cs#24 currency cascade (lane cs24a re-pin).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  server master `df6aa8e5` (spanning S306 `bcf47cd0` — tests/ under Psalm at
+  measured L5 via `psalm-tests.xml` + CI scope gate —, S161 `614cf766` —
+  migrations 096/097 + `Deduper` detect UNIQUE index by SHAPE, not just name —,
+  and S227 `df6aa8e5` — ThemeRegistry dead-island deletion, the second fake
+  theming subsystem beside the real one). Both generator-source guard-test files
+  are byte-identical across `bab33ff2` → `df6aa8e5`, so the 400 `[method, path]`
+  tuples are byte-identical (provenance-stripped deep-equal, added=[] removed=[]);
+  only serverSha + generatedAt move. `test/routeManifest.test.ts` short- and
+  full-sha pins + byte-freeze md5 gate follow; vector-authority `01340633`
+  fixture pins deliberately untouched. **UN-TAGGED regen — eleventh by design**:
+  consumers vendor the JSON bytes from master, not a tag; the six downstream
+  re-vendor in lock-step.
+
 ### Changed — W38 (cs23): manifest provenance re-pin (no route change) — 2026-09-06
 
 - **cs#23 currency cascade (lane cs23a re-pin).** Regenerated
