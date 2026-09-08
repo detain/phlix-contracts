@@ -52,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 2746677e (s81 profiles + cs13 hub-link included)', () => {
+  it('is derived from phlix-server master 1e14b539 (S273 admin updates check endpoint included)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '2746677eddf8f7a0847d2c6a687f2171b44c68c0',
+      '1e14b53983df0b86a58c711d5f09b23cf4a3e93b',
     );
   });
 
@@ -64,7 +64,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.sources).toEqual([
       {
         file: 'tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php',
-        count: 364,
+        count: 365,
       },
       {
         file: 'tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php',
@@ -72,7 +72,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
       },
     ]);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
-    expect(SERVER_ROUTE_MANIFEST.length).toBe(400);
+    expect(SERVER_ROUTE_MANIFEST.length).toBe(401);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
   });
 });
@@ -199,7 +199,7 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '4f4dc687047fa74d644068033a12377c';
+  const CS22_MANIFEST_MD5 = 'e364789971b271f8ffe2974164c8ce59';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
