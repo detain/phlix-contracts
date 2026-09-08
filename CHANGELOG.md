@@ -18,6 +18,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W39 (cs25): manifest provenance re-pin (no route change) — 2026-09-08
+
+- **cs#25 currency cascade (lane cs25a re-pin).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  server master `2746677e` (spanning S166 `a15fd786` — plugin composer
+  ClassLoader unregistered on disable/uninstall, leak closed — and S112
+  `2746677e` — the five MediaItemShaper URL surfaces validated at emission).
+  Both generator-source guard-test files are byte-identical across
+  `df6aa8e5` → `2746677e`, so the 400 `[method, path]` tuples are
+  byte-identical (provenance-stripped deep-equal, added=[] removed=[]);
+  only serverSha + generatedAt move. `test/routeManifest.test.ts` short- and
+  full-sha pins + byte-freeze md5 gate follow; vector-authority `01340633`
+  fixture pins deliberately untouched. **UN-TAGGED regen — twelfth by design**:
+  consumers vendor the JSON bytes from master, not a tag; the six downstream
+  re-vendor in lock-step.
+
 ### Changed — W38 (cs24): manifest provenance re-pin (no route change) — 2026-09-07
 
 - **cs#24 currency cascade (lane cs24a re-pin).** Regenerated
