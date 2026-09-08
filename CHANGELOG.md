@@ -18,6 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W43 (cs26): manifest regen — REAL route add (non-pure, 401 tuples) — 2026-09-08
+
+- **cs#26 currency cascade (lane s273b).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  server master `1e14b539` (spanning S449 `e450f0b8` — artwork URLs re-minted
+  only from raw query bytes, decode-reemit breakout closed —, S132 `9206faff`
+  — doc-only rescope — and S273 `1e14b539` — `POST /api/v1/admin/updates/check`,
+  the cached status-refresh trigger endpoint). UNLIKE cs#23–25 this regen is
+  NON-PURE: the Application-router guard file gained the 365th tuple
+  (WebPortal stays 47, shared stays 11 → union 400 → **401**). The new
+  `['POST', '/api/v1/admin/updates/check']` tuple is the only route-set delta;
+  provenance `serverSha`/`generatedAt` and the byte-freeze md5 move with it.
+  `test/routeManifest.test.ts` short- and full-sha pins, source count 365,
+  length 401 + md5 gate follow. **UN-TAGGED regen — thirteenth by design**:
+  consumers vendor the JSON bytes from master, not a tag; the six downstream
+  re-vendor in lock-step.
+
 ### Changed — W39 (cs25): manifest provenance re-pin (no route change) — 2026-09-08
 
 - **cs#25 currency cascade (lane cs25a re-pin).** Regenerated

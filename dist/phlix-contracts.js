@@ -471,6 +471,7 @@ var M = [
 	["POST", "/api/v1/admin/services/lastfm/disconnect"],
 	["POST", "/api/v1/admin/services/trakt/disconnect"],
 	["POST", "/api/v1/admin/sync/trash-guides"],
+	["POST", "/api/v1/admin/updates/check"],
 	["POST", "/api/v1/admin/users"],
 	["POST", "/api/v1/admin/users/{id}/approve"],
 	["POST", "/api/v1/admin/users/{id}/disable"],
@@ -579,18 +580,18 @@ var M = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], W = {
-	serverSha: "2746677eddf8f7a0847d2c6a687f2171b44c68c0",
-	generatedAt: "2026-09-08T01:49:21Z",
+	serverSha: "1e14b53983df0b86a58c711d5f09b23cf4a3e93b",
+	generatedAt: "2026-09-08T07:04:16Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
-		count: 364
+		count: 365
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
 		count: 47
 	}],
 	shared: 11,
-	total: 400
+	total: 401
 };
 //#endregion
 export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, U as SERVER_ROUTE_MANIFEST, W as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, L as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, V as SYNC_PLAY_ERROR_RESPONSE_KEYS, R as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, P as SYNC_PLAY_GROUP_KEYS, F as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, z as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, H as SYNC_PLAY_KEY_TIES, B as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, I as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, M as SYNC_PLAY_MEMBER_KEYS, N as SYNC_PLAY_QUEUE_ITEM_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };
