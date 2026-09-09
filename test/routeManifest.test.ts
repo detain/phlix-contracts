@@ -52,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master afe54c7c (cs#27 pure provenance re-pin; route bytes unmoved)', () => {
+  it('is derived from phlix-server master a5cde27e (cs#28 pure provenance re-pin; route bytes unmoved)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      'afe54c7c4bea6e9439c78e3bed24c44257ed62d1',
+      'a5cde27eeab6d89ab4ac2982b850da996eb5ef9f',
     );
   });
 
@@ -199,19 +199,19 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '5c06306cf9ecd4d9ed04cca575f5cbb8';
+  const CS22_MANIFEST_MD5 = '0331a2d8138e77f225502c093ade845e';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
     expect(bytes).toBe(CS22_MANIFEST_MD5);
   });
 
-  // cs#27 merge-ritual survival token — code-resident by design (one const in
+  // cs#28 merge-ritual survival token — code-resident by design (one const in
   // this file, one in the hub parity test; zero hits in any .md).
-  const CS27_RITUAL_TOKEN = 'CS27CURRENCYRERINX2B8';
+  const CS28_RITUAL_TOKEN = 'CS28CURRENCYPINX4R8';
 
-  it('carries the cs#27 re-pin survival token', () => {
-    expect(CS27_RITUAL_TOKEN).toHaveLength(21);
-    expect(CS27_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
+  it('carries the cs#28 re-pin survival token', () => {
+    expect(CS28_RITUAL_TOKEN).toHaveLength(19);
+    expect(CS28_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
   });
 });
