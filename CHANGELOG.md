@@ -18,6 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W48 (cs29): PURE manifest provenance re-pin (401 tuples unchanged) — 2026-09-09
+
+- **cs#29 currency re-pin cascade (lane cs29a).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  server master `e15d9543`. The span `a5cde27e` → `e15d9543` is two merges
+  (S211 #745 absolute config-dir resolution, S114 #746 stats_storage unique
+  key), both route-zero: the full route-authority set — both generator-source
+  guard tests, `Router.php`, `WebPortalRouter.php`, and the `Routes/` +
+  `FastPath/` trees — is blob- and tree-identical across it, and
+  `Application.php` (moved by S211) carries zero route-wiring hunks, so the
+  401 `[method, path]` tuples are unchanged — the provenance-stripped
+  route-content md5 measures equal old-vs-new and the 365+47−11 source counts
+  hold. Only serverSha + generatedAt move; `test/routeManifest.test.ts`
+  sha- and byte-freeze-md5 pins follow. **UN-TAGGED regen — sixteenth by
+  design**: the `v0.4.6` tag stays put; consumers vendor the JSON bytes from
+  master and re-vendor in lock-step.
+
 ### Changed — W47 (cs28): PURE manifest provenance re-pin (401 tuples unchanged) — 2026-09-09
 
 - **cs#28 currency re-pin cascade (lane cs28a).** Regenerated
