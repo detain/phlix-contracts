@@ -18,6 +18,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W50 (cs30 era-2): PURE manifest provenance re-pin (401 tuples unchanged) — 2026-09-09
+
+- **cs#30 re-cascade (server moved mid-wave).** phlix-server master advanced one merge
+  (`32183f5b` → `5986b61d`, S210 #749 — docker boot-gate bounds only: workflows +
+  `scripts/docker-boot-smoke.sh` + guard test). Re-proven route-zero before regenerating:
+  `Router.php`, `Application.php`, both wire-path guard tests, and the whole `Routes/` +
+  `FastPath/` trees are byte-identical across the span; zero route-wiring hunks. Manifest
+  regenerated from the live server checkout — counts hold at 365 + 47 − 11 = **401**, the
+  stripped route-content md5 **holds exactly** (`508a…`); only provenance lines move, so the
+  full-file md5 advances. Test pins (`sourceSha`, manifest md5, title cite) follow in the
+  same commit; lane ritual token unchanged; consumers re-vendor in their own cs30b PRs.
+
 ### Changed — W49 (cs30): PURE manifest provenance re-pin (401 tuples unchanged) — 2026-09-09
 
 - **cs#30 currency re-pin cascade (lane cs30a).** Regenerated

@@ -52,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 32183f5b (cs#30 pure provenance re-pin; route bytes unmoved)', () => {
+  it('is derived from phlix-server master 5986b61d (cs#30 pure provenance re-pin era-2; route bytes unmoved)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '32183f5beaeadeaf21a386cab6abcc5883d5b68c',
+      '5986b61dac4a21c03814d6c623d9cb2ab9903415',
     );
   });
 
@@ -199,7 +199,7 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = 'cb53d53f29ca244969c142eae293cde1';
+  const CS22_MANIFEST_MD5 = '045c09847cc55330e33f83bedde6c67a';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
