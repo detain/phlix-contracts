@@ -18,6 +18,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W46 (cs27): PURE manifest provenance re-pin (401 tuples unchanged) — 2026-09-09
+
+- **cs#27 currency re-pin cascade (lane cs27a).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  server master `afe54c7c`. The span `1e14b539` → `afe54c7c` covers seven
+  merges (`d91ae83e` S155, `5fd2f62d` S87, `f5c7b6a4` S322+S130, `148fe3ce`
+  S88, `798adc46` S154, `ff8cac9c` S61, `afe54c7c` S89), all route-zero: both
+  generator-source guard-test files are byte-identical across the span
+  (measured, not assumed), so the 401 `[method, path]` tuples are unchanged
+  (provenance-stripped route-set md5 equal old-vs-new). Only serverSha +
+  generatedAt move; the 365+47−11 source counts hold. `test/routeManifest.test.ts`
+  sha- and byte-freeze-md5 pins follow. **UN-TAGGED regen — fourteenth by
+  design**: the `v0.4.6` tag stays put; consumers vendor the JSON bytes from
+  master and re-vendor in lock-step.
+
 ### Changed — W43 (cs26): manifest regen — REAL route add (non-pure, 401 tuples) — 2026-09-08
 
 - **cs#26 currency cascade (lane s273b).** Regenerated
