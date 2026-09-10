@@ -580,8 +580,8 @@ var M = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], W = {
-	serverSha: "5986b61dac4a21c03814d6c623d9cb2ab9903415",
-	generatedAt: "2026-09-09T18:52:59Z",
+	serverSha: "9721448df523423b793d0f2cba6b9f065cb54b3a",
+	generatedAt: "2026-09-10T04:29:23Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
