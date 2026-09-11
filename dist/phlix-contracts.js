@@ -367,6 +367,7 @@ var M = [
 	["GET", "/api/v1/oauth/lastfm/callback"],
 	["GET", "/api/v1/oauth/trakt"],
 	["GET", "/api/v1/oauth/trakt/callback"],
+	["GET", "/api/v1/people/{personId}/photo"],
 	["GET", "/api/v1/photo/albums"],
 	["GET", "/api/v1/photo/albums/{id}"],
 	["GET", "/api/v1/photo/photos"],
@@ -580,18 +581,18 @@ var M = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], W = {
-	serverSha: "8ba7789c2b0206d43efe18e476966303545156ae",
-	generatedAt: "2026-09-10T22:01:26Z",
+	serverSha: "67e9eab966bf0c5e47aaa0053a6917ecab02f7a6",
+	generatedAt: "2026-09-11T03:05:52Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
 		count: 365
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
-		count: 47
+		count: 48
 	}],
 	shared: 11,
-	total: 401
+	total: 402
 };
 //#endregion
 export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, U as SERVER_ROUTE_MANIFEST, W as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, L as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, V as SYNC_PLAY_ERROR_RESPONSE_KEYS, R as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, P as SYNC_PLAY_GROUP_KEYS, F as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, z as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, H as SYNC_PLAY_KEY_TIES, B as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, I as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, M as SYNC_PLAY_MEMBER_KEYS, N as SYNC_PLAY_QUEUE_ITEM_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };
