@@ -52,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master f9a237d2 (cs#36 re-pin; route bytes unmoved — server span is test-only)', () => {
+  it('is derived from phlix-server master 6293d85a (cs#37 re-pin; route bytes unmoved — server span is test-only)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      'f9a237d2a2213465c48723833be618724c4a7d29',
+      '6293d85a81c94b9fbaf32e7df87e7a332acfe684',
     );
   });
 
@@ -199,19 +199,19 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '0dac9e69b036779011824057caf509db';
+  const CS22_MANIFEST_MD5 = '9b60fb47e8c02c800e9c56498fa55f44';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
     expect(bytes).toBe(CS22_MANIFEST_MD5);
   });
 
-  // cs#36 merge-ritual survival token — code-resident by design (one const in
+  // cs#37 merge-ritual survival token — code-resident by design (one const in
   // this file, one in the hub parity test; zero hits in any .md).
-  const CS36_RITUAL_TOKEN = 'CS36CURRENCYPINX9W9';
+  const CS37_RITUAL_TOKEN = 'CS37CURRENCYPINX9W0';
 
-  it('carries the cs#36 re-pin survival token', () => {
-    expect(CS36_RITUAL_TOKEN).toHaveLength(19);
-    expect(CS36_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
+  it('carries the cs#37 re-pin survival token', () => {
+    expect(CS37_RITUAL_TOKEN).toHaveLength(19);
+    expect(CS37_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
   });
 });
