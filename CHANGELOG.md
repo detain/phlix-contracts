@@ -18,6 +18,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W67 (cs38): PURE manifest provenance re-pin (402 tuples unchanged) — 2026-09-11
+
+- **cs#38 currency re-pin cascade (lane cs38).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  the current phlix-server master tip. Route purity re-proven before
+  regenerating: the manifest is derived ONLY from the two router-wire guard
+  constants, and the server span since the previous pin is two packaging-and-
+  operations merges (immutable sha-suffixed tags published for all server
+  runtime images, then helm charts and docker examples demanding those
+  immutable image pins — loud over silent) touching no route-registration
+  file; the scoped span probe under the server's route-bearing source
+  directories measures empty — so the 402 `[method, path]` tuples are
+  byte-for-byte unchanged. The provenance-stripped route-content digest and
+  the sorted-tuple fence digest measure equal old-vs-new and the source counts
+  hold. Only serverSha + generatedAt move; the `test/routeManifest.test.ts`
+  sha- and byte-freeze-md5 pins follow in the same commit and the lane survival
+  token rotates to this wave's value (two code homes only, as ever). Consumers
+  re-vendor the new bytes from master in their cs38 legs, hub last.
+  **UN-TAGGED regen — twenty-fifth by design**: the `v0.4.6` tag stays put.
+
 ### Changed — W63 (cs37): PURE manifest provenance re-pin (402 tuples unchanged) — 2026-09-11
 
 - **cs#37 currency re-pin cascade (lane cs37).** Regenerated
