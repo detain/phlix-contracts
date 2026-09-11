@@ -52,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 8ba7789c (cs#34 pure provenance re-pin; route bytes unmoved)', () => {
+  it('is derived from phlix-server master 67e9eab9 (cs#35 re-pin; route set grows by the person-photo read)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '8ba7789c2b0206d43efe18e476966303545156ae',
+      '67e9eab966bf0c5e47aaa0053a6917ecab02f7a6',
     );
   });
 
@@ -68,11 +68,11 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
       },
       {
         file: 'tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php',
-        count: 47,
+        count: 48,
       },
     ]);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
-    expect(SERVER_ROUTE_MANIFEST.length).toBe(401);
+    expect(SERVER_ROUTE_MANIFEST.length).toBe(402);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
   });
 });
@@ -199,19 +199,19 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = 'd8a9dfcedb6aa461826b5f01eee8c523';
+  const CS22_MANIFEST_MD5 = 'eb1a7a0df935f1f9b687a3c4858f5d1c';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
     expect(bytes).toBe(CS22_MANIFEST_MD5);
   });
 
-  // cs#34 merge-ritual survival token — code-resident by design (one const in
+  // cs#35 merge-ritual survival token — code-resident by design (one const in
   // this file, one in the hub parity test; zero hits in any .md).
-  const CS34_RITUAL_TOKEN = 'CS34CURRENCYPINX9W6';
+  const CS35_RITUAL_TOKEN = 'CS35CURRENCYPINX9W7';
 
-  it('carries the cs#34 re-pin survival token', () => {
-    expect(CS34_RITUAL_TOKEN).toHaveLength(19);
-    expect(CS34_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
+  it('carries the cs#35 re-pin survival token', () => {
+    expect(CS35_RITUAL_TOKEN).toHaveLength(19);
+    expect(CS35_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
   });
 });

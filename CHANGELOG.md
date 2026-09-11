@@ -18,7 +18,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed — W58 (cs34): PURE manifest provenance re-pin (401 tuples unchanged) — 2026-09-10
+### Changed — W59 (cs35): manifest regen with a route add (402 tuples) — 2026-09-11
+
+- **cs#35 currency re-pin cascade (lane cs35).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  the current phlix-server master tip. Unlike the previous pure provenance
+  waves, this span is a genuine route change: server change S73 registers a new
+  WebPortal read for a person's photo, so the WebPortal router-wire guard grows
+  by one entry and the manifest total moves from 401 to 402 tuples (365
+  Application + 48 WebPortal − 11 shared). The Application router count holds at
+  365 and the shared count at 11; only the WebPortal count and total shift, and
+  the added `[method, path]` tuple is the single person-photo read. Because the
+  tuple set itself changed, the provenance-stripped route-content digest, the
+  sorted-tuple fence digest, and the full-file export md5 all move as intended —
+  there is nothing here to hold equal, and the byte-freeze pin in
+  `test/routeManifest.test.ts` re-pins to the new export in the same commit
+  alongside the updated source and total counts. The lane survival token rotates
+  to this wave's value (two code homes only, as ever). Consumers re-vendor the
+  new bytes from master in their cs35 legs, hub last. **UN-TAGGED regen —
+  twenty-second by design**: the `v0.4.6` tag stays put.
+
+
 
 - **cs#34 currency re-pin cascade (lane cs34).** Regenerated
   `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
