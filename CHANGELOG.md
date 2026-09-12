@@ -18,6 +18,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W81 (cs43): CONTENT manifest regen (404 tuples — S240 adds two music query-param GET routes) — 2026-09-12
+
+- **cs#43 currency cascade (lane cs43).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  the current phlix-server master tip. Unlike the pure re-pin waves, this is a
+  CONTENT regen: the server span since the previous pin is S240's additive
+  music lookup-by-name surface (a `GET /api/v1/music/artist` and a
+  `GET /api/v1/music/album` query-param pair, alongside the existing mbid-path
+  routes) plus a following policy commit. Both new rails are registered by the
+  Application router, so the Application guard-constant count rises by two and
+  the union grows from 402 to 404 `[method, path]` tuples. Because the route
+  bytes genuinely moved, the provenance-stripped route-content digest and the
+  sorted-tuple fence digest both shift this wave — the hub-side fence is
+  re-derived, never transcribed. The `test/routeManifest.test.ts` sha-,
+  count-, and byte-freeze-md5 pins follow in the same commit and the lane
+  survival token rotates to this wave's value (two code homes only, as ever).
+  Consumers re-vendor the new bytes from master in their cs43 legs, hub last.
+  **UN-TAGGED regen — thirtieth by design**: the `v0.4.6` tag stays put.
+
 ### Changed — W79 (cs42): PURE manifest provenance re-pin (402 tuples unchanged) — 2026-09-12
 
 - **cs#42 currency re-pin cascade (lane cs42).** Regenerated
