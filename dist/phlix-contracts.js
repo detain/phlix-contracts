@@ -356,8 +356,10 @@ var M = [
 	["GET", "/api/v1/media/{id}/subtitles/{index}"],
 	["GET", "/api/v1/media/{id}/trailers"],
 	["GET", "/api/v1/media/{id}/trickplay"],
+	["GET", "/api/v1/music/album"],
 	["GET", "/api/v1/music/albums"],
 	["GET", "/api/v1/music/albums/{mbid}"],
+	["GET", "/api/v1/music/artist"],
 	["GET", "/api/v1/music/artists"],
 	["GET", "/api/v1/music/artists/{mbid}"],
 	["GET", "/api/v1/music/now-playing"],
@@ -581,18 +583,18 @@ var M = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], W = {
-	serverSha: "ae401e7f244366d8a1396397258acafe113240e6",
-	generatedAt: "2026-09-12T17:26:57Z",
+	serverSha: "e96f586da884b45b06df10492fdc3f48919b47bb",
+	generatedAt: "2026-09-12T21:27:35Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
-		count: 365
+		count: 367
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
 		count: 48
 	}],
 	shared: 11,
-	total: 402
+	total: 404
 };
 //#endregion
 export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, U as SERVER_ROUTE_MANIFEST, W as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, L as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, V as SYNC_PLAY_ERROR_RESPONSE_KEYS, R as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, P as SYNC_PLAY_GROUP_KEYS, F as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, z as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, H as SYNC_PLAY_KEY_TIES, B as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, I as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, M as SYNC_PLAY_MEMBER_KEYS, N as SYNC_PLAY_QUEUE_ITEM_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };
