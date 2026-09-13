@@ -18,6 +18,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W83 (cs44): PROVENANCE-ONLY manifest regen (404 tuples — route bytes unmoved) — 2026-09-13
+
+- **cs#44 currency cascade (lane cs44).** Re-pinned and regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  the current phlix-server master tip. Unlike the previous wave's content
+  regen, the server span since that pin is bundle-only — no route-registration
+  file and nothing under `include/` or `src/` moved — so this is a provenance
+  regen: the `[method, path]` tuples are byte-for-byte identical to the prior
+  era, `total` holds at 404 (union of 367 + 48 − 11 shared), the
+  provenance-stripped route-content digest is unmoved, and the hub-side
+  sorted-tuple fence therefore holds unchanged. Only the embedded provenance
+  moves — the source sha and generation timestamp — which is enough to rotate
+  the export md5 and every downstream vendored copy, while the route surface
+  they describe is the same set. The `test/routeManifest.test.ts` sha- and
+  byte-freeze-md5 pins follow in the same commit and the lane survival token
+  rotates to this wave's value (two code homes only, as ever). Consumers
+  re-vendor the new bytes from master in their cs44 legs, hub last.
+  **UN-TAGGED regen — thirty-first by design**: the `v0.4.6` tag stays put.
+
 ### Changed — W81 (cs43): CONTENT manifest regen (404 tuples — S240 adds two music query-param GET routes) — 2026-09-12
 
 - **cs#43 currency cascade (lane cs43).** Regenerated
