@@ -18,6 +18,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W89 (S495): PROVENANCE-ONLY manifest regen (404 tuples — route bytes unmoved) — 2026-09-15
+
+- **S495 provenance regen (lane s495hub; batch44-P1 plan-gap amendment).**
+  Re-pinned and regenerated `src/routeManifest.generated.ts` +
+  `dist/server-route-manifest.json` against the current phlix-server master
+  tip `c9c551e0`. The server span since the cs45 pin is two provenance-only
+  dependency-bump merges (#783 bundle rebuild, #784 tokens tag-archive dist
+  form) — nothing under `include/`, `src/`, or `public/` moved and both
+  `ROUTE_MANIFEST` guard-test sources are byte-identical across the span, so
+  this is a pure provenance regen: the `[method, path]` tuples are
+  byte-for-byte identical, `total` holds at 404 (union of 367 + 48 − 11
+  shared), the sorted-tuple content fence stays `97d6e62e…`, and the hub-side
+  S332 digest therefore holds unchanged. Only the embedded provenance moves —
+  the source sha and generation timestamp — which rotates the export md5 to
+  `56eb7052069a56cd95f7b2558f151f63` and every downstream vendored copy,
+  while the route surface they describe is the same set. The
+  `test/routeManifest.test.ts` sha- and byte-freeze-md5 pins follow in the
+  same commit. The lane survival token is deliberately NOT rotated: this is
+  a step lane (S495), not a currency-sync cs wave, and the cs45 token lives
+  as a matched pair (one const here, one in the hub parity test) which the
+  hub-side AC4 protects verbatim — rotating one side would orphan the pair.
+  Consumers re-vendor the new bytes from master; hub lands its three-file
+  currency commit against them. **UN-TAGGED regen — thirty-third by
+  design**: the `v0.4.7` tag stays put; master drifts provenance-only ahead,
+  accepted estate posture.
+
 ### Changed — W85 (cs45): PROVENANCE-ONLY manifest regen (404 tuples — route bytes unmoved) — 2026-09-13
 
 - **cs#45 currency cascade (lane cs45).** Re-pinned and regenerated
