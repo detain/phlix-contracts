@@ -281,6 +281,7 @@ var M = [
 	["GET", "/api/v1/admin/stats/top-media"],
 	["GET", "/api/v1/admin/stats/top-users"],
 	["GET", "/api/v1/admin/sync/status"],
+	["GET", "/api/v1/admin/telemetry/clients"],
 	["GET", "/api/v1/admin/transcoding/accelerators"],
 	["GET", "/api/v1/admin/transcoding/tone-mapping"],
 	["GET", "/api/v1/admin/updates/status"],
@@ -300,6 +301,7 @@ var M = [
 	["GET", "/api/v1/audiobooks/{id}/read"],
 	["GET", "/api/v1/audiobooks/{id}/stream"],
 	["GET", "/api/v1/auth/me"],
+	["GET", "/api/v1/auth/quick-connect/{code}/status"],
 	["GET", "/api/v1/books"],
 	["GET", "/api/v1/books/{id}"],
 	["GET", "/api/v1/books/{id}/cover"],
@@ -492,6 +494,9 @@ var M = [
 	["POST", "/api/v1/audiobooks/{id}/progress"],
 	["POST", "/api/v1/auth/hub-token"],
 	["POST", "/api/v1/auth/login"],
+	["POST", "/api/v1/auth/quick-connect/initiate"],
+	["POST", "/api/v1/auth/quick-connect/{code}/approve"],
+	["POST", "/api/v1/auth/quick-connect/{code}/token"],
 	["POST", "/api/v1/auth/refresh"],
 	["POST", "/api/v1/auth/register"],
 	["POST", "/api/v1/auth/webauthn/login/options"],
@@ -549,6 +554,7 @@ var M = [
 	["POST", "/api/v1/syncplay/groups"],
 	["POST", "/api/v1/syncplay/groups/{id}/join"],
 	["POST", "/api/v1/syncplay/groups/{id}/leave"],
+	["POST", "/api/v1/telemetry/heartbeat"],
 	["POST", "/api/v1/users/me/avatar"],
 	["POST", "/auth/identities/link/hub"],
 	["POST", "/auth/identities/link/ldap"],
@@ -583,18 +589,18 @@ var M = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], W = {
-	serverSha: "c9c551e0506a742220c17a34022d4a2f497e6989",
-	generatedAt: "2026-09-15T00:54:33Z",
+	serverSha: "730e55b7d3ad44a155f6b46374a9f6c463792840",
+	generatedAt: "2026-09-16T23:32:32Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
-		count: 367
+		count: 373
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
 		count: 48
 	}],
 	shared: 11,
-	total: 404
+	total: 410
 };
 //#endregion
 export { r as AUDIO_TRACK_KEYS, e as AUTO_QUALITY, f as EVENT, o as JWT_AUD, a as JWT_ISS, s as JWT_TYPE, p as MCP_SCOPE, m as MCP_SCOPES, h as MCP_TOKEN_PREFIX, l as PLUGIN_EVENT, U as SERVER_ROUTE_MANIFEST, W as SERVER_ROUTE_MANIFEST_PROVENANCE, c as SERVER_STATUS, n as SUBTITLE_TRACK_KEYS, L as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, V as SYNC_PLAY_ERROR_RESPONSE_KEYS, R as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, P as SYNC_PLAY_GROUP_KEYS, F as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, z as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, H as SYNC_PLAY_KEY_TIES, B as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, I as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, M as SYNC_PLAY_MEMBER_KEYS, N as SYNC_PLAY_QUEUE_ITEM_KEYS, C as TICKS_PER_HOUR, S as TICKS_PER_MINUTE, x as TICKS_PER_SECOND, i as TRACK_KEY_TIES, u as WEBHOOK_EVENT, d as WEBHOOK_EVENT_RESERVED, g as X_PHLIX_DEVICE_ID, _ as X_PHLIX_DEVICE_NAME, v as X_PHLIX_DEVICE_TYPE, y as X_PHLIX_SESSION_ID, b as buildPhlixHeaders, k as formatDuration, O as formatRuntime, j as pickDefaultAudio, t as pickDefaultRendition, A as pickDisplayRating, T as secondsToTicks, D as ticksToHms, E as ticksToMinutes, w as ticksToSeconds };

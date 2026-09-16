@@ -18,6 +18,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — W111 (cs47): CONTENT manifest regen (404→410 tuples — S518 adds six quick-connect/telemetry routes) — 2026-09-16
+
+- **cs#47 currency cascade (lane cs47a).** Regenerated
+  `src/routeManifest.generated.ts` + `dist/server-route-manifest.json` against
+  the current phlix-server master tip. This is a CONTENT regen: the server
+  span since the previous pin is S518's quick-connect device-pairing surface
+  (initiate, status, token exchange, and session-identity approve rails) plus
+  the consent-gated client telemetry pair (public heartbeat and its
+  admin-side clients listing) — six new routes, all registered by the
+  Application router, which lifts that guard constant's inventory from 367 to
+  373 while the WebPortal table is byte-identical across the span and the
+  shared overlap holds at 11, so the union grows from 404 to 410 `[method,
+  path]` tuples (373 + 48 − 11). Because the route bytes genuinely moved, the
+  provenance-stripped route-content digest and the sorted-tuple fence digest
+  both shift this wave — the hub-side fence is re-derived, never transcribed.
+  The `test/routeManifest.test.ts` sha-, count-, and byte-freeze-md5 pins
+  follow in the same commit and the lane survival token rotates to this
+  wave's value (two code homes only, as ever). Consumers re-vendor the new
+  bytes from master in their cs47 legs, hub last.
+  **UN-TAGGED regen — thirty-fourth by design**: the `v0.4.7` tag stays put.
+
 ### Changed — W89 (S495): PROVENANCE-ONLY manifest regen (404 tuples — route bytes unmoved) — 2026-09-15
 
 - **S495 provenance regen (lane s495hub; batch44-P1 plan-gap amendment).**
