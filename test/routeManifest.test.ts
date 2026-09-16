@@ -52,11 +52,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master c9c551e0 (S495 PROVENANCE-ONLY regen — route bytes unmoved, server span is two provenance-only dep-bump merges #783/#784 with zero route churn)', () => {
+  it('is derived from phlix-server master 730e55b7 (cs#47 CONTENT regen — S518 #790 adds six quick-connect/telemetry tuples: App-router inventory 367→373, total 404→410)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      'c9c551e0506a742220c17a34022d4a2f497e6989',
+      '730e55b7d3ad44a155f6b46374a9f6c463792840',
     );
   });
 
@@ -64,7 +64,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.sources).toEqual([
       {
         file: 'tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php',
-        count: 367,
+        count: 373,
       },
       {
         file: 'tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php',
@@ -72,7 +72,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
       },
     ]);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
-    expect(SERVER_ROUTE_MANIFEST.length).toBe(404);
+    expect(SERVER_ROUTE_MANIFEST.length).toBe(410);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
   });
 });
@@ -199,19 +199,19 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '56eb7052069a56cd95f7b2558f151f63';
+  const CS22_MANIFEST_MD5 = '06ce7ec95bc064cc0f13b94389af9a82';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
     expect(bytes).toBe(CS22_MANIFEST_MD5);
   });
 
-  // cs#45 merge-ritual survival token — code-resident by design (one const in
+  // cs#47 merge-ritual survival token — code-resident by design (one const in
   // this file, one in the hub parity test; zero hits in any .md).
-  const CS45_RITUAL_TOKEN = 'CS45CURRENCYPINX9W9';
+  const CS47_RITUAL_TOKEN = 'CS47CURRENCYPINX9X2';
 
-  it('carries the cs#45 regen survival token', () => {
-    expect(CS45_RITUAL_TOKEN).toHaveLength(19);
-    expect(CS45_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
+  it('carries the cs#47 regen survival token', () => {
+    expect(CS47_RITUAL_TOKEN).toHaveLength(19);
+    expect(CS47_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
   });
 });
