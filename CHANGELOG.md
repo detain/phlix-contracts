@@ -50,7 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ROUTE_MANIFEST` guard-test sources are byte-identical across the span, so
   this is a pure provenance regen: the `[method, path]` tuples are
   byte-for-byte identical, `total` holds at 404 (union of 367 + 48 − 11
-  shared), the sorted-tuple content fence holds at its then-current value, and the hub-side
+  shared), the sorted-tuple content fence holds at its then-current value,
+  and the hub-side
   S332 digest therefore holds unchanged. Only the embedded provenance moves —
   the source sha and generation timestamp — which rotates the export md5 and
   every downstream vendored copy,
