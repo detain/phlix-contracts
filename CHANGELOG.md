@@ -43,17 +43,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **S495 provenance regen (lane s495hub; batch44-P1 plan-gap amendment).**
   Re-pinned and regenerated `src/routeManifest.generated.ts` +
-  `dist/server-route-manifest.json` against the current phlix-server master
-  tip `c9c551e0`. The server span since the cs45 pin is two provenance-only
+  `dist/server-route-manifest.json` against the then-current phlix-server
+  master tip. The server span since the cs45 pin is two provenance-only
   dependency-bump merges (#783 bundle rebuild, #784 tokens tag-archive dist
   form) — nothing under `include/`, `src/`, or `public/` moved and both
   `ROUTE_MANIFEST` guard-test sources are byte-identical across the span, so
   this is a pure provenance regen: the `[method, path]` tuples are
   byte-for-byte identical, `total` holds at 404 (union of 367 + 48 − 11
-  shared), the sorted-tuple content fence stays `97d6e62e…`, and the hub-side
+  shared), the sorted-tuple content fence holds at its then-current value, and the hub-side
   S332 digest therefore holds unchanged. Only the embedded provenance moves —
-  the source sha and generation timestamp — which rotates the export md5 to
-  `56eb7052069a56cd95f7b2558f151f63` and every downstream vendored copy,
+  the source sha and generation timestamp — which rotates the export md5 and
+  every downstream vendored copy,
   while the route surface they describe is the same set. The
   `test/routeManifest.test.ts` sha- and byte-freeze-md5 pins follow in the
   same commit. The lane survival token is deliberately NOT rotated: this is
