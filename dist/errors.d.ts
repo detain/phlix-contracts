@@ -70,10 +70,11 @@
  * NOT IN THIS REGISTRY (still excluded — registering these would freeze a lie):
  *  - Hub relay handshake internals `INVALID_TOKEN`/`SERVER_MISMATCH`:
  *    `InvalidArgumentException` MESSAGES thrown by `RelayServerHandler::onConnect`
- *    (RelayServerHandler.php:78,83,87) on the WS server-attach path and logged
- *    by relay-worker catch sites (e.g. ClientRelayWorker.php:279) — they never
- *    surface as a `code`-field value or client-reachable code-shaped text, so
- *    they are worker diagnostics, not wire codes.
+ *    (RelayServerHandler.php:78,83,87) on the WS server-attach path. The handler
+ *    has no production caller of `onConnect` yet (dormant path); were it live,
+ *    the throws would be logged by relay-worker catch sites — they never surface
+ *    as a `code`-field value or client-reachable code-shaped text, so they are
+ *    worker diagnostics, not wire codes.
  *  - RFC 6749/6750 OAuth codes the hub emits in the `error` field
  *    (`invalid_client`, `invalid_grant`, `access_denied`, `server_error`,
  *    `invalid_token`, `insufficient_scope`, …) — those are spec-mandated OAuth
@@ -813,7 +814,7 @@ declare const CODES: {
      * (Wave 1b): all seven ride the `error` TEXT field today — as form-gate
      * snake pseudo-codes (no `code` key) and, for the last four, as the
      * `'error'` value of the `LdapConnection::testConnection()` arrays that
-     * `LdapAdminController.php:353` passes THROUGH to the client as JSON
+     * `LdapAdminController.php:352-354` passes THROUGH to the client as JSON
      * (catch-arm text at :358) — the emit-wave promotes them to the `code`
      * channel; clients match in `error` text until then.
      */
@@ -824,13 +825,13 @@ declare const CODES: {
         readonly MISSING_BASE_DN: "ldap.missing_base_dn";
         /** srv LdapAdminController.php:146 — form word 'invalid_port'. */
         readonly INVALID_PORT: "ldap.invalid_port";
-        /** srv LdapAdminController.php:358 (catch arm) · LdapConnection.php:259 (via :353 passthrough) — 'connection_failed'. */
+        /** srv LdapAdminController.php:358 (catch arm) · LdapConnection.php:259 (via :352-354 passthrough) — 'connection_failed'. */
         readonly CONNECTION_FAILED: "ldap.connection_failed";
-        /** srv LdapConnection.php:268 (via LdapAdminController.php:353 passthrough) — 'bind_failed'. */
+        /** srv LdapConnection.php:268 (via LdapAdminController.php:352-354 passthrough) — 'bind_failed'. */
         readonly BIND_FAILED: "ldap.bind_failed";
-        /** srv LdapConnection.php:281 (via :353 passthrough) — 'ldap_error'. */
+        /** srv LdapConnection.php:281 (via :352-354 passthrough) — 'ldap_error'. */
         readonly ERROR: "ldap.error";
-        /** srv LdapConnection.php:287 (via :353 passthrough) — 'runtime_error'. */
+        /** srv LdapConnection.php:287 (via :352-354 passthrough) — 'runtime_error'. */
         readonly RUNTIME_ERROR: "ldap.runtime_error";
     };
     /**
@@ -1588,7 +1589,7 @@ export declare const ERROR_CODE: {
      * (Wave 1b): all seven ride the `error` TEXT field today — as form-gate
      * snake pseudo-codes (no `code` key) and, for the last four, as the
      * `'error'` value of the `LdapConnection::testConnection()` arrays that
-     * `LdapAdminController.php:353` passes THROUGH to the client as JSON
+     * `LdapAdminController.php:352-354` passes THROUGH to the client as JSON
      * (catch-arm text at :358) — the emit-wave promotes them to the `code`
      * channel; clients match in `error` text until then.
      */
@@ -1599,13 +1600,13 @@ export declare const ERROR_CODE: {
         readonly MISSING_BASE_DN: "ldap.missing_base_dn";
         /** srv LdapAdminController.php:146 — form word 'invalid_port'. */
         readonly INVALID_PORT: "ldap.invalid_port";
-        /** srv LdapAdminController.php:358 (catch arm) · LdapConnection.php:259 (via :353 passthrough) — 'connection_failed'. */
+        /** srv LdapAdminController.php:358 (catch arm) · LdapConnection.php:259 (via :352-354 passthrough) — 'connection_failed'. */
         readonly CONNECTION_FAILED: "ldap.connection_failed";
-        /** srv LdapConnection.php:268 (via LdapAdminController.php:353 passthrough) — 'bind_failed'. */
+        /** srv LdapConnection.php:268 (via LdapAdminController.php:352-354 passthrough) — 'bind_failed'. */
         readonly BIND_FAILED: "ldap.bind_failed";
-        /** srv LdapConnection.php:281 (via :353 passthrough) — 'ldap_error'. */
+        /** srv LdapConnection.php:281 (via :352-354 passthrough) — 'ldap_error'. */
         readonly ERROR: "ldap.error";
-        /** srv LdapConnection.php:287 (via :353 passthrough) — 'runtime_error'. */
+        /** srv LdapConnection.php:287 (via :352-354 passthrough) — 'runtime_error'. */
         readonly RUNTIME_ERROR: "ldap.runtime_error";
     };
     /**
