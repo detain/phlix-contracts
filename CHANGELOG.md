@@ -18,6 +18,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — W1 (errors): estate error-code registry, Wave 1 of the error-code doctrine — 2026-09-23
+
+- **`src/errors.ts` + `scripts/emit-error-codes.mjs` + `dist/error-codes.json`.**
+  The owner-approved doctrine: the stable machine error code on the wire is the
+  SSOT for *what went wrong*; clients localize by code, the server's English
+  message text is a debug fallback, and there is no server-side i18n and no
+  protocol locale negotiation. This registry is the vocabulary that doctrine
+  needs, derived code-first from the emitting sources rather than transcribed
+  from any prior inventory: every dotted and bare-snake code actually placed on
+  the wire today by `phlix-server` or `phlix-hub` is listed VERBATIM (each entry
+  carries its source file:line refs in the docblock), 146 codes across 30
+  domain namespaces. The SyncPlay WebSocket's 12 SCREAMING_SNAKE `error_code`
+  literals are pinned under `legacy` exactly as emitted (the test restates the
+  set independently of the registry and asserts it is the registry's *only*
+  uppercase content); Wave 2 will introduce their dotted twins server-side
+  without touching today's wire.
+- **Reserved dotted twins.** Seven new `syncplay.*` codes pre-register the
+  coarse prose-carrier families — the `CREATE_FAILED`/`JOIN_FAILED`/
+  `LEAVE_FAILED` arms that today wrap distinct failures ('Maximum group limit
+  reached', 'Group not found', 'Invalid password', 'Group is full') inside
+  English message text — with `SYNCPLAY_ERROR_CODE_TWINS` as the explicit
+  migration map (twin → legacy original). Clients may localize the twins now so
+  the Wave-2 server cutover is wire-only, needing no client release.
+- **Wave-2 triage is documented, not registered.** Hub SCREAMING families
+  (`ALEXA_*`, `CLAIM_*`, `HUB_*`), server CamelCase pseudo-codes in the `error`
+  text field (`StreamLimitExceeded`, `AccessScheduled`), the RFC-6749/6750
+  OAuth `error` values (frozen by the RFC, not estate codes), JSON-RPC and
+  SOAP numeric codes, and defined-but-never-emitted constants
+  (`profile.not_owned`) are enumerated in the module header as known-but-
+  unregistered, so the SCREAMING-pin invariant stays exactly true.
+- **Emit pipeline mirrors the mcp-scopes precedent end to end**: generated from
+  the built bundle (cannot drift from `src/errors.ts`), plain ordered string
+  array plus a `$comment` provenance marker for the Node-less PHP consumers,
+  fail-fast guard against emitting an empty vocabulary, wired as the last step
+  of `npm run build`, and COMMITTED under `dist/` like its siblings.
+  `test/errors.test.ts` (28 tests) restates every domain's ordered vocabulary
+  from the PHP sources, pins the exact 146-code census, enforces the wire-shape
+  regex (lowercase dotted/snake, uppercase only inside `legacy`), verifies the
+  twin map's totality over pinned legacy members, and byte-freezes the
+  committed artifact against a fresh deterministic emit.
+
 ### Changed — W111 (cs47): CONTENT manifest regen (404→410 tuples — S518 adds six quick-connect/telemetry routes) — 2026-09-16
 
 - **cs#47 currency cascade (lane cs47a).** Regenerated

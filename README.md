@@ -73,6 +73,7 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
 | `events.ts`   | event payload interfaces + `PLUGIN_EVENT`, `WEBHOOK_EVENT`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
 | `mcp.ts`      | `MCP_SCOPE`, `McpScope`, `MCP_SCOPES`, `MCP_TOKEN_PREFIX` (mirrored to `dist/mcp-scopes.json`) |
+| `errors.ts`   | `ERROR_CODE`, `ERROR_CODES`, `ERROR_DOMAINS`, `ErrorCode`, per-domain code lists + unions, `SyncPlayErrorCode`, `LEGACY_SYNCPLAY_ERROR_CODES`, `SYNCPLAY_ERROR_CODE_TWINS` (mirrored to `dist/error-codes.json`) |
 | `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `buildPhlixHeaders` |
 | `ticks.ts`    | `TICKS_PER_SECOND`/`_MINUTE`/`_HOUR`, `ticksToSeconds`, `secondsToTicks`, `ticksToMinutes`, `ticksToHms`, `formatRuntime`, `formatDuration` |
 | `Rating.ts`   | `Rating`, `MediaRatings`, `RatingValue`, `RatingSortKey`, `MinRatingFilter`, `MaxRatingFilter`, `SmartRuleField`, `MediaItemRatingSource`, `pickDisplayRating`, `ManualMatchOverride` |
@@ -108,7 +109,13 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
   live on the detail-only `cast[]`.
 - Detail-only fields (`cast`, `crew`, `production_companies`, `studio`,
   `streams`, `stream_url`) appear only on `GET /api/v1/media/{id}`.
-- `src/routeManifest.generated.ts`, `dist/mcp-scopes.json` and
+- The stable machine error code on the wire is the SSOT for *what went wrong*
+  (`errors.ts`, mirrored to `dist/error-codes.json`): clients localize by code,
+  the server's English `message`/`error` text is a debug fallback, and there is
+  no server-side i18n or protocol locale negotiation. Wire values are never
+  renamed lightly — a rename is a wire break.
+- `src/routeManifest.generated.ts`, `dist/mcp-scopes.json`,
+  `dist/error-codes.json` and
   `dist/server-route-manifest.json` are generated — regenerate them, never
   hand-edit. Wire shapes with an exported key-list const (`AUDIO_TRACK_KEYS`,
   `SUBTITLE_TRACK_KEYS`, `SYNC_PLAY_*_KEYS`) are gated against the captured
@@ -120,7 +127,7 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 npm install
 npm run lint        # eslint (no-explicit-any)
 npm run typecheck   # tsc --noEmit (strict)
-npm run build       # typecheck + vite lib (ES+CJS) + d.ts + dist/mcp-scopes.json + dist/server-route-manifest.json
+npm run build       # typecheck + vite lib (ES+CJS) + d.ts + dist/mcp-scopes.json + dist/server-route-manifest.json + dist/error-codes.json
 npm run test:run    # vitest run
 npm run test:run -- --coverage   # + v8 coverage; writes ./coverage/lcov.info (CI uploads it to Codacy)
 
