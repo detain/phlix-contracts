@@ -45,6 +45,7 @@ import {
   INVITE_ERROR_CODES,
   REQUEST_ERROR_CODES,
   ADMIN_ERROR_CODES,
+  UPDATES_ERROR_CODES,
   SYNCPLAY_TWIN_ERROR_CODES,
   SYNCPLAY_ERROR_CODES,
   SYNCPLAY_ERROR_CODE_TWINS,
@@ -74,11 +75,11 @@ const SERVER_SYNCPLAY_SEND_ERROR_CODES = [
 const DOTTED_OR_SNAKE = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/;
 
 describe('error-code registry invariants', () => {
-  it('is non-vacuous: exactly the 146 derived codes, each a non-empty string', () => {
+  it('is non-vacuous: exactly the 147 derived codes, each a non-empty string', () => {
     // Anti-vacuity floor + exact pin. A consumer gating against this list must
     // be able to trust that an empty or undefined export cannot pass as "equal".
     expect(ERROR_CODES.length).toBeGreaterThanOrEqual(140);
-    expect(ERROR_CODES).toHaveLength(146);
+    expect(ERROR_CODES).toHaveLength(147);
     for (const code of ERROR_CODES) {
       expect(typeof code).toBe('string');
       expect(code.length).toBeGreaterThan(0);
@@ -380,6 +381,12 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'invalid_throttle',
     ]);
   });
+
+  it('updates (srv core-update admin surface, bare snake on code)', () => {
+    // srv AdminUpdatesController.php:214 — the 503 the POST /admin/updates/check
+    // handler emits when checkNow() throws synchronously.
+    expect([...UPDATES_ERROR_CODES]).toEqual(['update_check_dispatch_failed']);
+  });
 });
 
 describe('the committed dist/error-codes.json artifact', () => {
@@ -387,9 +394,17 @@ describe('the committed dist/error-codes.json artifact', () => {
   // JSON rather than importing the package. The artifact is COMMITTED, which
   // means it can go stale: someone edits src/errors.ts, skips `npm run build`,
   // and a consumer then gates against a vocabulary this package no longer
-  // declares. This is the detector. In CI `npm run build` runs before
-  // `npm run test:run`, so a stale committed file is caught even after that
-  // build regenerated the working copy.
+  // declares. SCOPE OF THIS TEST: it reads the WORKING-COPY bytes. Locally (no
+  // rebuild yet) that IS the committed file, so the byte-freeze below reddens a
+  // forgotten regen; but in CI `npm run build` heals the working copy before
+  // the suite runs, so a stale COMMITTED artifact cannot be caught HERE. The
+  // committed-freshness gate is the CI step `git diff --exit-code --
+  // dist/error-codes.json` immediately after the build. Chosen over an in-test
+  // `git show HEAD:…` comparison because the suite must stay runnable outside a
+  // git worktree (packed/source-distributed runs) and must not race a
+  // staged-but-uncommitted index, where HEAD is by definition older than the
+  // change under test — the CI diff sees exactly one truth: HEAD vs a fresh
+  // emit, at the gate that ships.
   const bytes = readFileSync(resolve(__dirname, '..', 'dist', 'error-codes.json'), 'utf8');
   const artifact = JSON.parse(bytes) as { $comment: string; codes: string[] };
 
@@ -406,8 +421,9 @@ describe('the committed dist/error-codes.json artifact', () => {
   it('is byte-identical to a fresh emit (idempotency freeze)', () => {
     // Re-deriving the emitter's exact serialization (same $comment, same
     // JSON.stringify(..., null, 2) + trailing newline) freezes BOTH content and
-    // formatting: the generator is deterministic and the committed file is its
-    // current output.
+    // formatting: the generator is deterministic and this file (the working
+    // copy — the committed bytes until a rebuild, per the describe comment) is
+    // its current output.
     const regenerated = `${JSON.stringify(
       {
         $comment:

@@ -9,10 +9,11 @@
  * cannot drift from `src/errors.ts` — it is generated from the built bundle,
  * never hand-maintained.
  *
- * `test/errors.test.ts` asserts the committed JSON matches `ERROR_CODES` byte
- * for byte, so a stale artifact (someone edited `src/errors.ts` and skipped
- * `npm run build`) is a RED rather than a silently wrong file a consumer then
- * pins against.
+ * `test/errors.test.ts` asserts the working-copy JSON matches `ERROR_CODES`
+ * byte for byte — which reddens a forgotten regen whenever the suite runs
+ * before a rebuild — and CI adds the committed-freshness gate: `git diff
+ * --exit-code -- dist/error-codes.json` right after `npm run build`, so a stale
+ * COMMITTED artifact is a RED even though the build healed the working copy.
  *
  * The JSON shape mirrors `dist/mcp-scopes.json`: a `$comment` provenance marker
  * plus one ordered array of plain wire strings. Order is the registry

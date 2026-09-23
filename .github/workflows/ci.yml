@@ -24,6 +24,17 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
+
+      # Committed-artifact freshness for the error-code registry. `npm run
+      # build` just rewrote the working copy from src/, so any diff left here is
+      # the COMMITTED dist/error-codes.json lagging the registry — the drift the
+      # errors.test.ts byte-freeze cannot see in CI (the build heals the working
+      # copy before the suite runs, see test/errors.test.ts describe comment).
+      # A forgotten regen fails loudly instead of shipping a stale vocabulary to
+      # the Node-less PHP consumers that pin this JSON.
+      - name: dist/error-codes.json committed-freshness check
+        run: git diff --exit-code -- dist/error-codes.json
+
       - run: npm run test:run -- --coverage
 
       - name: Upload coverage to Codacy

@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   needs, derived code-first from the emitting sources rather than transcribed
   from any prior inventory: every dotted and bare-snake code actually placed on
   the wire today by `phlix-server` or `phlix-hub` is listed VERBATIM (each entry
-  carries its source file:line refs in the docblock), 146 codes across 30
+  carries its source file:line refs in the docblock), 147 codes across 31
   domain namespaces. The SyncPlay WebSocket's 12 SCREAMING_SNAKE `error_code`
   literals are pinned under `legacy` exactly as emitted (the test restates the
   set independently of the registry and asserts it is the registry's *only*
@@ -53,8 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   array plus a `$comment` provenance marker for the Node-less PHP consumers,
   fail-fast guard against emitting an empty vocabulary, wired as the last step
   of `npm run build`, and COMMITTED under `dist/` like its siblings.
-  `test/errors.test.ts` (28 tests) restates every domain's ordered vocabulary
-  from the PHP sources, pins the exact 146-code census, enforces the wire-shape
+  `test/errors.test.ts` (29 tests) restates every domain's ordered vocabulary
+  from the PHP sources, pins the exact 147-code census, enforces the wire-shape
   regex (lowercase dotted/snake, uppercase only inside `legacy`), verifies the
   twin map's totality over pinned legacy members, and byte-freezes the
   committed artifact against a fresh deterministic emit.
