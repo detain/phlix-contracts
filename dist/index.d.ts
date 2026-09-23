@@ -17,6 +17,7 @@ export * from './hub';
 export * from './library';
 export * from './events';
 export * from './mcp';
+export * from './errors';
 export * from './headers';
 export * from './ticks';
 export * from './Rating';
