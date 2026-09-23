@@ -19,10 +19,12 @@ import {
   ERROR_DOMAINS,
   AUTH_ERROR_CODES,
   HUB_ERROR_CODES,
+  CLAIM_ERROR_CODES,
   SERVER_ERROR_CODES,
   PROXY_ERROR_CODES,
   QUOTA_ERROR_CODES,
   STREAM_ERROR_CODES,
+  ACCESS_ERROR_CODES,
   GATEWAY_ERROR_CODES,
   RELAY_ERROR_CODES,
   MCP_ERROR_CODES,
@@ -46,6 +48,10 @@ import {
   REQUEST_ERROR_CODES,
   ADMIN_ERROR_CODES,
   UPDATES_ERROR_CODES,
+  IDENTITY_ERROR_CODES,
+  PROVIDER_ERROR_CODES,
+  OAUTH_ERROR_CODES,
+  LDAP_ERROR_CODES,
   SYNCPLAY_TWIN_ERROR_CODES,
   SYNCPLAY_ERROR_CODES,
   SYNCPLAY_ERROR_CODE_TWINS,
@@ -75,11 +81,11 @@ const SERVER_SYNCPLAY_SEND_ERROR_CODES = [
 const DOTTED_OR_SNAKE = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/;
 
 describe('error-code registry invariants', () => {
-  it('is non-vacuous: exactly the 147 derived codes, each a non-empty string', () => {
+  it('is non-vacuous: exactly the 202 derived codes, each a non-empty string', () => {
     // Anti-vacuity floor + exact pin. A consumer gating against this list must
     // be able to trust that an empty or undefined export cannot pass as "equal".
-    expect(ERROR_CODES.length).toBeGreaterThanOrEqual(140);
-    expect(ERROR_CODES).toHaveLength(147);
+    expect(ERROR_CODES.length).toBeGreaterThanOrEqual(200);
+    expect(ERROR_CODES).toHaveLength(202);
     for (const code of ERROR_CODES) {
       expect(typeof code).toBe('string');
       expect(code.length).toBeGreaterThan(0);
@@ -129,7 +135,7 @@ describe('legacy SyncPlay SCREAMING pin', () => {
 });
 
 describe('syncplay dotted twins', () => {
-  it('declares the 7 reserved twins', () => {
+  it('declares the 7 dotted twins (server emit-wave landing)', () => {
     expect([...SYNCPLAY_TWIN_ERROR_CODES]).toEqual([
       'syncplay.create_failed',
       'syncplay.join_failed',
@@ -176,7 +182,10 @@ describe('syncplay dotted twins', () => {
 });
 
 describe('per-domain vocabulary restated from the emitting sources', () => {
-  // server + hub auth gates
+  // server + hub auth gates. Wave-1b tail (unauthenticated … invalid_-
+  // credentials): dotted twins of hub/server gate values that ride the `code`
+  // channel as SCREAMING or the `error` TEXT as pseudo-codes today — order is
+  // the registry declaration order, restated from the emit sites.
   it('auth', () => {
     expect([...AUTH_ERROR_CODES]).toEqual([
       'auth.required',
@@ -187,14 +196,29 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'auth.account_pending',
       'auth.account_disabled',
       'auth.password_change_required',
+      'auth.unauthenticated',
+      'auth.enrollment_expired',
+      'auth.server_mismatch',
+      'auth.missing_credentials',
+      'auth.invalid_credentials',
     ]);
   });
 
-  it('hub (server-side account-link family)', () => {
+  it('hub (server↔hub conversation family)', () => {
     expect([...HUB_ERROR_CODES]).toEqual([
       'hub.not_enrolled',
       'hub.token_required',
       'hub.jwt_invalid',
+      'hub.protocol_unsupported',
+      'hub.internal_error',
+    ]);
+  });
+
+  it('claim (hub claim-code exchange, text-field twins)', () => {
+    expect([...CLAIM_ERROR_CODES]).toEqual([
+      'claim.code_not_found',
+      'claim.code_expired',
+      'claim.code_already_claimed',
     ]);
   });
 
@@ -205,13 +229,15 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'server.relay_unavailable',
       'server.offline',
       'server.no_tunnel',
+      'server.key_invalid',
     ]);
   });
 
-  it('proxy / quota / stream / gateway', () => {
+  it('proxy / quota / stream / access / gateway', () => {
     expect([...PROXY_ERROR_CODES]).toEqual(['proxy.scope_denied']);
     expect([...QUOTA_ERROR_CODES]).toEqual(['quota.exceeded']);
-    expect([...STREAM_ERROR_CODES]).toEqual(['stream.limit']);
+    expect([...STREAM_ERROR_CODES]).toEqual(['stream.limit', 'stream.limit_exceeded']);
+    expect([...ACCESS_ERROR_CODES]).toEqual(['access.scheduled']);
     expect([...GATEWAY_ERROR_CODES]).toEqual(['gateway.timeout']);
   });
 
@@ -237,10 +263,28 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
     ]);
   });
 
+  // Alexa: the two code-channel dotted entries first, then the fourteen
+  // Wave-1b twins of the SCREAMING `ALEXA_*` values that
+  // AlexaSignatureMiddleware::reject() places on `code` today (forward form;
+  // the emit-wave flips the middleware).
   it('alexa / tls / csrf / user', () => {
     expect([...ALEXA_ERROR_CODES]).toEqual([
       'alexa.streaming_unsupported',
       'alexa.malformed_envelope',
+      'alexa.verification_error',
+      'alexa.missing_cert_chain_url',
+      'alexa.missing_signature_header',
+      'alexa.empty_body',
+      'alexa.cert_url_rejected',
+      'alexa.cert_fetch_failed',
+      'alexa.cert_chain_malformed',
+      'alexa.signature_invalid',
+      'alexa.cert_expired',
+      'alexa.cert_san_mismatch',
+      'alexa.cert_chain_untrusted',
+      'alexa.timestamp_malformed',
+      'alexa.timestamp_missing',
+      'alexa.timestamp_stale',
     ]);
     expect([...TLS_ERROR_CODES]).toEqual(['tls.acme_not_implemented']);
     expect([...CSRF_ERROR_CODES]).toEqual(['csrf.invalid_origin']);
@@ -287,6 +331,9 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'profile.last_profile',
       'profile.no_pin',
       'profile.pin_mismatch',
+      // Wave 1b: twin of the machine `denial_type` value 'profile_not_found'
+      // (srv StreamLimitMiddleware.php:88-100, PreRouterFastPaths.php:596-599).
+      'profile.not_found',
     ]);
   });
 
@@ -387,6 +434,57 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
     // handler emits when checkNow() throws synchronously.
     expect([...UPDATES_ERROR_CODES]).toEqual(['update_check_dispatch_failed']);
   });
+
+  // Wave-1b server text-field families: every entry below rides the `error`
+  // TEXT field today as a bare snake pseudo-code (no `code` key); the emit-
+  // wave promotes them to the `code` channel. Restated from the controller
+  // sources at srv 838da686.
+  it('identity (linked-identity failures, text-field family)', () => {
+    expect([...IDENTITY_ERROR_CODES]).toEqual([
+      'identity.missing_id',
+      'identity.not_found',
+      'identity.last_sign_in_method',
+      'identity.already_linked',
+      'identity.invalid',
+      'identity.link_unavailable',
+      'identity.invalid_link_state',
+    ]);
+  });
+
+  it('provider (auth-provider config/lookup, text-field family)', () => {
+    expect([...PROVIDER_ERROR_CODES]).toEqual([
+      'provider.not_configured',
+      'provider.unknown',
+      'provider.not_found',
+      'provider.invalid_type',
+      'provider.missing_client_id',
+      'provider.missing_url',
+      'provider.invalid_url',
+    ]);
+  });
+
+  it('oauth (browser-callback flow, text-field family — estate words, NOT the RFC-6749 vocabulary)', () => {
+    expect([...OAUTH_ERROR_CODES]).toEqual([
+      'oauth.missing_code',
+      'oauth.missing_state',
+      'oauth.invalid_state',
+      'oauth.missing_redirect_uri',
+      'oauth.invalid_redirect_uri',
+      'oauth.callback_url_not_configured',
+    ]);
+  });
+
+  it('ldap (connection admin surface, text-field family)', () => {
+    expect([...LDAP_ERROR_CODES]).toEqual([
+      'ldap.missing_host',
+      'ldap.missing_base_dn',
+      'ldap.invalid_port',
+      'ldap.connection_failed',
+      'ldap.bind_failed',
+      'ldap.error',
+      'ldap.runtime_error',
+    ]);
+  });
 });
 
 describe('the committed dist/error-codes.json artifact', () => {
@@ -410,7 +508,7 @@ describe('the committed dist/error-codes.json artifact', () => {
 
   it('is non-vacuous', () => {
     expect(Array.isArray(artifact.codes)).toBe(true);
-    expect(artifact.codes.length).toBeGreaterThanOrEqual(140);
+    expect(artifact.codes.length).toBeGreaterThanOrEqual(200);
   });
 
   it('carries the same ordered vocabulary as ERROR_CODES', () => {

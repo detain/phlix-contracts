@@ -18,6 +18,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — W1b (errors): registry expansion — the complete emit-wave vocabulary — 2026-09-23
+
+- **`src/errors.ts` grows from 147 codes / 31 domains to 202 codes / 37
+  domains — strictly additive** (no code removed, renamed, or re-parented).
+  Every former Wave-2 triage family now has its dotted vocabulary registered so
+  the server/hub emit-waves can ship without further registry changes. All 55
+  new entries re-verified file:line against phlix-server `838da686` and
+  phlix-hub `c023a341`:
+  - `auth` +5: `auth.unauthenticated` / `auth.enrollment_expired` (dotted
+    forward twins of the SCREAMING values that already ride the hub `code`
+    channel today — `ServerClaimController.php:103`,
+    `EnrollmentJwtMiddleware.php:46,51,56`), `auth.server_mismatch` (← hub
+    `AUTHORIZATION_FAILED` text, `ServerController.php:73,131,164,195`),
+    `auth.missing_credentials` / `auth.invalid_credentials` (← srv
+    `AccountLinkController.php:295,332` text).
+  - `hub` +2: `hub.protocol_unsupported`, `hub.internal_error` (← text-field
+    pseudo-codes on `ServerClaimController`/`ServerController`/
+    `HubProtocolMiddleware` refusals and mapError defaults).
+  - `claim` NEW (3): `claim.code_not_found` / `code_expired` /
+    `code_already_claimed` (← hub `CLAIM_CODE_*` text traps,
+    `ServerClaimController.php:133-142` ← `ClaimRequestHandler` throws).
+  - `server` +1: `server.key_invalid` (← hub `SERVER_KEY_INVALID` text,
+    `ServerClaimController.php:149-150`).
+  - `alexa` +14: dotted twins for every `ALEXA_*` value
+    `AlexaSignatureMiddleware::reject()` places on `code` (header gate, cert
+    chain, signature, timestamp families).
+  - `stream` +1 / `access` NEW (1) / `profile` +1: `stream.limit_exceeded`,
+    `access.scheduled`, `profile.not_found` (← srv CamelCase `error`-text
+    pseudo-codes and `denial_type` machine values in `StreamLimitMiddleware`,
+    `AccessScheduleMiddleware`, `PreRouterFastPaths`). The
+    `CastingEnabledMiddleware` ucfirst-interpolated site already emits the
+    registered `casting.disabled` on `code` — no new code needed, documented
+    in the module header.
+  - `identity` NEW (7), `provider` NEW (7), `oauth` NEW (6), `ldap` NEW (7):
+    the server text-snake family promoted from the Wave-2 triage list —
+    AccountLink/AuthProvider/OIDC/GitHub-callback/LDAP surfaces, mapped 1:1 to
+    the emitted snake words (with `provider.not_configured` unifying today's
+    `not_configured`/`provider_not_configured` spellings). These are
+    estate-chosen words, distinct from the hub's RFC-6749/6750-mandated OAuth
+    `error` values, which stay excluded.
+- **Field-placement caveats.** Every domain that gained text-field (or
+  `denial_type`) codes carries a caveat docblock modeled on the Wave-1
+  `profile.*` precedent: "rides the error TEXT field today; Wave 2 promotes to
+  the `code` channel; clients match in `error` text until then." The module
+  header's triage inventory was rewritten accordingly: relay-handshake worker
+  diagnostics, RFC OAuth values, JSON-RPC/SOAP numerics, and never-emitted
+  constants stay excluded with reasoning; hub text words that are display
+  aliases of registered codes (`SERVER_NOT_FOUND`, `MISSING_SERVER_ID`,
+  `UNAUTHORIZED`, `UPGRADE_REQUIRED`, `NOT_IMPLEMENTED*`) are documented as
+  reuse targets, not new vocabulary.
+- **SyncPlay twin flip.** The seven `syncplay.*` codes are no longer marked
+  "RESERVED, servers do not emit" — the server emit-wave is landing; the
+  `SYNCPLAY_ERROR_CODE_TWINS` migration table and all structural test laws
+  (ordered pins, legacy-only SCREAMING, byte-frozen artifact) are unchanged.
+- **Gates:** `npm run typecheck`, `npm run lint`, `npm run test:run` (repo
+  suite 171 passed; `errors.test.ts` 34 passed — five new per-domain pin
+  blocks added), `npm run build` + double-emit md5 idempotency of
+  `dist/error-codes.json`, clean `git status`.
+
 ### Added — W1 (errors): estate error-code registry, Wave 1 of the error-code doctrine — 2026-09-23
 
 - **`src/errors.ts` + `scripts/emit-error-codes.mjs` + `dist/error-codes.json`.**
