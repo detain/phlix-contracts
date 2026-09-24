@@ -1,8 +1,11 @@
 # @phlix/contracts — CI
 #
-# Deterministic gate: lint, typecheck, build (typecheck + bundle + d.ts), and
-# run the full vitest suite. Manual dispatch by default (no runner wired to
-# this repo yet); uncomment the triggers to make it a required PR check.
+# Deterministic gate: lint, typecheck, build (typecheck + bundle + d.ts),
+# committed-artifact freshness checks, and the full vitest suite. The trigger
+# block below is LIVE — push/pull_request against master run this workflow
+# (the earlier "no runner wired" note predates the error-registry waves).
+# The `verify:cites` script is deliberately NOT a step here: it needs
+# checkouts of the sibling private repos and is a dev-side tripwire only.
 name: contracts-ci
 
 on:

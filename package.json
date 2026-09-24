@@ -22,7 +22,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest",
     "test:run": "vitest run",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "verify:cites": "node scripts/check-error-cites.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
