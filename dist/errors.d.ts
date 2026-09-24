@@ -91,7 +91,10 @@
  *    `Messages::error` docblock examples `GROUP_FULL`/`INVALID_PASSWORD`.
  *  - Text words that are display aliases of ALREADY-registered codes — the
  *    emit-waves map them onto their existing twins, no new vocabulary:
- *    `SERVER_NOT_FOUND` (hub ServerController.php:181-186,238-243) →
+ *    `SERVER_NOT_FOUND` (hub ServerController.php:181-186,238-243 — dual
+ *    placement; hub SubdomainController.php:126 reuse target — rides the
+ *    `error` TEXT today, the hub wave attaches the `code` channel there;
+ *    clients match text until then) →
  *    `server.not_found`; `MISSING_SERVER_ID` (hub SubdomainController.php:61,152,189,
  *    RelayController.php:57, ClientMountController.php:86) → `missing_server_id`
  *    (common); `UNAUTHORIZED` (hub SubdomainController.php:77,200,240,
@@ -254,7 +257,14 @@ declare const CODES: {
     };
     /** Hub-side server lookup/tunnel failures (phlix-hub). */
     readonly server: {
-        /** hub ServerProxyController.php:978 (+4 controllers) */
+        /**
+         * hub ServerProxyController.php:978 (+4 controllers). REUSE TARGET
+         * (sanctioned additive coord): hub SubdomainController.php:126 — the
+         * subdomain-allocation 404 emits the SCREAMING `SERVER_NOT_FOUND` riding
+         * the `error` TEXT today with no `code` key. The hub wave attaches
+         * `server.not_found` on the `code` channel at that site (dual placement,
+         * legacy text byte-identical); clients match the text until that lands.
+         */
         readonly NOT_FOUND: "server.not_found";
         /** hub ServerProxyController.php:982 (+3 controllers) */
         readonly NOT_OWNED: "server.not_owned";
@@ -1039,7 +1049,14 @@ export declare const ERROR_CODE: {
     };
     /** Hub-side server lookup/tunnel failures (phlix-hub). */
     readonly server: {
-        /** hub ServerProxyController.php:978 (+4 controllers) */
+        /**
+         * hub ServerProxyController.php:978 (+4 controllers). REUSE TARGET
+         * (sanctioned additive coord): hub SubdomainController.php:126 — the
+         * subdomain-allocation 404 emits the SCREAMING `SERVER_NOT_FOUND` riding
+         * the `error` TEXT today with no `code` key. The hub wave attaches
+         * `server.not_found` on the `code` channel at that site (dual placement,
+         * legacy text byte-identical); clients match the text until that lands.
+         */
         readonly NOT_FOUND: "server.not_found";
         /** hub ServerProxyController.php:982 (+3 controllers) */
         readonly NOT_OWNED: "server.not_owned";
