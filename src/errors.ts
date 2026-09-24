@@ -39,13 +39,16 @@
  *  2. `legacy` — the 12 SCREAMING_SNAKE codes the SyncPlay WebSocket emits in
  *     `error_code` today (the exact `sendError`/`Messages::error` literal set in
  *     `phlix-server/src/Session/SyncPlay/SyncPlayManager.php` and
- *     `phlix-server/src/Server/WebSocket/MessageHandler.php`). Canonical until
- *     the Wave-2 SyncPlay cutover ships; do not remove.
+ *     `phlix-server/src/Server/WebSocket/MessageHandler.php`). Canonical while
+ *     the Wave-2 SyncPlay cutover lands (create/join carriers now wrap these
+ *     behind `?? ` fallbacks; the rest still emit raw); do not remove.
  *  3. `syncplay` — dotted twins for the coarse `*_FAILED` prose-carrier
- *     family. The server emit-wave is landing: the SyncPlay error sites switch
- *     from `CREATE_FAILED` + prose to these codes (the `SYNCPLAY_ERROR_CODE_-
- *     TWINS` map below is the migration table). Clients localize them now, so
- *     the switch needs no client release.
+ *     family. The server emit-wave has landed on the wrap sites: `create`/
+ *     `join` now flow `Messages::error($result['error_code'] ?? '..._FAILED',
+ *     ...)` so the twins reach the wire (the `SYNCPLAY_ERROR_CODE_TWINS` map
+ *     below is the migration table); the `leave` carrier still emits raw.
+ *     Clients localize them now, so the remaining switch needs no client
+ *     release.
  *
  * REGISTERED IN WAVE 1b (previously Wave-2 triage; every emit site re-verified
  * at phlix-server 838da686 / phlix-hub c023a341):
@@ -88,8 +91,8 @@
  *    `Messages::error` docblock examples `GROUP_FULL`/`INVALID_PASSWORD`.
  *  - Text words that are display aliases of ALREADY-registered codes — the
  *    emit-waves map them onto their existing twins, no new vocabulary:
- *    `SERVER_NOT_FOUND` (hub ServerController.php:172,220-221) → `server.not_-
- *    found`; `MISSING_SERVER_ID` (hub SubdomainController.php:61,152,189,
+ *    `SERVER_NOT_FOUND` (hub ServerController.php:181-186,238-243) →
+ *    `server.not_found`; `MISSING_SERVER_ID` (hub SubdomainController.php:61,152,189,
  *    RelayController.php:57, ClientMountController.php:86) → `missing_server_id`
  *    (common); `UNAUTHORIZED` (hub SubdomainController.php:77,200,240,
  *    RelayController.php:73,144 — 401 enrollment gates, no `code` key) →
@@ -119,16 +122,18 @@
  * `dist/error-codes.json` preserve it, so consumers may pin the list ordered.
  */
 const CODES = {
-  /**
-   * Authentication/authorization gate failures, spoken by BOTH servers.
-   * CAVEAT (Wave 1b): the last five entries below are NOT on the `code`
-   * channel yet. `auth.unauthenticated` rides `code` today in SCREAMING form
-   * and `auth.enrollment_expired` rides `code` (SCREAMING) on the middleware
-   * path but the `error` TEXT on the mapError path; `auth.server_mismatch`,
-   * `auth.missing_credentials` and `auth.invalid_credentials` ride the
-   * `error` TEXT field today. The emit-waves promote all five to the `code`
-   * channel; clients match the current placement until then.
-   */
+   /**
+    * Authentication/authorization gate failures, spoken by BOTH servers.
+    * CAVEAT (Wave 1b, updated post-hub-W3): the hub emit-wave promoted
+    * `auth.unauthenticated`, `auth.enrollment_expired` and
+    * `auth.server_mismatch` to the dotted forward form on the `code` channel —
+    * the legacy SCREAMING values (`UNAUTHENTICATED`,
+    * `ENROLLMENT_TOKEN_EXPIRED`, `AUTHORIZATION_FAILED`) now ride the `error`
+    * TEXT field of the same payloads, so clients may match either channel.
+    * `auth.missing_credentials` / `auth.invalid_credentials` (server
+    * AccountLink surface) still ride the `error` TEXT field only; the server
+    * emit-wave promotes them.
+    */
   auth: {
     /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:113 */
     REQUIRED: 'auth.required',
@@ -147,31 +152,30 @@ const CODES = {
     /** srv PasswordChangeRequiredException.php:30 */
     PASSWORD_CHANGE_REQUIRED: 'auth.password_change_required',
     /**
-     * hub ServerClaimController.php:103 — 401 on the claim route when no user
-     * resolves. Rides the `code` channel TODAY as SCREAMING `UNAUTHENTICATED`;
-     * this dotted entry is the forward form, the emit-wave flips the site and
-     * the SCREAMING original becomes legacy. Clients match `'UNAUTHENTICATED'`
-     * in `code` until then.
+     * hub ServerClaimController.php:107 — 401 on the claim route when no user
+     * resolves. Hub W3 promoted the site: dotted `auth.unauthenticated` rides
+     * the `code` channel, the SCREAMING `UNAUTHENTICATED` is parked in the
+     * `error` TEXT field of the same payload (dual placement).
      */
     UNAUTHENTICATED: 'auth.unauthenticated',
     /**
      * hub EnrollmentJwtMiddleware.php:46,51,56 → `unauthorized()` helper
-     * (:69-73) emits SCREAMING `ENROLLMENT_TOKEN_EXPIRED` on the `code`
-     * channel; hub ServerController.php:216-218 mapError arm emits it in the
-     * `error` TEXT (throw sources: DeregisterHandler.php:51,
-     * RenewHandler.php:57, HeartbeatHandler.php:65,69). Dotted forward form —
-     * emit-wave promotes to `code`; clients match `ENROLLMENT_TOKEN_EXPIRED`
-     * in `code`/`error` text until then.
+     * (:76) emits the dotted forward form on the `code` channel with the
+     * SCREAMING `ENROLLMENT_TOKEN_EXPIRED` parked in the `error` TEXT
+     * (W3 dual placement); hub ServerController.php:232-237 mapError arm does
+     * the same (throw sources: DeregisterHandler.php:51,
+     * RenewHandler.php:57, HeartbeatHandler.php:65,69).
      */
     ENROLLMENT_EXPIRED: 'auth.enrollment_expired',
     /**
-     * hub ServerController.php:73,131,164,195 — 403 `AUTHORIZATION_FAILED`
-     * text when the enrollment token's serverId doesn't match the path
-     * serverId. Rides the `error` TEXT field today; Wave 2 promotes to the
-     * `code` channel; clients match in `error` text until then. Also the
-     * planned target for the "Server ID mismatch" arms of the hub 401
-     * enrollment gates (SubdomainController.php:218, RelayController.php,
-     * via their `unauthorized()` helpers, today bare `UNAUTHORIZED` text).
+     * hub ServerController.php:76,138,173,208 — 403 refusals when the
+     * enrollment token's serverId doesn't match the path serverId. Hub W3
+     * promoted: dotted `auth.server_mismatch` rides `code`, the legacy
+     * `AUTHORIZATION_FAILED` is parked in the `error` TEXT field (dual
+     * placement). The "Server ID mismatch" arms of the hub 401 enrollment
+     * gates (SubdomainController.php:218, RelayController.php, via their
+     * `unauthorized()` helpers, today bare `UNAUTHORIZED` text) remain
+     * deferred — that promotion is not on the wire yet.
      */
     SERVER_MISMATCH: 'auth.server_mismatch',
     /**
@@ -192,12 +196,12 @@ const CODES = {
   /**
    * Server↔hub conversation failures: the server-side account-linking family
    * (phlix-server, all three on the `code` channel) plus the hub-side
-   * protocol-envelope failures (phlix-hub). CAVEAT (Wave 1b): the last two
-   * entries ride the `error` TEXT field today as SCREAMING pseudo-codes
+   * protocol-envelope failures (phlix-hub). CAVEAT (Wave 1b, updated
+   * post-hub-W3): the last two entries were SCREAMING pseudo-codes
    * (`HUB_PROTOCOL_UNSUPPORTED`, `HUB_INTERNAL_ERROR`) on
-   * ServerClaimController/ServerController refusals and mapError defaults; the
-   * emit-wave promotes them to the `code` channel in dotted form — clients
-   * match the SCREAMING text until then.
+   * ServerClaimController/ServerController refusals and mapError defaults;
+   * hub W3 promoted them — the dotted form now rides the `code` channel and
+   * the SCREAMING originals ride the `error` TEXT field (dual placement).
    */
   hub: {
     /** srv AccountLinkController.php:412, HubTokenController.php:67 */
@@ -207,121 +211,125 @@ const CODES = {
     /** srv AccountLinkController.php:432,444, HubJwtMiddleware.php:73 */
     JWT_INVALID: 'hub.jwt_invalid',
     /**
-     * hub ServerClaimController.php:48,145-146 · ServerController.php:63,121 ·
-     * HubProtocolMiddleware.php:40-41 — 400 when the `protocol` header is
-     * absent or not `phlix-hub`. Rides the `error` TEXT field today as
-     * `HUB_PROTOCOL_UNSUPPORTED`; Wave 2 promotes to the `code` channel;
-     * clients match in `error` text until then.
+     * hub ServerClaimController.php:49,159 · ServerController.php:64,126 ·
+     * HubProtocolMiddleware.php:41-42 — 400 when the `protocol` header is
+     * absent or not `phlix-hub`. Hub W3 promoted: dotted rides `code`, the
+     * SCREAMING `HUB_PROTOCOL_UNSUPPORTED` is parked in the `error` TEXT of
+     * the same payload (dual placement; clients may match either).
      */
     PROTOCOL_UNSUPPORTED: 'hub.protocol_unsupported',
     /**
-     * hub ServerClaimController.php:153-154 · ServerController.php:224-225 —
-     * the mapError default 500. Rides the `error` TEXT field today as
-     * `HUB_INTERNAL_ERROR`; Wave 2 promotes to the `code` channel; clients
-     * match in `error` text until then.
+     * hub ServerClaimController.php:171 · ServerController.php:246 —
+     * the mapError default 500. Hub W3 promoted: dotted rides `code`, the
+     * SCREAMING `HUB_INTERNAL_ERROR` is parked in the `error` TEXT (dual
+     * placement; clients may match either).
      */
     INTERNAL_ERROR: 'hub.internal_error',
   },
 
   /**
    * Hub claim-code exchange failures (phlix-hub `ClaimRequestHandler` →
-   * `ServerClaimController::mapError`). CAVEAT (Wave 1b): all three ride the
-   * `error` TEXT field today as SCREAMING pseudo-codes; the emit-wave promotes
-   * them to the `code` channel in dotted form — clients match the SCREAMING
-   * text until then.
+   * `ServerClaimController::mapError`). CAVEAT (Wave 1b, updated post-hub-W3):
+   * the three arms rode the `error` TEXT field as SCREAMING pseudo-codes; hub
+   * W3 promoted them — every arm now carries the dotted form on the `code`
+   * channel with the SCREAMING original parked byte-identical in the same
+   * payload's `error` TEXT (dual placement; clients may match either).
    */
   claim: {
     /**
-     * hub ServerClaimController.php:133-134 (404) ← throws at
-     * ClaimRequestHandler.php:162,189 — today `CLAIM_CODE_NOT_FOUND` in
-     * `error` text.
+     * hub ServerClaimController.php:141 (404 arm 139-144) ← throws at
+     * ClaimRequestHandler.php:162,189 — dotted on `code`, SCREAMING
+     * `CLAIM_CODE_NOT_FOUND` parked in `error` text (dual).
      */
     CODE_NOT_FOUND: 'claim.code_not_found',
     /**
-     * hub ServerClaimController.php:137-138 (410) ← throw at
-     * ClaimRequestHandler.php:199 — today `CLAIM_CODE_EXPIRED` in `error`
-     * text.
+     * hub ServerClaimController.php:147 (410 arm 145-150) ← throw at
+     * ClaimRequestHandler.php:199 — dotted on `code`, SCREAMING
+     * `CLAIM_CODE_EXPIRED` parked in `error` text (dual).
      */
     CODE_EXPIRED: 'claim.code_expired',
     /**
-     * hub ServerClaimController.php:141-142 (409) ← throw at
-     * ClaimRequestHandler.php:206 — today `CLAIM_CODE_ALREADY_CLAIMED` in
-     * `error` text.
+     * hub ServerClaimController.php:153 (409 arm 151-156) ← throw at
+     * ClaimRequestHandler.php:206 — dotted on `code`, SCREAMING
+     * `CLAIM_CODE_ALREADY_CLAIMED` parked in `error` text (dual).
      */
     CODE_ALREADY_CLAIMED: 'claim.code_already_claimed',
   },
 
   /** Hub-side server lookup/tunnel failures (phlix-hub). */
   server: {
-    /** hub ServerProxyController.php:983 (+3 controllers) */
+    /** hub ServerProxyController.php:978 (+4 controllers) */
     NOT_FOUND: 'server.not_found',
-    /** hub ServerProxyController.php:990 (+3) */
+    /** hub ServerProxyController.php:982 (+3 controllers) */
     NOT_OWNED: 'server.not_owned',
-    /** hub ServerProxyController.php:1009 — relay manager absent */
+    /** hub ServerProxyController.php:1000 — relay manager absent */
     RELAY_UNAVAILABLE: 'server.relay_unavailable',
-    /** hub ServerProxyController.php:1017, RelayProxyManager.php:482 */
+    /** hub ServerProxyController.php:1007, RelayProxyManager.php:480 */
     OFFLINE: 'server.offline',
-    /** hub RelayProxyManager.php:233 */
+    /** hub RelayProxyManager.php:231 */
     NO_TUNNEL: 'server.no_tunnel',
     /**
-     * hub ServerClaimController.php:149-150 (400) ← throws at
+     * hub ServerClaimController.php:165 (400 arm 163-168) ← throws at
      * ClaimRequestHandler.php:399,402,405,409 — the server's Ed25519 key
-     * failed validation during claim. Rides the `error` TEXT field today as
-     * SCREAMING `SERVER_KEY_INVALID`; the emit-wave promotes it to the `code`
-     * channel in dotted form; clients match the SCREAMING text until then.
+     * failed validation during claim. Hub W3 promoted: dotted rides `code`,
+     * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
+     * placement; clients may match either).
      */
     KEY_INVALID: 'server.key_invalid',
   },
 
   /** Hub reverse-proxy scope gates. */
   proxy: {
-    /** hub ServerProxyController.php:1054,1069 */
+    /** hub ServerProxyController.php:1044,1059 */
     SCOPE_DENIED: 'proxy.scope_denied',
   },
 
   /** Hub bandwidth quota gate. */
   quota: {
-    /** hub ServerProxyController.php:1029 */
+    /** hub ServerProxyController.php:1019 */
     EXCEEDED: 'quota.exceeded',
   },
 
   /**
    * Concurrent-stream throttle gates (hub proxy + server middleware).
-   * CAVEAT (Wave 1b): `stream.limit` rides the hub `code` channel. The server
-   * twin below rides the `error` TEXT field today as the CamelCase pseudo-code
-   * `StreamLimitExceeded`, mirrored machine-sub-field style in `denial_type`
-   * (`'stream_limit_exceeded'`); the emit-wave promotes it to the `code`
-   * channel — clients match in `error` text / `denial_type` until then.
+   * CAVEAT (Wave 1b, updated post-server-W2): `stream.limit` rides the hub
+   * `code` channel. The server twin below was promoted by the server W2
+   * emit-wave: `stream.limit_exceeded` now rides the `code` channel
+   * positionally, the CamelCase pseudo-code `StreamLimitExceeded` is parked in
+   * the `error` TEXT field and the `denial_type` machine mirror is kept
+   * (dual placement; clients may match `code`, `error` text or `denial_type`).
    */
   stream: {
-    /** hub ServerProxyController.php:1108 */
+    /** hub ServerProxyController.php:1098 */
     LIMIT: 'stream.limit',
     /**
-     * srv StreamLimitMiddleware.php:115-120 (429) · PreRouterFastPaths.php:
-     * 569-573 (429) — today `'error' => 'StreamLimitExceeded', 'denial_type'
-     * => 'stream_limit_exceeded'`, no `code` key.
+     * srv StreamLimitMiddleware.php:113-117 (429) · PreRouterFastPaths.php:
+     * 569-575 (429) — `'code' => 'stream.limit_exceeded'` alongside the
+     * parked `'error' => 'StreamLimitExceeded'` and `'denial_type' =>
+     * 'stream_limit_exceeded'` mirror (server W2 dual placement).
      */
     LIMIT_EXCEEDED: 'stream.limit_exceeded',
   },
 
   /**
-   * Server scheduled-access window gate (phlix-server). CAVEAT (Wave 1b):
-   * rides the `error` TEXT field today as the CamelCase pseudo-code
-   * `AccessScheduled` with no `code` key and no `denial_type`; the emit-wave
-   * promotes it to the `code` channel — clients match in `error` text until
-   * then.
+   * Server scheduled-access window gate (phlix-server). CAVEAT (Wave 1b,
+   * updated post-server-W2): promoted by the server W2 emit-wave —
+   * `access.scheduled` rides the `code` channel positionally, the CamelCase
+   * pseudo-code `AccessScheduled` is parked in the `error` TEXT field
+   * (dual placement; clients may match either).
    */
   access: {
     /**
-     * srv AccessScheduleMiddleware.php:99-102,110-113,119-122 — 403 outside
-     * the profile's allowed window; today `'error' => 'AccessScheduled'`.
+     * srv AccessScheduleMiddleware.php:99-101,109-111,117-119 — 403 outside
+     * the profile's allowed window; `'code' => 'access.scheduled'` with
+     * `'error' => 'AccessScheduled'` parked in text (server W2).
      */
     SCHEDULED: 'access.scheduled',
   },
 
   /** Hub→server upstream gateway failures. */
   gateway: {
-    /** hub ServerProxyController.php:1143, RelayProxyManager.php:624, RelayProxyBridge.php:315 */
+    /** hub ServerProxyController.php:1131, RelayProxyManager.php:622, RelayProxyBridge.php:313 */
     TIMEOUT: 'gateway.timeout',
   },
 
@@ -331,7 +339,7 @@ const CODES = {
     CLIENT_WS_ENDPOINT: 'relay.client_ws_endpoint',
     /** hub RelayController.php:125 — HTTP hit on the server WS endpoint */
     WS_HTTP_ENDPOINT: 'relay.ws_http_endpoint',
-    /** hub RelayProxyManager.php:260 */
+    /** hub RelayProxyManager.php:258 */
     ENCODE_ERROR: 'relay.encode_error',
   },
 
@@ -533,11 +541,12 @@ const CODES = {
    * Server profile PIN/switch/denial gates. Dotted wire values that CURRENTLY
    * RIDE A NON-`code` FIELD, not the `code` channel: the first four emit
    * `'error' => 'profile.use_switch'` etc. with NO `code` key (verified at
-   * srv ProfilesController.php:215,274,403,407), and `profile.not_found` rides
-   * the machine `denial_type` sub-field (see its ref). The Wave-1b text-field
+   * srv ProfilesController.php:215,274,403,407). `profile.not_found` was
+   * promoted by the server W2 emit-wave and now rides the `code` channel with
+   * the `denial_type` machine mirror kept (see its ref). The Wave-1b text-field
    * families named in the module header carry the same promote-in-Wave-2
-   * caveat per domain. Until then, clients match these strings in `error`
-   * text / `denial_type`, not in `code`.
+   * caveat per domain. Until then, clients match the first four strings in
+   * `error` text, not in `code`.
    */
   profile: {
     /** srv ProfilesController.php:215 */
@@ -549,13 +558,12 @@ const CODES = {
     /** srv ProfilesController.php:407 */
     PIN_MISMATCH: 'profile.pin_mismatch',
     /**
-     * srv StreamLimitMiddleware.php:88-92,96-100 (403) ·
-     * PreRouterFastPaths.php:596-599 (403) — the request carries a profile
-     * that doesn't exist. Rides the machine `denial_type` sub-field today
-     * (`'denial_type' => 'profile_not_found'`, alongside
-     * `'error' => 'StreamLimitExceeded'`, no `code` key); the emit-wave
-     * promotes it to the `code` channel — clients match in `denial_type`
-     * until then.
+     * srv StreamLimitMiddleware.php:88-91,95-98 (403) ·
+     * PreRouterFastPaths.php:597-602 (403) — the request carries a profile
+     * that doesn't exist. Server W2 promoted it: `'code' =>
+     * 'profile.not_found'` rides the `code` channel alongside the parked
+     * `'error' => 'StreamLimitExceeded'` and the machine `'denial_type' =>
+     * 'profile_not_found'` mirror (dual placement; clients may match any).
      */
     NOT_FOUND: 'profile.not_found',
   },
@@ -871,27 +879,32 @@ const CODES = {
   },
 
   /**
-   * SyncPlay WebSocket domain — dotted twins. The server emit-wave is
-   * landing: the `*_FAILED` prose-carrier sites switch over to these codes
-   * (see `SYNCPLAY_ERROR_CODE_TWINS` for the migration table), keeping the
-   * `error_code` channel and read order untouched. Clients localize these
-   * codes; the legacy SCREAMING carriers remain pinned under `legacy` for
-   * in-flight and older-server traffic.
+   * SyncPlay WebSocket domain — dotted twins. The server emit-wave has
+   * landed on the wrap-site carriers: `create`/`join` now emit the twin
+   * `syncplay.*_failed` code on `error_code` with the SCREAMING fallback if
+   * the inner handler set no code (`Messages::error($result['error_code'] ??
+   * 'CREATE_FAILED', ...)` at SyncPlayManager.php:1586,1623); the `leave`
+   * carrier (SyncPlayManager.php:1652) still emits raw `LEAVE_FAILED` — its
+   * inner failure paths carry no `error_code` yet. See
+   * `SYNCPLAY_ERROR_CODE_TWINS` for the migration table; `error_code` channel
+   * and read order are untouched. Clients localize these codes; the legacy
+   * SCREAMING carriers remain pinned under `legacy` for in-flight and
+   * older-server traffic.
    */
   syncplay: {
-    /** twin of legacy CREATE_FAILED (SyncPlayManager.php:1580) */
+    /** twin of legacy CREATE_FAILED (SyncPlayManager.php:1586) */
     CREATE_FAILED: 'syncplay.create_failed',
-    /** twin of legacy JOIN_FAILED (SyncPlayManager.php:1615) */
+    /** twin of legacy JOIN_FAILED (SyncPlayManager.php:1623) */
     JOIN_FAILED: 'syncplay.join_failed',
-    /** twin of legacy LEAVE_FAILED (SyncPlayManager.php:1644) */
+    /** twin of legacy LEAVE_FAILED (SyncPlayManager.php:1652) */
     LEAVE_FAILED: 'syncplay.leave_failed',
-    /** was prose 'Maximum group limit reached' inside CREATE_FAILED (:618) */
+    /** was prose 'Maximum group limit reached' inside CREATE_FAILED (:621) */
     GROUP_LIMIT_REACHED: 'syncplay.group_limit_reached',
-    /** was prose 'Group not found' inside JOIN_FAILED (:698) */
+    /** was prose 'Group not found' inside JOIN_FAILED (:702) */
     GROUP_NOT_FOUND: 'syncplay.group_not_found',
-    /** was prose 'Invalid password' inside JOIN_FAILED (:737) */
+    /** was prose 'Invalid password' inside JOIN_FAILED (:741) */
     INVALID_PASSWORD: 'syncplay.invalid_password',
-    /** was prose 'Group is full' inside JOIN_FAILED (:741) */
+    /** was prose 'Group is full' inside JOIN_FAILED (:745) */
     GROUP_FULL: 'syncplay.group_full',
   },
 
@@ -906,25 +919,25 @@ const CODES = {
     UNKNOWN_MESSAGE: 'UNKNOWN_MESSAGE',
     /** SyncPlayManager.php:579 */
     HANDLER_ERROR: 'HANDLER_ERROR',
-    /** SyncPlayManager.php:940 (+11) · MessageHandler.php:148 */
+    /** SyncPlayManager.php:944 (+11) · MessageHandler.php:156 */
     NOT_AUTHENTICATED: 'NOT_AUTHENTICATED',
-    /** SyncPlayManager.php:948 (+7) */
+    /** SyncPlayManager.php:952 (+7) */
     NOT_IN_GROUP: 'NOT_IN_GROUP',
-    /** SyncPlayManager.php:953 (+4) */
+    /** SyncPlayManager.php:957 (+4) */
     NOT_HOST: 'NOT_HOST',
-    /** SyncPlayManager.php:1274 */
+    /** SyncPlayManager.php:1278 */
     INVALID_NEW_HOST: 'INVALID_NEW_HOST',
-    /** SyncPlayManager.php:1279 */
+    /** SyncPlayManager.php:1283 */
     MEMBER_NOT_FOUND: 'MEMBER_NOT_FOUND',
-    /** SyncPlayManager.php:1284 */
+    /** SyncPlayManager.php:1288 */
     SAME_HOST: 'SAME_HOST',
-    /** SyncPlayManager.php:1580 — coarse carrier, see syncplay.create_failed twin */
+    /** SyncPlayManager.php:1586 — coarse carrier, see syncplay.create_failed twin */
     CREATE_FAILED: 'CREATE_FAILED',
-    /** SyncPlayManager.php:1615 — coarse carrier, see syncplay.join_failed twins */
+    /** SyncPlayManager.php:1623 — coarse carrier, see syncplay.join_failed twins */
     JOIN_FAILED: 'JOIN_FAILED',
-    /** SyncPlayManager.php:1644 — coarse carrier, see syncplay.leave_failed twin */
+    /** SyncPlayManager.php:1652 — coarse carrier, see syncplay.leave_failed twin */
     LEAVE_FAILED: 'LEAVE_FAILED',
-    /** MessageHandler.php:180-183 */
+    /** MessageHandler.php:188-191 */
     PROTOCOL_VERSION_MISMATCH: 'PROTOCOL_VERSION_MISMATCH',
   },
 } as const;
