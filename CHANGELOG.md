@@ -18,6 +18,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — registry tickets: honest artifact-freshness claims + CI gates, docblock coordinate currency — 2026-09-24
+
+- **Committed-artifact staleness claims corrected (R2 carry-forward of #77's
+  error-codes fix).** `test/mcp.test.ts` and `test/routeManifest.test.ts` (plus
+  the `emit-mcp-scopes.mjs` / `emit-server-route-manifest.mjs` headers) claimed
+  their tests detect a stale *committed* dist JSON. They do not: the tests read
+  working-copy bytes and CI's `npm run build` heals them before the suite runs.
+  The comments now state the real scope (working-copy only, reddening a
+  forgotten regen locally) and name the actual committed-freshness gate.
+- **CI gained the missing gates**: `git diff --exit-code --
+  dist/mcp-scopes.json` and `git diff --exit-code -- dist/server-route-manifest.json`
+  immediately after `npm run build`, mirroring the #77 `dist/error-codes.json`
+  step exactly. Red-proofed in a throwaway clone: a stale committed artifact
+  turns the step non-zero.
+- **`src/errors.ts` docblock coordinate currency**: ~30 stale file:line cites
+  re-synced against phlix-server `e0e010b0` / phlix-hub `f92669a` (the only
+  drift universe is the files the server-W2 / hub-W3 emit-waves touched after
+  the W1b re-verification base `838da686`/`c023a341`). Notably the syncplay
+  twins moved `:1580/:1615/:1644` → `:1586/:1623/:1652`, hub claim/auth/hub
+  entries now document W3's dual placement (dotted on `code`, SCREAMING parked
+  in `error` TEXT), and server-W2 promotions (stream/access/profile.not_found)
+  are rewritten from "landing" to landed prose. **Docblock-only: zero wire
+  changes — `dist/error-codes.json` and `dist/mcp-scopes.json` are
+  byte-identical before/after (md5-proven), so no tag is cut; the next natural
+  tag carries this.**
+
 ### Added — W1b (errors): registry expansion — the complete emit-wave vocabulary — 2026-09-23
 
 - **`src/errors.ts` grows from 147 codes / 31 domains to 202 codes / 37

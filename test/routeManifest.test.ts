@@ -8,9 +8,13 @@
  *
  * These tests restate facts INDEPENDENTLY of the generated file — the count,
  * the provenance sha, structural invariants, known-served and
- * known-UNSERED tuples — so an accidental hand-edit of the artifact, a
- * regeneration against the wrong ref, or a stale committed JSON is a RED here,
- * never a silently agreed-upon change.
+ * known-UNSERED tuples — so a regeneration against the wrong ref (which moves
+ * the TS source these assertions are pinned against) is a RED here, never a
+ * silently agreed-upon change. The committed-artifact asserts below read the
+ * WORKING-COPY bytes: locally that catches a hand-edit or a stale committed
+ * JSON, but in CI `npm run build` heals the working copy first, so committed
+ * freshness is enforced by the CI step `git diff --exit-code --
+ * dist/server-route-manifest.json` (see the final describe for the full scope).
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT
@@ -169,10 +173,19 @@ describe('isServed — tuple-exact, never substring, never sibling-wildcard', ()
 
 describe('the committed dist/server-route-manifest.json artifact', () => {
   // Non-TypeScript consumers (phlix-roku-client; future PHP/other clients)
-  // vendor this JSON verbatim. Like dist/mcp-scopes.json (S249) it is COMMITTED,
-  // so it can go stale — someone regenerates the TS artifact and skips
-  // `npm run build`. This is the detector: the JSON must agree with the TS
-  // manifest, tuple-for-tuple, order-for-order, provenance-for-provenance.
+  // vendor this JSON verbatim. Like dist/mcp-scopes.json (S249) and
+  // dist/error-codes.json it is COMMITTED, so it can go stale — someone
+  // regenerates the TS artifact and skips `npm run build`. SCOPE OF THESE
+  // TESTS: they read the WORKING-COPY bytes. Locally (no rebuild yet) that IS
+  // the committed file, so the agreement and byte-freeze asserts below redden
+  // a forgotten regen; but in CI `npm run build` heals the working copy before
+  // the suite runs, so a stale COMMITTED artifact cannot be caught HERE. The
+  // committed-freshness gate is the CI step `git diff --exit-code --
+  // dist/server-route-manifest.json` immediately after the build. What IS
+  // caught in both modes: the JSON disagreeing with the TS manifest —
+  // tuple-for-tuple, order-for-order, provenance-for-provenance — because the
+  // build derives the JSON FROM that manifest, so a divergence means the
+  // emit chain itself broke.
   const artifactPath = resolve(__dirname, '..', 'dist', 'server-route-manifest.json');
   const artifact = JSON.parse(readFileSync(artifactPath, 'utf8')) as {
     provenance: { serverSha: string; total: number; generatedAt: string };

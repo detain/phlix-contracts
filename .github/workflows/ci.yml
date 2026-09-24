@@ -35,6 +35,19 @@ jobs:
       - name: dist/error-codes.json committed-freshness check
         run: git diff --exit-code -- dist/error-codes.json
 
+      # Same gate for the other two committed JSONs, each mirrored against its
+      # build-emitted twin: any diff here is the COMMITTED artifact lagging the
+      # TS source (the tests read working-copy bytes, which the build just
+      # healed — see the describe comments in test/mcp.test.ts and
+      # test/routeManifest.test.ts). Node-less/TS-less consumers (phlix-hub,
+      # phlix-roku-client) pin these files, so staleness ships as a wrong
+      # vocabulary unless reddened here.
+      - name: dist/mcp-scopes.json committed-freshness check
+        run: git diff --exit-code -- dist/mcp-scopes.json
+
+      - name: dist/server-route-manifest.json committed-freshness check
+        run: git diff --exit-code -- dist/server-route-manifest.json
+
       - run: npm run test:run -- --coverage
 
       - name: Upload coverage to Codacy

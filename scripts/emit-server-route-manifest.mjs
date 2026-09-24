@@ -9,10 +9,12 @@
  * TS build produces — it reads the built bundle, never the server — so the
  * JSON cannot drift from `src/routeManifest.generated.ts`.
  *
- * `test/routeManifest.test.ts` asserts the committed JSON matches the TS
- * manifest, so a stale artifact (someone regenerated the TS file and skipped
- * `npm run build`) is a RED rather than a silently wrong file a client then
- * vendors.
+ * `test/routeManifest.test.ts` asserts the working-copy JSON matches the TS
+ * manifest — which reddens a forgotten regen whenever the suite runs before a
+ * rebuild — and CI adds the committed-freshness gate: `git diff --exit-code --
+ * dist/server-route-manifest.json` right after `npm run build`, so a stale
+ * COMMITTED artifact is a RED even though the build healed the working copy.
+ * Same pattern as `emit-error-codes.mjs`.
  *
  * Byte-stability: `generatedAt` is taken from the TS provenance (the moment
  * the GENERATOR ran), not `new Date()` here, so repeated builds of the same
