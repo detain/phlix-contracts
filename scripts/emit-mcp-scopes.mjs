@@ -8,9 +8,12 @@
  * the SAME constants the TS build produces, so the JSON cannot drift from
  * `src/mcp.ts` — it is generated from the built bundle, never hand-maintained.
  *
- * `test/mcp.test.ts` asserts the committed JSON matches `MCP_SCOPES`, so a
- * stale artifact (someone edited `src/mcp.ts` and skipped `npm run build`) is a
- * RED rather than a silently wrong file the hub then pins against.
+ * `test/mcp.test.ts` asserts the working-copy JSON matches `MCP_SCOPES` —
+ * which reddens a forgotten regen whenever the suite runs before a rebuild —
+ * and CI adds the committed-freshness gate: `git diff --exit-code --
+ * dist/mcp-scopes.json` right after `npm run build`, so a stale COMMITTED
+ * artifact is a RED even though the build healed the working copy. Same
+ * pattern as `emit-error-codes.mjs`.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
