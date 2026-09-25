@@ -16,6 +16,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > ordered by **publication date**, which is why the version numbers are not
 > monotonic between `0.4.1` and `0.4.0`. Details in the `0.3.13` section below.
 
+## [Unreleased]
+
+### Changed — docblock wording only: syncplay twin wire-status made forensic
+
+- **`src/errors.ts` syncplay twin docblocks corrected.** The prior wording
+  ("create/join now emit the twin") overstated the server state: re-reading
+  the read-only server origin at `1113c67d` (SyncPlayManager.php unchanged
+  since the `e0e010b` cite sweep) shows only the FOUR inner-path
+  specializations are LIVE on the wire today —
+  `syncplay.group_limit_reached` (:621), `syncplay.group_not_found` (:702),
+  `syncplay.invalid_password` (:741), `syncplay.group_full` (:745) —
+  forwarded through the `??` wrap sites (:1586/:1623). The `_failed` trio
+  (`syncplay.create_failed`/`join_failed`/`leave_failed`) stays RESERVED and
+  un-emitted: the wrap sites still fall back to SCREAMING `CREATE_FAILED`/
+  `JOIN_FAILED` and :1652 still emits raw `LEAVE_FAILED` — the trio remains
+  canonical for those shapes. Recorded the flip-unblocking fact: console
+  #167 + roku #90 prove both clients already resolve either shape — clients
+  prepped, flip ready. Header currency stamp extended honestly to
+  `1113c67d`; `SYNCPLAY_ERROR_CODE_TWINS` docblock status sharpened.
+- **Zero wire/registry movement.** `dist/error-codes.json` byte-frozen (md5
+  `b919685d3816940fc76f2f67c9b9eee2` proven pre/post); committed
+  `errors.d.ts`/maps regenerated from the docblocks only. `npm run
+  verify:cites` exits 0. No new tag — nothing consumers pin has changed.
+
 ## [0.5.2] - 2026-09-25
 
 ### Changed — version-field alignment ONLY (`0.4.7` → `0.5.2`) — registry content untouched
