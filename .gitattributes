@@ -1,0 +1,17 @@
+# Enforce LF line endings in the working tree on every platform.
+#
+# WHY: this repo's shipped wire contract lives in COMMITTED byte artifacts —
+# dist/error-codes.json, dist/server-route-manifest.json and
+# dist/mcp-scopes.json. test/errors.test.ts, test/routeManifest.test.ts and
+# test/mcp.test.ts re-derive those artifacts and compare content, and
+# downstream clients vendor the JSON verbatim (e.g. phlix-ui's
+# src/api/test/routeGate.api.test.ts md5-pins dist/server-route-manifest.json;
+# server/hub pin this package by tag and hash their vendored copies).
+# A checkout that silently rewrites LF to CRLF (git core.autocrlf=true on a
+# windows runner) perturbs those bytes and poisons every hash downstream —
+# the exact failure class fixed in phlix-windows-client PR #46.
+#
+# Census at adoption (master 35266073): 104 tracked blobs, zero CR bytes in
+# any of them and no binary files — so this shield is text-only. If binary
+# assets are ever added, mark them `binary` here at the same time.
+* text=auto eol=lf
