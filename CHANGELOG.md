@@ -16,6 +16,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > ordered by **publication date**, which is why the version numbers are not
 > monotonic between `0.4.1` and `0.4.0`. Details in the `0.3.13` section below.
 
+## [0.5.2] - 2026-09-25
+
+### Changed — version-field alignment ONLY (`0.4.7` → `0.5.2`) — registry content untouched
+
+- **This release kills a documented version skew at the source.** The
+  `v0.5.0` and `v0.5.1` tags shipped ahead of the `package.json` `version`
+  field, which still read `0.4.7` in both tagged trees — so tag-pinned
+  consumers (`github:detain/phlix-contracts#<tag>`) installed metadata that
+  disagreed with the tag they pinned. This release aligns the field to the
+  published tag line: **`version` `0.4.7` → `0.5.2`, and nothing else is
+  semantic** — no wire shape, error code, scope or DTO changed.
+- **Registry content unchanged since `v0.5.1` (#78, the W1b expansion).**
+  Everything merged since (#79 CI freshness gates + honest test claims,
+  #80 `server.not_found` reuse-target docblock, #81 the third `src/errors.ts`
+  coordinate re-sweep + `npm run verify:cites` tripwire, plus #82's
+  `.gitattributes` LF shield) is tooling, docblock and CI work only.
+  Census holds at **202 codes / 37 domains**.
+- **Artifact byte-identity pin.** `dist/error-codes.json` is byte-identical
+  before/after the release rebuild — md5
+  `b919685d3816940fc76f2f67c9b9eee2` (proven pre/post in the release PR; the
+  CI committed-freshness `git diff --exit-code` gates re-prove it on every
+  push). The committed bundles embed **no** version string, so the entire
+  `dist/` tree ships unchanged; downstream PHP fixture pins of the registry
+  JSON (phlix-server, phlix-hub) stay valid across this tag.
+
 ## [Unreleased]
 
 ### Fixed — registry tickets: honest artifact-freshness claims + CI gates, docblock coordinate currency — 2026-09-24
