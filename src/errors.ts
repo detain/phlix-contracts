@@ -29,7 +29,13 @@
  * #793/#794/#795) — 2026-09-24. Syncplay twin cites re-confirmed @ server
  * 1113c67d9dbe0eedd72ffd52162d41f04910f4ac (2026-09-25 wording polish;
  * SyncPlayManager.php is unchanged between e0e010b and 1113c67d — the delta
- * is .gitattributes/CHANGELOG/xsd/package-lock only). Re-sweep with
+ * is .gitattributes/CHANGELOG/xsd/package-lock only). Trio-flip re-anchor:
+ * syncplay coords re-verified @ server
+ * 9b2394eea631739dff8f6e039d50f910c4304d97 (post server #796/#797/#798 —
+ * #798 flipped the reserved `_failed` trio LIVE; the three carrier fallback
+ * sites moved to srv SyncPlayManager.php:1588, :1627 and :1659 with the
+ * inserted flip comments, and the four inner-path codes held their
+ * lines). Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -51,28 +57,34 @@
  *     `ldap.*`, `auth.missing_credentials` / `auth.invalid_credentials` and
  *     the four profile text traps) are the remaining `error`-TEXT minority;
  *     their per-domain "promote in Wave 2" caveats stay until they land.
- *  2. `legacy` — the 12 SCREAMING_SNAKE codes the SyncPlay WebSocket emits in
- *     `error_code` today (the exact `sendError`/`Messages::error` literal set in
+ *  2. `legacy` — the 12 SCREAMING_SNAKE codes of the SyncPlay WebSocket wire
+ *     history (the exact `sendError`/`Messages::error` literal set in
  *     `phlix-server/src/Session/SyncPlay/SyncPlayManager.php` and
- *     `phlix-server/src/Server/WebSocket/MessageHandler.php`). Canonical while
- *     the Wave-2 SyncPlay cutover lands (create/join carriers now wrap these
- *     behind `?? ` fallbacks; the rest still emit raw); do not remove.
+ *     `phlix-server/src/Server/WebSocket/MessageHandler.php`). Nine still
+ *     emit raw on the current server; the `*_FAILED` trio was retired from
+ *     current emit by the server #798 carrier flip (its three fallback
+ *     literals are now the dotted twins) but stays REGISTERED and
+ *     client-resolved for in-flight and older-server traffic — it is wire
+ *     history, not dead vocabulary; do not remove.
  *  3. `syncplay` — dotted twins for the coarse `*_FAILED` prose-carrier
- *     family. Wire status (re-verified at srv 1113c67d, see the domain
- *     docblock below for the file:line evidence): only the four INNER-PATH
- *     specializations are LIVE on the wire today — `syncplay.group_limit_reached`,
- *     `syncplay.group_not_found`, `syncplay.invalid_password`,
- *     `syncplay.group_full` — because the create/join carriers forward any
- *     inner code through `$result['error_code'] ?? '..._FAILED'` and fall
- *     back to SCREAMING only when the inner failure set no code. The
- *     `syncplay.*_failed` trio itself is RESERVED — registered, never
- *     emitted: those three failure shapes still ride SCREAMING
- *     `CREATE_FAILED`/`JOIN_FAILED` fallbacks and raw `LEAVE_FAILED`. The
- *     carrier flip is client-unblocked: console #167 + roku #90 prove both
- *     clients already resolve either shape — clients prepped, flip ready.
- *     `SYNCPLAY_ERROR_CODE_TWINS` below is the migration table; the
- *     SCREAMING trio stays canonical for its three shapes until the flip
- *     lands.
+ *     family. Wire status (re-verified at srv 9b2394ee, see the domain
+ *     docblock below for the file:line evidence): ALL SEVEN rows are LIVE on
+ *     the wire. The four INNER-PATH specializations —
+ *     `syncplay.group_limit_reached`, `syncplay.group_not_found`,
+ *     `syncplay.invalid_password`, `syncplay.group_full` — reach the client
+ *     because the create/join carriers forward any inner code through
+ *     `$result['error_code'] ?? '..._failed'` and fall back to the dotted
+ *     coarse twin when the inner failure set no code. The `syncplay.*_failed`
+ *     trio went LIVE with server #798: `syncplay.create_failed` is the
+ *     create-carrier fallback at srv SyncPlayManager.php:1588,
+ *     `syncplay.join_failed` the join-carrier fallback at srv
+ *     SyncPlayManager.php:1627, and `syncplay.leave_failed` the leave
+ *     carrier's direct emit at srv SyncPlayManager.php:1659 (its inner
+ *     failure paths carry no `error_code`). The flip was client-unblocked
+ *     before it landed: console #167 + roku #90 proved both clients already
+ *     resolve either shape. `SYNCPLAY_ERROR_CODE_TWINS` below is the
+ *     migration table — now complete for this family; the SCREAMING trio
+ *     stays registered for older-server traffic (see `legacy`).
  *
  * REGISTERED IN WAVE 1b (previously Wave-2 triage; every emit site re-verified
  * at phlix-server 838da686 / phlix-hub c023a341):
@@ -936,53 +948,55 @@ const CODES = {
 
   /**
    * SyncPlay WebSocket domain — dotted twins of the coarse `*_FAILED`
-   * prose-carrier family. TWO wire statuses, re-verified at srv 1113c67d:
-   * LIVE today — the four INNER-PATH specializations returned by the
-   * `createGroup`/`joinGroup` handlers reach the client because the WS
-   * carriers forward any inner code on `error_code`: `sendError($connection,
-   * $result['error_code'] ?? 'CREATE_FAILED', ...)` at srv
-   * SyncPlayManager.php:1586,1623. The four live codes:
+   * prose-carrier family. ALL SEVEN rows are LIVE on the wire, re-verified
+   * at srv 9b2394ee (server #798 carrier flip). The four INNER-PATH
+   * specializations returned by the `createGroup`/`joinGroup` handlers reach
+   * the client because the WS carriers forward any inner code on
+   * `error_code`: `sendError($connection, $result['error_code'] ??
+   * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1588 and the
+   * join twin at srv SyncPlayManager.php:1627. The four inner-path codes:
    * `syncplay.group_limit_reached` at srv SyncPlayManager.php:621,
    * `syncplay.group_not_found` at srv SyncPlayManager.php:702,
    * `syncplay.invalid_password` at srv SyncPlayManager.php:741,
    * `syncplay.group_full` at srv SyncPlayManager.php:745.
-   * RESERVED, never emitted — the `_failed` trio proper
-   * (`syncplay.create_failed`, `syncplay.join_failed`,
-   * `syncplay.leave_failed`): the same wrap sites fall back to SCREAMING
-   * `CREATE_FAILED` at srv SyncPlayManager.php:1586 and `JOIN_FAILED` at srv
-   * SyncPlayManager.php:1623, and the `leave` carrier at srv
-   * SyncPlayManager.php:1652 still emits raw `LEAVE_FAILED` (its inner
-   * failure paths carry no `error_code` at all). Flipping the trio means
-   * replacing those three literals with the dotted twins. The flip is
-   * client-unblocked — console #167 + roku #90 prove both clients already
-   * resolve either shape: clients prepped, flip ready. Until it lands the
-   * legacy SCREAMING trio stays canonical for those shapes (pinned under
-   * `legacy` for in-flight and older-server traffic). See
-   * `SYNCPLAY_ERROR_CODE_TWINS` for the migration table; `error_code`
-   * channel and read order are untouched.
+   * The `_failed` trio proper — `syncplay.create_failed` (srv
+   * SyncPlayManager.php:1588), `syncplay.join_failed` (srv
+   * SyncPlayManager.php:1627) and `syncplay.leave_failed`, emitted directly
+   * by the leave carrier at srv SyncPlayManager.php:1659 (its inner failure
+   * paths carry no `error_code`) — was RESERVED until server #798 replaced
+   * the three SCREAMING fallback literals with these dotted twins; the
+   * message prose stayed byte-identical and the `error_code` channel and
+   * read order are untouched. The legacy SCREAMING trio is retired from
+   * current server emit and stays pinned under `legacy` for in-flight and
+   * older-server traffic — clients resolve either shape (console #167 +
+   * roku #90). See `SYNCPLAY_ERROR_CODE_TWINS` for the migration table.
    */
   syncplay: {
-    /** RESERVED twin of legacy `CREATE_FAILED` — flip pending at srv SyncPlayManager.php:1586; never emitted today */
+    /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1588 — dotted twin of legacy `CREATE_FAILED` */
     CREATE_FAILED: 'syncplay.create_failed',
-    /** RESERVED twin of legacy `JOIN_FAILED` — flip pending at srv SyncPlayManager.php:1623; never emitted today */
+    /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1627 — dotted twin of legacy `JOIN_FAILED` */
     JOIN_FAILED: 'syncplay.join_failed',
-    /** RESERVED twin of legacy `LEAVE_FAILED` — flip pending at srv SyncPlayManager.php:1652; never emitted today */
+    /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1659 — dotted twin of legacy `LEAVE_FAILED` */
     LEAVE_FAILED: 'syncplay.leave_failed',
-    /** LIVE on the wire (srv SyncPlayManager.php:621): inner createGroup code, forwarded through the `CREATE_FAILED` wrap at srv SyncPlayManager.php:1586 */
+    /** LIVE on the wire (srv SyncPlayManager.php:621): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1588 */
     GROUP_LIMIT_REACHED: 'syncplay.group_limit_reached',
-    /** LIVE on the wire (srv SyncPlayManager.php:702): inner joinGroup code, forwarded through the `JOIN_FAILED` wrap at srv SyncPlayManager.php:1623 */
+    /** LIVE on the wire (srv SyncPlayManager.php:702): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1627 */
     GROUP_NOT_FOUND: 'syncplay.group_not_found',
-    /** LIVE on the wire (srv SyncPlayManager.php:741): inner joinGroup code, forwarded through the `JOIN_FAILED` wrap at srv SyncPlayManager.php:1623 */
+    /** LIVE on the wire (srv SyncPlayManager.php:741): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1627 */
     INVALID_PASSWORD: 'syncplay.invalid_password',
-    /** LIVE on the wire (srv SyncPlayManager.php:745): inner joinGroup code, forwarded through the `JOIN_FAILED` wrap at srv SyncPlayManager.php:1623 */
+    /** LIVE on the wire (srv SyncPlayManager.php:745): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1627 */
     GROUP_FULL: 'syncplay.group_full',
   },
 
   /**
-   * Legacy SyncPlay WS codes — the VERBATIM SCREAMING_SNAKE set servers emit in
-   * `error_code` today. Canonical until Wave 2; renaming breaks live clients.
-   * Sources: phlix-server Session/SyncPlay/SyncPlayManager.php sendError() sites
-   * and Server/WebSocket/MessageHandler.php Messages::error() sites.
+   * Legacy SyncPlay WS codes — the VERBATIM SCREAMING_SNAKE set carried in
+   * `error_code` by servers in the field. Sources: phlix-server
+   * Session/SyncPlay/SyncPlayManager.php sendError() sites and
+   * Server/WebSocket/MessageHandler.php Messages::error() sites. Nine still
+   * emit raw on the current server; the `*_FAILED` trio was retired from
+   * current emit by server #798 but stays REGISTERED — older servers and
+   * in-flight frames still speak these, and every client resolves them.
+   * Renaming or removing breaks live clients.
    */
   legacy: {
     /** srv SyncPlayManager.php:576 */
@@ -1001,11 +1015,11 @@ const CODES = {
     MEMBER_NOT_FOUND: 'MEMBER_NOT_FOUND',
     /** srv SyncPlayManager.php:1288 */
     SAME_HOST: 'SAME_HOST',
-    /** srv SyncPlayManager.php:1586 — coarse carrier, see syncplay.create_failed twin */
+    /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1588; still resolved client-side for old-server compatibility */
     CREATE_FAILED: 'CREATE_FAILED',
-    /** srv SyncPlayManager.php:1623 — coarse carrier, see syncplay.join_failed twins */
+    /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1627; still resolved client-side for old-server compatibility */
     JOIN_FAILED: 'JOIN_FAILED',
-    /** srv SyncPlayManager.php:1652 — coarse carrier, see syncplay.leave_failed twin */
+    /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1659; still resolved client-side for old-server compatibility */
     LEAVE_FAILED: 'LEAVE_FAILED',
     /** srv MessageHandler.php:188-191 */
     PROTOCOL_VERSION_MISMATCH: 'PROTOCOL_VERSION_MISMATCH',
@@ -1193,7 +1207,7 @@ export type LdapErrorCode = ErrorCodeIn<'ldap'>;
 export type SyncPlayTwinErrorCode = ErrorCodeIn<'syncplay'>;
 export type LegacySyncPlayErrorCode = ErrorCodeIn<'legacy'>;
 
-/** The full SyncPlay vocabulary: legacy SCREAMING on the wire today ∪ reserved dotted twins. */
+/** The full SyncPlay vocabulary: legacy SCREAMING wire history ∪ dotted twins (all LIVE on the current server since srv #798). */
 export type SyncPlayErrorCode = LegacySyncPlayErrorCode | SyncPlayTwinErrorCode;
 
 /** Legacy + twins, legacy first (what a Wave-2 SyncPlay client must understand). */
@@ -1204,11 +1218,16 @@ export const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[] = [
 
 /**
  * Wave-2 migration map: each dotted twin → the coarse/legacy code it replaces
- * (or un-wraps from a prose carrier). Status at srv 1113c67d: the four
- * inner-path rows are LIVE (the `??` wrap sites already forward those codes);
- * the three `*_failed` rows await the carrier flip — clients prepped, flip
- * ready (console #167 + roku #90 resolve either shape). The wire channel
- * (`error_code`) and the read order never change.
+ * (or un-wraps from a prose carrier). Status at srv 9b2394ee: ALL SEVEN rows
+ * are LIVE. The four inner-path rows ride the `?? ` wrap sites — the carriers
+ * forward any inner code at srv SyncPlayManager.php:1588 and srv
+ * SyncPlayManager.php:1627. The three `*_failed` rows landed with the server
+ * #798 carrier flip: `syncplay.create_failed` is now the create fallback at
+ * srv SyncPlayManager.php:1588, `syncplay.join_failed` the join fallback at
+ * srv SyncPlayManager.php:1627, and `syncplay.leave_failed` the leave
+ * carrier's direct emit at srv SyncPlayManager.php:1659. The SCREAMING legacy
+ * values stay registered for in-flight and older-server traffic; the wire
+ * channel (`error_code`) and the read order never change.
  */
 export const SYNCPLAY_ERROR_CODE_TWINS = {
   'syncplay.create_failed': 'CREATE_FAILED',

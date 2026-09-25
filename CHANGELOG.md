@@ -18,6 +18,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock wording only: syncplay `_failed` trio flipped RESERVED → LIVE
+
+- **Trigger: server PR #798 merged at `9b2394eea631739dff8f6e039d50f910c4304d97`.**
+  The three carrier fallbacks in SyncPlayManager.php now emit the dotted
+  registry twins — `syncplay.create_failed` at srv SyncPlayManager.php:1588,
+  `syncplay.join_failed` at srv SyncPlayManager.php:1627 and
+  `syncplay.leave_failed` (direct) at srv SyncPlayManager.php:1659 — all
+  re-read from a read-only server checkout before writing. The doc-side flip
+  follows the code: header CONTENTS #3 and the syncplay domain docblock now
+  state ALL SEVEN twin rows LIVE with the new evidence coordinates (+2/+4/+7
+  line drift from the blessed pre-flip cites, stamped honestly in the
+  COORDINATE CURRENCY header); `SYNCPLAY_ERROR_CODE_TWINS` status updated
+  accordingly.
+- **Legacy SCREAMING trio marked with honest status.** `CREATE_FAILED`/
+  `JOIN_FAILED`/`LEAVE_FAILED` remain REGISTERED — wire history: older
+  servers and in-flight frames still speak them and every client resolves
+  either shape (console #167 + roku #90). Their entries now read "retired
+  from current server emit at srv #798; still resolved client-side for
+  old-server compatibility" instead of "coarse carrier". Header CONTENTS #2
+  and the `legacy` block docblock got the same truth.
+- **Zero wire/registry movement.** The flip is docblock-only (server #798
+  changed emit literals that were already registered here; no code added,
+  renamed or removed — census holds at 202 codes / 37 domains).
+  `dist/error-codes.json` byte-frozen — md5
+  `b919685d3816940fc76f2f67c9b9eee2` proven pre/post regen; committed
+  `errors.d.ts`/sourcemaps regenerated from the docblocks only (diff is
+  100% comment lines). `npm run verify:cites` exits 0 against server
+  `9b2394ee` + hub `7915fdf9` (415 cites, 0 problems). **No new tag** —
+  nothing consumers pin has changed (#84 precedent).
+
+## [Unreleased]
+
 ### Changed — docblock wording only: syncplay twin wire-status made forensic
 
 - **`src/errors.ts` syncplay twin docblocks corrected.** The prior wording
