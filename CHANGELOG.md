@@ -18,6 +18,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — coordinate sweep only: 82 drifted cites re-anchored at hub `14a8a55` / srv `9d3e92b2` (2026-09-29)
+
+- **Trigger: hub H-4/H-5 federation rework + server queue-cap/password-gate
+  lanes** moved the error-emit files below the previous stamps (hub
+  `b83639fa`, srv `9b2394ee`). `npm run verify:cites` fired on 82 cites; each
+  was re-anchored by re-reading the emit site in the sibling checkouts: 40
+  srv SyncPlayManager.php cites (trio carriers 1588/1627/1659 →
+  1720/1773/1805, inner-path 621/702/741/745 → 676/768/816/821, the legacy
+  SCREAMING set to their post-lane lines), 27 hub FederationController.php
+  cites (post-rework region deltas +13/+31/+41/+106/+122/+129), 3 hub
+  AuthMiddleware (+4), 3 hub ClientMountController (+13), 4 hub
+  RelayProxyManager (+20/+74 — `server.no_tunnel` anchored on the emit at
+  :251, not the comment at :239 the tripwire first surfaced), 1 srv
+  Core/Application.php `rate_limited` (2731 → 2741) and the
+  EnrollmentJwtMiddleware entry, whose docblock now describes the rework's
+  `unauthorized()` → `invalidToken()`/`expired()` split routing with the
+  current gate/helper coordinates.
+- **Honesty re-anchors (drifted but window-absorbed, not flagged):** 9 hub
+  InviteLinkController cites (+3), 3 hub RequestController cites (296/352/384
+  → 299/355/387) and 3 srv AuthController cites (194/264/336,354 →
+  195/265/337,355) in files that also changed since the stamp — every one
+  re-read at the current tips.
+- **Zero registry movement.** Docblock comments only: 202 codes / 37 domains;
+  `dist/error-codes.json` byte-frozen (md5 `b919685d3816940fc76f2f67c9b9eee2`
+  proven pre/post); `errors.d.ts` + source maps regenerated docblock-only.
+  `verify:cites` exits 0 (420 cites, 0 problems) against hub `14a8a5574f9db2d605efff19823b3ec2da198713`
+  + srv `9d3e92b2a8c87d78851d06333e9d208aa20533d2`; full build + 171/171 tests
+  green. No tag.
+
 ### Changed — docblock wording only: syncplay `_failed` trio flipped RESERVED → LIVE
 
 - **Trigger: server PR #798 merged at `9b2394eea631739dff8f6e039d50f910c4304d97`.**
