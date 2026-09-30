@@ -18,6 +18,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites only: hub FederationController re-anchored at f30e8a7
+
+- **Trigger: hub `f30e8a7a62a3ab1392214b12dcf76f9589c28c8e`.** The
+  FederationController unregistered-`invalid_leaf_hub_id` fix reworked
+  `badRequest()`: the two malformed-UUID 400 sites now emit the registered
+  generic `invalid_request` with the condition in a free-form `reason`
+  (409-sibling precedent in the same controller). The inserted docblock
+  comments shifted every later emit — +3 lines from line 268, +5 from
+  line 351.
+- **25 cite spans re-anchored from source, not by the blanket delta.** The
+  17 spans the `verify:cites` tripwire flagged (all +5) now read the true
+  hub coordinates; additionally swept the 7 spans in the 268–354 band the
+  ±3 window only masked at exactly +3 (`invalid_url` second site
+  288→291, `missing_url` 275→278, `missing_public_key` 279→282,
+  `missing_name` 283→286, `peer_url_exists` 296→299, `peer_key_exists`
+  305→308, `missing_peer_id` 344→347), and the
+  `leaf_hub_id_already_bound` 409 anchor 373→378, which passed only
+  because `invalid_request` recurs beside the stale coord. Three spans
+  confirmed unmoved (`invalid_body` 106, `invalid_role` 123, `invalid_url`
+  first site 139); their stale pending-drift "(+N)" annotations — prose
+  the tripwire never parses — are retired with the re-anchor.
+- **`leaf_hub_id_already_bound` RESERVED docblock made current.** The mint
+  entry described only the 409 bind conflict; f30e8a7 unified the whole
+  leaf_hub_id family onto the generic+reason shape, so the docblock now
+  names the two 400 parse sites (274, 356) alongside the 409 site (378)
+  and records the dropped literal as never-registered. The deferred-mint
+  emit-switch note now covers the family.
+- **Zero registry movement.** Census holds at 204 codes / 37 domains;
+  docblock-only, so `dist/error-codes.json` is byte-frozen vs `7fc864c`
+  (md5 `40c1da48787f37d00a6fc9af6c64a1ac` proven pre/post regen — the
+  202-code `b919…` hash was superseded by the 7fc864c mints).
+  `errors.d.ts`/sourcemaps regenerated from the docblocks (diff is
+  comment lines only). COORDINATE CURRENCY header re-stamped at hub
+  `f30e8a7` / srv `9e765895` (tip-at-run-time; no srv cite moved under the
+  post-`62923c92` websocket-doc commits). `npm run verify:cites` exits 0
+  (428 cites, 0 problems — 426 plus the two honest new sites in the
+  RESERVED docblock). **No new tag** — nothing consumers pin has changed
+  (02a306e precedent).
+
 ### Added — two deferred mints: `leaf_hub_id_already_bound` + `syncplay.queue_limit_exceeded` (census 202 → 204)
 
 - **`federation.leaf_hub_id_already_bound` (RESERVED).** The hub

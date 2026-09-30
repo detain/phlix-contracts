@@ -23,23 +23,39 @@
  * breaking wire change (that is a Wave-2 tagged cascade, not a Wave-1 edit).
  *
  * COORDINATE CURRENCY: every hub/server file:line cite below was re-anchored
- * against a read-only checkout of each repo at head — last full re-anchor at
- * hub 14a8a5574f9db2d605efff19823b3ec2da198713 (post hub H-4/H-5 federation
+ * against a checkout of each repo at head — the hub FederationController set
+ * at f30e8a7a62a3ab1392214b12dcf76f9589c28c8e (badRequest wire-law rework:
+ * the two malformed-leaf_hub_id 400 parse sites now ride the registered
+ * `invalid_request` generic with the condition in `reason`, and the helper
+ * docblock insertions shifted every emit below them — +3 lines from line
+ * 268, +5 from line 351) / server 9e765895fc6d61ebac456330245f9a3fcf5c4b76
+ * (post websocket-lane doc follow-ups; no srv cite in this registry moved
+ * under them) — 2026-09-30, tripwire green after the sweep. All drifted
+ * FederationController cite spans were re-derived from source, not by the
+ * blanket delta: the 17 the tripwire flagged at +5, the 7 in the 268–354
+ * band it only masked at +3 inside the ±3 window, and the
+ * `leaf_hub_id_already_bound` 409 anchor 373→378 (it passed only because
+ * `invalid_request` recurs beside the stale coord); cites 106, 123 and 139
+ * confirmed unmoved, and the stale pending-drift "(+N)" annotations on this
+ * file's entries are retired with the re-anchor. The
+ * `leaf_hub_id_already_bound` docblock now names the whole unified
+ * leaf_hub_id family. Earlier: last full registry-wide re-anchor at hub
+ * 14a8a5574f9db2d605efff19823b3ec2da198713 (post hub H-4/H-5 federation
  * rework, auth-middleware and relay/mount churn) / server
  * 9d3e92b2a8c87d78851d06333e9d208aa20533d2 (post server queue-cap/
- * password-gate lane) — 2026-09-29; the `verify:cites` tripwire re-run clean
+ * password-gate lane) — 2026-09-29; the `verify:cites` tripwire re-ran clean
  * (420 cites, 0 problems) at hub 8a5dc12942dd37b6a9154321b8af6414bbba6bfb /
  * server c11bd4ac19809fbd58231be2ade89c4d78bf60e9 (2026-09-30, alongside the
  * `leaf_hub_id_already_bound` + `syncplay.queue_limit_exceeded` mints, whose
  * cites were each read at source). Prior stamps: server
  * 9b2394eea631739dff8f6e039d50f910c4304d97 (server #798 flipped the
  * reserved `_failed` trio LIVE) and hub b83639fa / server e0e010b0 (the
- * Wave-1b emit-waves). This sweep moved the three syncplay carrier-fallback
- * cites to srv SyncPlayManager.php:1720, :1773 and :1805, the four
- * inner-path cites to :676, :768, :816 and :821, the legacy SCREAMING set
- * to their post-lane lines, and the hub FederationController,
+ * Wave-1b emit-waves). The 2026-09-29 sweep had moved the three syncplay
+ * carrier-fallback cites to srv SyncPlayManager.php:1720, :1773 and :1805,
+ * the four inner-path cites to :676, :768, :816 and :821, the legacy
+ * SCREAMING set to their post-lane lines, and the hub FederationController,
  * AuthMiddleware, EnrollmentJwtMiddleware, ClientMountController,
- * RelayProxyManager and srv Core/Application.php cites to their current
+ * RelayProxyManager and srv Core/Application.php cites to their then-current
  * coordinates. Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
@@ -686,7 +702,7 @@ const CODES = {
     PROVIDER_UNAVAILABLE: 'provider_unavailable',
     /** srv QuickConnectController.php:258,301 · hub InviteLinkController.php:110 */
     INVALID_REQUEST: 'invalid_request',
-    /** hub FederationController.php:106 (+5) · InviteLinkController.php:53 · LibraryShareController.php:52,240 */
+    /** hub FederationController.php:106 · InviteLinkController.php:53 · LibraryShareController.php:52,240 */
     INVALID_BODY: 'invalid_body',
     /** srv QuickConnectController.php:380-406 · hub AdminUpdatesController.php:109 */
     INVALID_PAYLOAD: 'invalid_payload',
@@ -696,21 +712,21 @@ const CODES = {
     VALIDATION_FAILED: 'validation_failed',
     /** hub RequestController.php:387 · UserQuotaController.php:332 · AdminUpdatesController.php:165 */
     ADMIN_REQUIRED: 'admin_required',
-    /** hub FederationController.php:843,890 */
+    /** hub FederationController.php:848,895 */
     MASTER_ONLY: 'master_only',
-    /** hub FederationController.php:139,288 */
+    /** hub FederationController.php:139,291 */
     INVALID_URL: 'invalid_url',
     /** hub FederationController.php:123 */
     INVALID_ROLE: 'invalid_role',
-    /** hub FederationController.php:610 (also LibraryShareController.php:275) */
+    /** hub FederationController.php:615 (also LibraryShareController.php:275) */
     INVALID_PERMISSION: 'invalid_permission',
-    /** hub FederationController.php:275 */
+    /** hub FederationController.php:278 */
     MISSING_URL: 'missing_url',
-    /** hub FederationController.php:283 */
+    /** hub FederationController.php:286 */
     MISSING_NAME: 'missing_name',
-    /** hub FederationController.php:279 */
+    /** hub FederationController.php:282 */
     MISSING_PUBLIC_KEY: 'missing_public_key',
-    /** hub FederationController.php:910 · UserQuotaController.php:350 */
+    /** hub FederationController.php:915 · UserQuotaController.php:350 */
     MISSING_USER_ID: 'missing_user_id',
     /** hub InviteLinkController.php:71 · LibraryController.php:54 · LibraryShareController.php:77 */
     MISSING_SERVER_ID: 'missing_server_id',
@@ -720,45 +736,49 @@ const CODES = {
 
   /** Hub federation peer/offer/delegation CRUD (bare snake on `code`). */
   federation: {
-    /** hub FederationController.php:296 */
+    /** hub FederationController.php:299 */
     PEER_URL_EXISTS: 'peer_url_exists',
-    /** hub FederationController.php:305 */
+    /** hub FederationController.php:308 */
     PEER_KEY_EXISTS: 'peer_key_exists',
-    /** hub FederationController.php:358 (+5) */
+    /** hub FederationController.php:363 */
     PEER_NOT_FOUND: 'peer_not_found',
-    /** hub FederationController.php:747,797 */
+    /** hub FederationController.php:752,802 */
     OFFER_NOT_FOUND: 'offer_not_found',
-    /** hub FederationController.php:755,805 */
+    /** hub FederationController.php:760,810 */
     OFFER_ALREADY_RESPONDED: 'offer_already_responded',
-    /** hub FederationController.php:951 */
+    /** hub FederationController.php:956 */
     DELEGATION_NOT_FOUND: 'delegation_not_found',
-    /** hub FederationController.php:344 (+3) */
+    /** hub FederationController.php:347 */
     MISSING_PEER_ID: 'missing_peer_id',
-    /** hub FederationController.php:740,790 */
+    /** hub FederationController.php:745,795 */
     MISSING_OFFER_ID: 'missing_offer_id',
-    /** hub FederationController.php:944 */
+    /** hub FederationController.php:949 */
     MISSING_DELEGATION_ID: 'missing_delegation_id',
-    /** hub FederationController.php:594 (also LibraryShareController.php:84) */
+    /** hub FederationController.php:599 (also LibraryShareController.php:84) */
     MISSING_LIBRARY_ID: 'missing_library_id',
-    /** hub FederationController.php:614 (also LibraryShareController.php:91) */
+    /** hub FederationController.php:619 (also LibraryShareController.php:91) */
     MISSING_LIBRARY_NAME: 'missing_library_name',
     /**
-     * hub FederationController.php:373 — RESERVED: the immutable leaf-hub-id
+     * hub FederationController.php:378 — RESERVED: the immutable leaf-hub-id
      * bind conflict (409 "already bound to a different value") still emits the
      * registered conflict generic `invalid_request` there with the specific
-     * condition carried in the `reason` field; the hub switches this site to
-     * `leaf_hub_id_already_bound` when the next contracts release pins it
-     * (deferred-mint pattern, mirroring the `syncplay.queue_limit_exceeded`
-     * queue-cap note).
+     * condition carried in the `reason` field. Hub f30e8a7 unified the whole
+     * leaf_hub_id family onto that shape: the two malformed-UUID 400 parse
+     * sites — :274 in registerPeer, :356 in bindPeerLeafHubId — dropped their
+     * never-registered `invalid_leaf_hub_id` literal and now ride
+     * `invalid_request` with the condition in `reason` too. The hub switches
+     * these sites to `leaf_hub_id_already_bound` when the next contracts
+     * release pins it (deferred-mint pattern, mirroring the
+     * `syncplay.queue_limit_exceeded` queue-cap note).
      */
     LEAF_HUB_ID_ALREADY_BOUND: 'leaf_hub_id_already_bound',
   },
 
   /** Hub library-share CRUD (bare snake on `code`). */
   share: {
-    /** hub FederationController.php:675 · LibraryShareController.php:196,262 */
+    /** hub FederationController.php:680 · LibraryShareController.php:196,262 */
     NOT_FOUND: 'share_not_found',
-    /** hub FederationController.php:668 · LibraryShareController.php:184,232 */
+    /** hub FederationController.php:673 · LibraryShareController.php:184,232 */
     MISSING_SHARE_ID: 'missing_share_id',
     /** hub LibraryShareController.php:70 */
     MISSING_COLLABORATOR_EMAIL: 'missing_collaborator_email',
