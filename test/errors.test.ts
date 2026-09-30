@@ -81,11 +81,11 @@ const SERVER_SYNCPLAY_SEND_ERROR_CODES = [
 const DOTTED_OR_SNAKE = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/;
 
 describe('error-code registry invariants', () => {
-  it('is non-vacuous: exactly the 202 derived codes, each a non-empty string', () => {
+  it('is non-vacuous: exactly the 204 derived codes, each a non-empty string', () => {
     // Anti-vacuity floor + exact pin. A consumer gating against this list must
     // be able to trust that an empty or undefined export cannot pass as "equal".
     expect(ERROR_CODES.length).toBeGreaterThanOrEqual(200);
-    expect(ERROR_CODES).toHaveLength(202);
+    expect(ERROR_CODES).toHaveLength(204);
     for (const code of ERROR_CODES) {
       expect(typeof code).toBe('string');
       expect(code.length).toBeGreaterThan(0);
@@ -135,7 +135,7 @@ describe('legacy SyncPlay SCREAMING pin', () => {
 });
 
 describe('syncplay dotted twins', () => {
-  it('declares the 7 dotted twins (server emit-wave landing)', () => {
+  it('declares the 8 syncplay rows (7 SCREAMING twins — server emit-wave landed — + 1 RESERVED queue-cap split)', () => {
     expect([...SYNCPLAY_TWIN_ERROR_CODES]).toEqual([
       'syncplay.create_failed',
       'syncplay.join_failed',
@@ -144,10 +144,14 @@ describe('syncplay dotted twins', () => {
       'syncplay.group_not_found',
       'syncplay.invalid_password',
       'syncplay.group_full',
+      'syncplay.queue_limit_exceeded',
     ]);
   });
 
   it('maps each twin to the legacy SCREAMING code it replaces or un-wraps', () => {
+    // The RESERVED `syncplay.queue_limit_exceeded` row is intentionally NOT in
+    // this table: it splits a dotted condition (the queue-cap stretch of
+    // `syncplay.group_limit_reached`), not a SCREAMING legacy value.
     expect(SYNCPLAY_ERROR_CODE_TWINS).toEqual({
       'syncplay.create_failed': 'CREATE_FAILED',
       'syncplay.group_limit_reached': 'CREATE_FAILED',
@@ -176,6 +180,7 @@ describe('syncplay dotted twins', () => {
         'syncplay.group_not_found',
         'syncplay.invalid_password',
         'syncplay.group_full',
+        'syncplay.queue_limit_exceeded',
       ],
     ]);
   });
@@ -389,6 +394,7 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'missing_delegation_id',
       'missing_library_id',
       'missing_library_name',
+      'leaf_hub_id_already_bound',
     ]);
   });
 

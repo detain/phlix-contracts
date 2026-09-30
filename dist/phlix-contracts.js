@@ -243,7 +243,8 @@ var n = [
 		MISSING_OFFER_ID: "missing_offer_id",
 		MISSING_DELEGATION_ID: "missing_delegation_id",
 		MISSING_LIBRARY_ID: "missing_library_id",
-		MISSING_LIBRARY_NAME: "missing_library_name"
+		MISSING_LIBRARY_NAME: "missing_library_name",
+		LEAF_HUB_ID_ALREADY_BOUND: "leaf_hub_id_already_bound"
 	},
 	share: {
 		NOT_FOUND: "share_not_found",
@@ -322,7 +323,8 @@ var n = [
 		GROUP_LIMIT_REACHED: "syncplay.group_limit_reached",
 		GROUP_NOT_FOUND: "syncplay.group_not_found",
 		INVALID_PASSWORD: "syncplay.invalid_password",
-		GROUP_FULL: "syncplay.group_full"
+		GROUP_FULL: "syncplay.group_full",
+		QUEUE_LIMIT_EXCEEDED: "syncplay.queue_limit_exceeded"
 	},
 	legacy: {
 		UNKNOWN_MESSAGE: "UNKNOWN_MESSAGE",

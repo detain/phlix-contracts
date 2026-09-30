@@ -23,11 +23,15 @@
  * breaking wire change (that is a Wave-2 tagged cascade, not a Wave-1 edit).
  *
  * COORDINATE CURRENCY: every hub/server file:line cite below was re-anchored
- * against a read-only checkout of each repo at head — hub coords verified @
- * 14a8a5574f9db2d605efff19823b3ec2da198713 (post hub H-4/H-5 federation
- * rework, auth-middleware and relay/mount churn), server coords verified @
+ * against a read-only checkout of each repo at head — last full re-anchor at
+ * hub 14a8a5574f9db2d605efff19823b3ec2da198713 (post hub H-4/H-5 federation
+ * rework, auth-middleware and relay/mount churn) / server
  * 9d3e92b2a8c87d78851d06333e9d208aa20533d2 (post server queue-cap/
- * password-gate lane) — 2026-09-29. Prior stamps: server
+ * password-gate lane) — 2026-09-29; the `verify:cites` tripwire re-run clean
+ * (420 cites, 0 problems) at hub 8a5dc12942dd37b6a9154321b8af6414bbba6bfb /
+ * server c11bd4ac19809fbd58231be2ade89c4d78bf60e9 (2026-09-30, alongside the
+ * `leaf_hub_id_already_bound` + `syncplay.queue_limit_exceeded` mints, whose
+ * cites were each read at source). Prior stamps: server
  * 9b2394eea631739dff8f6e039d50f910c4304d97 (server #798 flipped the
  * reserved `_failed` trio LIVE) and hub b83639fa / server e0e010b0 (the
  * Wave-1b emit-waves). This sweep moved the three syncplay carrier-fallback
@@ -68,9 +72,12 @@
  *     client-resolved for in-flight and older-server traffic — it is wire
  *     history, not dead vocabulary; do not remove.
  *  3. `syncplay` — dotted twins for the coarse `*_FAILED` prose-carrier
- *     family. Wire status (re-verified at srv 9b2394ee, see the domain
- *     docblock below for the file:line evidence): ALL SEVEN rows are LIVE on
- *     the wire. The four INNER-PATH specializations —
+ *     family, plus one RESERVED queue-cap specialization. Wire status
+ *     (re-verified at srv 9b2394ee, see the domain docblock below for the
+ *     file:line evidence): the SEVEN twin rows are LIVE on the wire; the
+ *     eighth row `syncplay.queue_limit_exceeded` is RESERVED (the playback-
+ *     queue cap still stretches `syncplay.group_limit_reached` onto it —
+ *     the server flips the emit when the release pins). The four INNER-PATH specializations —
  *     `syncplay.group_limit_reached`, `syncplay.group_not_found`,
  *     `syncplay.invalid_password`, `syncplay.group_full` — reach the client
  *     because the create/join carriers forward any inner code through
@@ -717,7 +724,7 @@ const CODES = {
     PEER_URL_EXISTS: 'peer_url_exists',
     /** hub FederationController.php:305 */
     PEER_KEY_EXISTS: 'peer_key_exists',
-    /** hub FederationController.php:358 (+4) */
+    /** hub FederationController.php:358 (+5) */
     PEER_NOT_FOUND: 'peer_not_found',
     /** hub FederationController.php:747,797 */
     OFFER_NOT_FOUND: 'offer_not_found',
@@ -735,6 +742,16 @@ const CODES = {
     MISSING_LIBRARY_ID: 'missing_library_id',
     /** hub FederationController.php:614 (also LibraryShareController.php:91) */
     MISSING_LIBRARY_NAME: 'missing_library_name',
+    /**
+     * hub FederationController.php:373 — RESERVED: the immutable leaf-hub-id
+     * bind conflict (409 "already bound to a different value") still emits the
+     * registered conflict generic `invalid_request` there with the specific
+     * condition carried in the `reason` field; the hub switches this site to
+     * `leaf_hub_id_already_bound` when the next contracts release pins it
+     * (deferred-mint pattern, mirroring the `syncplay.queue_limit_exceeded`
+     * queue-cap note).
+     */
+    LEAF_HUB_ID_ALREADY_BOUND: 'leaf_hub_id_already_bound',
   },
 
   /** Hub library-share CRUD (bare snake on `code`). */
@@ -953,7 +970,8 @@ const CODES = {
 
   /**
    * SyncPlay WebSocket domain — dotted twins of the coarse `*_FAILED`
-   * prose-carrier family. ALL SEVEN rows are LIVE on the wire, re-verified
+   * prose-carrier family, plus one RESERVED queue-cap specialization. The
+   * SEVEN twin rows are LIVE on the wire, re-verified
    * at srv 9b2394ee (server #798 carrier flip). The four INNER-PATH
    * specializations returned by the `createGroup`/`joinGroup` handlers reach
    * the client because the WS carriers forward any inner code on
@@ -974,7 +992,11 @@ const CODES = {
    * read order are untouched. The legacy SCREAMING trio is retired from
    * current server emit and stays pinned under `legacy` for in-flight and
    * older-server traffic — clients resolve either shape (console #167 +
-   * roku #90). See `SYNCPLAY_ERROR_CODE_TWINS` for the migration table.
+   * roku #90). See `SYNCPLAY_ERROR_CODE_TWINS` for the migration table. The
+   * eighth registry row — `syncplay.queue_limit_exceeded` — is RESERVED: the
+   * playback-queue cap at srv SyncPlayManager.php:1230 still stretches
+   * `syncplay.group_limit_reached` onto it and flips to the dedicated code
+   * when the next contracts release pins it.
    */
   syncplay: {
     /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1720 — dotted twin of legacy `CREATE_FAILED` */
@@ -983,7 +1005,7 @@ const CODES = {
     JOIN_FAILED: 'syncplay.join_failed',
     /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1805 — dotted twin of legacy `LEAVE_FAILED` */
     LEAVE_FAILED: 'syncplay.leave_failed',
-    /** LIVE on the wire (srv SyncPlayManager.php:676): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1720 */
+    /** LIVE on the wire (srv SyncPlayManager.php:676): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1720; also stretched onto the playback-queue cap at srv SyncPlayManager.php:1230 until `syncplay.queue_limit_exceeded` pins in a release */
     GROUP_LIMIT_REACHED: 'syncplay.group_limit_reached',
     /** LIVE on the wire (srv SyncPlayManager.php:768): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
     GROUP_NOT_FOUND: 'syncplay.group_not_found',
@@ -991,6 +1013,17 @@ const CODES = {
     INVALID_PASSWORD: 'syncplay.invalid_password',
     /** LIVE on the wire (srv SyncPlayManager.php:821): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
     GROUP_FULL: 'syncplay.group_full',
+    /**
+     * srv SyncPlayManager.php:1230 — RESERVED: the playback-queue cap
+     * (`GroupState::MAX_QUEUE_SIZE` overflow on the queue-update handler)
+     * today stretches `syncplay.group_limit_reached` onto this site; the
+     * server switches the emit here to `syncplay.queue_limit_exceeded` when
+     * the next contracts release pins it. The group-count cap keeps
+     * `syncplay.group_limit_reached` at :676 — this row splits the two
+     * conditions. Not a SCREAMING-legacy twin, so `SYNCPLAY_ERROR_CODE_TWINS`
+     * deliberately omits it.
+     */
+    QUEUE_LIMIT_EXCEEDED: 'syncplay.queue_limit_exceeded',
   },
 
   /**
@@ -1212,8 +1245,21 @@ export type LdapErrorCode = ErrorCodeIn<'ldap'>;
 export type SyncPlayTwinErrorCode = ErrorCodeIn<'syncplay'>;
 export type LegacySyncPlayErrorCode = ErrorCodeIn<'legacy'>;
 
-/** The full SyncPlay vocabulary: legacy SCREAMING wire history ∪ dotted twins (all LIVE on the current server since srv #798). */
+/** The full SyncPlay vocabulary: legacy SCREAMING wire history ∪ dotted twins (LIVE on the current server since srv #798, plus the RESERVED `syncplay.queue_limit_exceeded` queue-cap split awaiting its emit-switch). */
 export type SyncPlayErrorCode = LegacySyncPlayErrorCode | SyncPlayTwinErrorCode;
+
+/**
+ * The syncplay rows that are SCREAMING-legacy twins — the exact key domain of
+ * `SYNCPLAY_ERROR_CODE_TWINS` below. The one excluded syncplay row,
+ * `syncplay.queue_limit_exceeded`, splits a dotted condition instead of
+ * replacing a legacy value, so it has no SCREAMING predecessor to map onto; a
+ * future ninth row must either be a real twin (lands in the map, totality
+ * forces it) or get its own documented exclusion here.
+ */
+export type SyncPlayLegacyTwinErrorCode = Exclude<
+  SyncPlayTwinErrorCode,
+  'syncplay.queue_limit_exceeded'
+>;
 
 /** Legacy + twins, legacy first (what a Wave-2 SyncPlay client must understand). */
 export const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[] = [
@@ -1232,7 +1278,11 @@ export const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[] = [
  * srv SyncPlayManager.php:1773, and `syncplay.leave_failed` the leave
  * carrier's direct emit at srv SyncPlayManager.php:1805. The SCREAMING legacy
  * values stay registered for in-flight and older-server traffic; the wire
- * channel (`error_code`) and the read order never change.
+ * channel (`error_code`) and the read order never change. The eighth syncplay
+ * registry row `syncplay.queue_limit_exceeded` is deliberately absent here: it
+ * splits a dotted condition (the queue-cap stretch of
+ * `syncplay.group_limit_reached` at srv SyncPlayManager.php:1230), not a
+ * SCREAMING legacy value, and this table maps legacy replacements only.
  */
 export const SYNCPLAY_ERROR_CODE_TWINS = {
   'syncplay.create_failed': 'CREATE_FAILED',
@@ -1242,4 +1292,4 @@ export const SYNCPLAY_ERROR_CODE_TWINS = {
   'syncplay.invalid_password': 'JOIN_FAILED',
   'syncplay.group_full': 'JOIN_FAILED',
   'syncplay.leave_failed': 'LEAVE_FAILED',
-} as const satisfies Record<SyncPlayTwinErrorCode, LegacySyncPlayErrorCode>;
+} as const satisfies Record<SyncPlayLegacyTwinErrorCode, LegacySyncPlayErrorCode>;

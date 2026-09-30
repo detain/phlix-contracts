@@ -18,6 +18,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — two deferred mints: `leaf_hub_id_already_bound` + `syncplay.queue_limit_exceeded` (census 202 → 204)
+
+- **`federation.leaf_hub_id_already_bound` (RESERVED).** The hub
+  FederationController leaf-hub-id bind conflict (409 at hub
+  FederationController.php:373) currently emits the registered generic
+  `invalid_request` with the condition in the `reason` field; the entry
+  docblock records the site and the emit-switch note — the hub flips the
+  literal when the next contracts release pins this vocabulary.
+- **`syncplay.queue_limit_exceeded` (RESERVED).** The playback-queue cap
+  (srv SyncPlayManager.php:1230) today stretches `syncplay.group_limit_reached`
+  onto it; the entry splits the two conditions with the same deferred-mint
+  note, and the `syncplay.group_limit_reached` docblock gained the honest
+  `:1230` stretch cite. The row is deliberately absent from
+  `SYNCPLAY_ERROR_CODE_TWINS` (it splits a dotted condition, not a SCREAMING
+  legacy value); the map's totality is now expressed against the new
+  `SyncPlayLegacyTwinErrorCode` (`Exclude` of the queue-cap row, documented).
+- **Cite corrections from the 5b8305a review:** `peer_not_found` gained its
+  sixth emit site — re-derived at hub `8a5dc12`: sites 358/410/458/514/605/917,
+  cite `(+4)` → `(+5)`; module-header COORDINATE CURRENCY re-stamped with the
+  tripwire re-run at hub `8a5dc12` / srv `c11bd4ac`.
+- **Dist moves INTENTIONALLY this time:** `dist/error-codes.json` 202 → 204
+  codes (ordered insertion; every existing position untouched), `errors.d.ts`
+  + bundles regenerated. Test pins updated by measurement: exact-count
+  202 → 204, federation and syncplay ordered-list pins extended; suite holds
+  171/171. `npm run verify:cites` exits 0 (426 cites, 0 problems) against
+  hub `8a5dc12942dd37b6a9154321b8af6414bbba6bfb` + srv
+  `c11bd4ac19809fbd58231be2ade89c4d78bf60e9`.
+- **No tag, no version bump** (additive-master precedent of `884e261`:
+  registry growth lands on master; the release tag follows when the mint
+  cascade is scheduled). Consumers' content pins stay at `#v0.5.2` (202-code)
+  until the re-tag; the fixture-pin cascade (hub/server/client censuses that
+  byte-pin the JSON) lands with the release tag, NOT with this commit.
+
 ### Changed — coordinate sweep only: 82 drifted cites re-anchored at hub `14a8a55` / srv `9d3e92b2` (2026-09-29)
 
 - **Trigger: hub H-4/H-5 federation rework + server queue-cap/password-gate
