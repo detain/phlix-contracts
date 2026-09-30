@@ -738,7 +738,7 @@ declare const CODES: {
          * registered conflict generic `invalid_request` there with the specific
          * condition carried in the `reason` field. Hub f30e8a7 unified the whole
          * leaf_hub_id family onto that shape: the two malformed-UUID 400 parse
-         * sites — :274 in registerPeer, :356 in bindPeerLeafHubId — dropped their
+         * sites — :274 in createPeer, :356 in bindPeerLeafHubId — dropped their
          * never-registered `invalid_leaf_hub_id` literal and now ride
          * `invalid_request` with the condition in `reason` too. The hub switches
          * these sites to `leaf_hub_id_already_bound` when the next contracts
@@ -1599,7 +1599,7 @@ export declare const ERROR_CODE: {
          * registered conflict generic `invalid_request` there with the specific
          * condition carried in the `reason` field. Hub f30e8a7 unified the whole
          * leaf_hub_id family onto that shape: the two malformed-UUID 400 parse
-         * sites — :274 in registerPeer, :356 in bindPeerLeafHubId — dropped their
+         * sites — :274 in createPeer, :356 in bindPeerLeafHubId — dropped their
          * never-registered `invalid_leaf_hub_id` literal and now ride
          * `invalid_request` with the condition in `reason` too. The hub switches
          * these sites to `leaf_hub_id_already_bound` when the next contracts

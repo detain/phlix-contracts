@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (428 cites, 0 problems — 426 plus the two honest new sites in the
   RESERVED docblock). **No new tag** — nothing consumers pin has changed
   (02a306e precedent).
+- **Post-review method-name fix:** the RESERVED docblock's `:274` site now
+  reads `createPeer` (hub :250) — the hub has no `registerPeer`.
 
 ### Added — two deferred mints: `leaf_hub_id_already_bound` + `syncplay.queue_limit_exceeded` (census 202 → 204)
 
