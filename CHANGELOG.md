@@ -18,6 +18,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites only: srv L-bundle hygiene re-anchor at `b3aece4e`
+
+- **Trigger: server `b3aece4e530d3f721d3f8196d0ab86597305375e`** (L-bundle
+  security hygiene: `/system/info` fingerprint drop, library-paths admin gate,
+  HubJwtMiddleware deletion, cast 500 sanitization, CSP guard/prose, router
+  debug-log removal, M-3 fastpath twin).
+- **`hub.jwt_invalid` cite re-pointed.** L-5 deleted the dead-wired
+  `HubJwtMiddleware` (its `:73` emit site is gone); the cite now names the two
+  live emitters verified at source: `AccountLinkController.php:432,444` and
+  `HubTokenController.php:91`. The code itself stays LIVE — no registry move.
+- **Four cites line-shifted by server insertions and were re-read at source:**
+  `stream.limit_exceeded` (`StreamLimitMiddleware.php:113-117→139-143`,
+  `PreRouterFastPaths.php:569-575→580-582` — the synthetic-bucket extraction
+  and twin rework shifted the emits), `profile.not_found`
+  (`StreamLimitMiddleware.php:88-91,95-98→93-96,100-103` tightened even where
+  the ±3 window still passed, `PreRouterFastPaths.php:597-602→608-610`),
+  `library.delete_all.confirm_required` (`LibraryController.php:965→990`, the
+  L-4 admin-gate insertions above it) and `rate_limited`
+  (`Core/Application.php:2741→2805`; all shifts re-derived from the tree at
+  `b3aece4e`).
+- **Zero registry movement** — census holds at 204 codes / 37 domains;
+  docblock-only, `dist/error-codes.json` byte-frozen (md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` proven pre/post regen). `errors.d.ts` /
+  sourcemaps regenerated from the docblocks (comment lines only). COORDINATE
+  CURRENCY header re-stamped — the stamp paragraph itself now carries the
+  `AccountLinkController.php:432,444 · HubTokenController.php:91` spans, which
+  the tripwire counts and verifies (that is the +3 vs the 428 at `480ba9f`:
+  431 cites, 0 problems). **No new tag** (02a306e /
+  480ba9f precedent).
+
 ### Changed — docblock cites only: hub FederationController re-anchored at f30e8a7
 
 - **Trigger: hub `f30e8a7a62a3ab1392214b12dcf76f9589c28c8e`.** The

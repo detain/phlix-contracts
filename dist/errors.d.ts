@@ -56,7 +56,14 @@
  * SCREAMING set to their post-lane lines, and the hub FederationController,
  * AuthMiddleware, EnrollmentJwtMiddleware, ClientMountController,
  * RelayProxyManager and srv Core/Application.php cites to their then-current
- * coordinates. Re-sweep with
+ * coordinates. Latest: server b3aece4e (L-bundle security hygiene) re-anchored
+ * a cite cluster — the HubJwtMiddleware deletion re-pointed `hub.jwt_invalid`
+ * to its two remaining emit sites (AccountLinkController.php:432,444 ·
+ * HubTokenController.php:91), and the StreamLimitMiddleware/pre-router twin
+ * rework shifted `stream.limit_exceeded` and `profile.not_found`, plus the
+ * LibraryController/Application.php insert-driven bumps on
+ * `library.delete_all.confirm_required` and `rate_limited` — all re-read at
+ * source, not by blanket delta. Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -279,7 +286,7 @@ declare const CODES: {
         readonly NOT_ENROLLED: "hub.not_enrolled";
         /** srv AccountLinkController.php:422, HubTokenController.php:79 */
         readonly TOKEN_REQUIRED: "hub.token_required";
-        /** srv AccountLinkController.php:432,444, HubJwtMiddleware.php:73 */
+        /** srv AccountLinkController.php:432,444, HubTokenController.php:91 */
         readonly JWT_INVALID: "hub.jwt_invalid";
         /**
          * hub ServerClaimController.php:49,162 · hub ServerController.php:64,126 ·
@@ -376,8 +383,8 @@ declare const CODES: {
         /** hub ServerProxyController.php:1098 */
         readonly LIMIT: "stream.limit";
         /**
-         * srv StreamLimitMiddleware.php:113-117 (429) · PreRouterFastPaths.php:
-         * 569-575 (429) — `'code' => 'stream.limit_exceeded'` alongside the
+          * srv StreamLimitMiddleware.php:139-143 (429) · PreRouterFastPaths.php:
+          * 580-582 (429) — `'code' => 'stream.limit_exceeded'` alongside the
          * parked `'error' => 'StreamLimitExceeded'` and `'denial_type' =>
          * 'stream_limit_exceeded'` mirror (server W2 dual placement).
          */
@@ -586,7 +593,7 @@ declare const CODES: {
     };
     /** Server library CRUD. */
     readonly library: {
-        /** srv LibraryController.php:965 */
+        /** srv LibraryController.php:990 */
         readonly DELETE_ALL_CONFIRM_REQUIRED: "library.delete_all.confirm_required";
     };
     /** Server TMDB metadata lookups. */
@@ -632,8 +639,8 @@ declare const CODES: {
         /** srv ProfilesController.php:407 */
         readonly PIN_MISMATCH: "profile.pin_mismatch";
         /**
-         * srv StreamLimitMiddleware.php:88-91,95-98 (403) ·
-         * srv PreRouterFastPaths.php:597-602 (403) — the request carries a profile
+          * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
+          * srv PreRouterFastPaths.php:608-610 (403) — the request carries a profile
          * that doesn't exist. Server W2 promoted it: `'code' =>
          * 'profile.not_found'` rides the `code` channel alongside the parked
          * `'error' => 'StreamLimitExceeded'` and the machine `'denial_type' =>
@@ -671,7 +678,7 @@ declare const CODES: {
      * resource name, emitted by more than one controller (or by both servers).
      */
     readonly common: {
-        /** srv Core/Application.php:2741 · hub Application.php:203 (+3) */
+        /** srv Core/Application.php:2805 · hub Application.php:203 (+3) */
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
@@ -1140,7 +1147,7 @@ export declare const ERROR_CODE: {
         readonly NOT_ENROLLED: "hub.not_enrolled";
         /** srv AccountLinkController.php:422, HubTokenController.php:79 */
         readonly TOKEN_REQUIRED: "hub.token_required";
-        /** srv AccountLinkController.php:432,444, HubJwtMiddleware.php:73 */
+        /** srv AccountLinkController.php:432,444, HubTokenController.php:91 */
         readonly JWT_INVALID: "hub.jwt_invalid";
         /**
          * hub ServerClaimController.php:49,162 · hub ServerController.php:64,126 ·
@@ -1237,8 +1244,8 @@ export declare const ERROR_CODE: {
         /** hub ServerProxyController.php:1098 */
         readonly LIMIT: "stream.limit";
         /**
-         * srv StreamLimitMiddleware.php:113-117 (429) · PreRouterFastPaths.php:
-         * 569-575 (429) — `'code' => 'stream.limit_exceeded'` alongside the
+          * srv StreamLimitMiddleware.php:139-143 (429) · PreRouterFastPaths.php:
+          * 580-582 (429) — `'code' => 'stream.limit_exceeded'` alongside the
          * parked `'error' => 'StreamLimitExceeded'` and `'denial_type' =>
          * 'stream_limit_exceeded'` mirror (server W2 dual placement).
          */
@@ -1447,7 +1454,7 @@ export declare const ERROR_CODE: {
     };
     /** Server library CRUD. */
     readonly library: {
-        /** srv LibraryController.php:965 */
+        /** srv LibraryController.php:990 */
         readonly DELETE_ALL_CONFIRM_REQUIRED: "library.delete_all.confirm_required";
     };
     /** Server TMDB metadata lookups. */
@@ -1493,8 +1500,8 @@ export declare const ERROR_CODE: {
         /** srv ProfilesController.php:407 */
         readonly PIN_MISMATCH: "profile.pin_mismatch";
         /**
-         * srv StreamLimitMiddleware.php:88-91,95-98 (403) ·
-         * srv PreRouterFastPaths.php:597-602 (403) — the request carries a profile
+          * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
+          * srv PreRouterFastPaths.php:608-610 (403) — the request carries a profile
          * that doesn't exist. Server W2 promoted it: `'code' =>
          * 'profile.not_found'` rides the `code` channel alongside the parked
          * `'error' => 'StreamLimitExceeded'` and the machine `'denial_type' =>
@@ -1532,7 +1539,7 @@ export declare const ERROR_CODE: {
      * resource name, emitted by more than one controller (or by both servers).
      */
     readonly common: {
-        /** srv Core/Application.php:2741 · hub Application.php:203 (+3) */
+        /** srv Core/Application.php:2805 · hub Application.php:203 (+3) */
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
