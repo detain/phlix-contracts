@@ -56,11 +56,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 730e55b7 (cs#47 CONTENT regen — S518 #790 adds six quick-connect/telemetry tuples: App-router inventory 367→373, total 404→410)', () => {
+  it('is derived from phlix-server master 758f9149 (regen #35 CONTENT regen — fa30b871 M-6 adds the two book-progress tuples: App-router inventory 373→375, total 410→412; other manifest-file commits in the span change annotations only)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '730e55b7d3ad44a155f6b46374a9f6c463792840',
+      '758f91496c068551b310f1078093335f79c20e04',
     );
   });
 
@@ -68,7 +68,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.sources).toEqual([
       {
         file: 'tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php',
-        count: 373,
+        count: 375,
       },
       {
         file: 'tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php',
@@ -76,7 +76,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
       },
     ]);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
-    expect(SERVER_ROUTE_MANIFEST.length).toBe(410);
+    expect(SERVER_ROUTE_MANIFEST.length).toBe(412);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
   });
 });
@@ -212,7 +212,7 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '06ce7ec95bc064cc0f13b94389af9a82';
+  const CS22_MANIFEST_MD5 = '915796837d38a77733c169996d97640c';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
@@ -221,6 +221,10 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
 
   // cs#47 merge-ritual survival token — code-resident by design (one const in
   // this file, one in the hub parity test; zero hits in any .md).
+  // Regen #35 deliberately does NOT rotate it: the token is a PAIR with the
+  // hub-side const and marks the wave in which consumers re-vendored together.
+  // A contracts-only regen leaves the vendored downstream bytes untouched, so
+  // the pair advances only in a coordinated re-vendor leg (cs#47 precedent).
   const CS47_RITUAL_TOKEN = 'CS47CURRENCYPINX9X2';
 
   it('carries the cs#47 regen survival token', () => {

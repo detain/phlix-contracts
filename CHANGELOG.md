@@ -18,6 +18,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — route-manifest regen #35: CONTENT 410→412 tuples at server `758f9149` + cite-currency re-stamp
+
+- **Trigger: phlix-server master advanced `730e55b7` → `758f9149`.**
+  Regenerated `src/routeManifest.generated.ts` + the committed dist with the
+  repo's own `scripts/generate-server-route-manifest.mjs` against the live
+  server checkout. CONTENT regen: the two book-progress rails added by the
+  server's M-6 commit (`GET|POST /api/v1/books/{id}/progress`) lift the
+  Application guard inventory 373→375; the WebPortal table is byte-identical
+  across the span and the shared overlap holds at 11, so the union grows
+  410→412 `[method, path]` tuples. The empirical tuple diff is EXACTLY those
+  two additions — zero removals, zero other movement — confirming the span's
+  remaining manifest-file commits (the L-1/L-2 route gates, the music/scan
+  middleware move) changed only the ` -> Handler [Middleware]` annotations the
+  generator strips.
+- **Test pins rotate in the same commit** (regen #34 precedent): provenance
+  sha, source/total counts, and the byte-freeze md5 re-pinned to the new
+  committed artifact. The cs#47 merge-ritual survival token deliberately does
+  NOT rotate: it is a PAIR with the hub-side const and marks the wave in which
+  consumers re-vendored together — a contracts-only regen leaves the vendored
+  downstream bytes untouched, so the pair advances only in a coordinated
+  re-vendor leg.
+- **Consumers verified unperturbed.** Every downstream master gate
+  (phlix-ui `routeGate.api.test.ts`, tizen `routeManifest.gate.test.ts`,
+  mobile/roku vendored JSON, hub's S280 parity fixtures) reads a VENDORED copy
+  pinned at the v0.5.2-era bytes (md5 `06ce7ec9…`) — no repo's tests read
+  `dist/server-route-manifest.json` from a sibling contracts checkout, so the
+  new bytes are master-only until the next release tag (no-retag standing).
+  The only sibling reads in this lane are this repo's own `verify:cites`
+  against the server checkout.
+- **Cite currency: no drift, header re-stamped.** `npm run verify:cites`
+  exits 0 — 431 cites, 0 problems — at hub `db7ea738` / server `758f9149`:
+  neither post-L-bundle security merge (admin-gated `/app/library/scan` SPA
+  route; `isAdminUser` ACTIVE-admin predicate) moved a cite-referenced file
+  beyond the ±3 window. The COORDINATE CURRENCY header now stamps that state.
+- **Zero registry movement** — census holds at 204 codes / 37 domains;
+  `dist/error-codes.json` byte-frozen (md5 `40c1da48787f37d00a6fc9af6c64a1ac`
+  proven pre/post). `errors.d.ts` / sourcemaps regenerated docblock-only.
+  **No new tag** (02a306e / 480ba9f precedent).
+
 ### Changed — docblock cites only: srv L-bundle hygiene re-anchor at `b3aece4e`
 
 - **Trigger: server `b3aece4e530d3f721d3f8196d0ab86597305375e`** (L-bundle

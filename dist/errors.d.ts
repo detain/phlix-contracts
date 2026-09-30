@@ -56,14 +56,18 @@
  * SCREAMING set to their post-lane lines, and the hub FederationController,
  * AuthMiddleware, EnrollmentJwtMiddleware, ClientMountController,
  * RelayProxyManager and srv Core/Application.php cites to their then-current
- * coordinates. Latest: server b3aece4e (L-bundle security hygiene) re-anchored
- * a cite cluster — the HubJwtMiddleware deletion re-pointed `hub.jwt_invalid`
- * to its two remaining emit sites (AccountLinkController.php:432,444 ·
- * HubTokenController.php:91), and the StreamLimitMiddleware/pre-router twin
- * rework shifted `stream.limit_exceeded` and `profile.not_found`, plus the
- * LibraryController/Application.php insert-driven bumps on
- * `library.delete_all.confirm_required` and `rate_limited` — all re-read at
- * source, not by blanket delta. Re-sweep with
+  * coordinates. Latest: server b3aece4e (L-bundle security hygiene) re-anchored
+  * a cite cluster — the HubJwtMiddleware deletion re-pointed `hub.jwt_invalid`
+  * to its two remaining emit sites (AccountLinkController.php:432,444 ·
+  * HubTokenController.php:91), and the StreamLimitMiddleware/pre-router twin
+  * rework shifted `stream.limit_exceeded` and `profile.not_found`, plus the
+  * LibraryController/Application.php insert-driven bumps on
+  * `library.delete_all.confirm_required` and `rate_limited` — all re-read at
+  * source, not by blanket delta. Currency re-stamp 2026-09-30 (regen #35 lane):
+  * server tip 758f9149 adds two post-L-bundle security merges (admin-gating the
+  * `/app/library/scan` SPA route; `isAdminUser` now demanding an ACTIVE admin) —
+  * neither moves any registry cite, and the tripwire re-ran green at
+  * hub db7ea738 / srv 758f9149 (431 cites, 0 problems). Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
