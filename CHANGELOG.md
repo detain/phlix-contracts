@@ -60,6 +60,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock wording only: deferred-mint pair flipped RESERVED → LIVE (hub `f44275f` + server `7baa398a`)
+
+- **Trigger: the two v0.5.3 deferred mints landed on the wire.** Hub
+  `f44275f3bb1bbf1eb5ccb16a55e8bd2ae3d831b0` flipped all three `leaf_hub_id`
+  sites onto the dedicated `leaf_hub_id_already_bound` — the malformed-UUID
+  400 parse sites at hub FederationController.php:274 (`createPeer`) and
+  :356 (`bindPeerLeafHubId`), plus the 409 already-bound conflict at :378 —
+  re-read from the sibling checkout at the tip before writing. Server
+  `7baa398ad81532c8560668bd8d3ca01e357a4132` switched the playback-queue cap
+  at srv SyncPlayManager.php:1230 to emit `syncplay.queue_limit_exceeded`,
+  with the group-count cap keeping `syncplay.group_limit_reached` at :676 —
+  the documented split. The doc-side flips follow the code (fe9b9ef
+  precedent shape): the two entry docblocks, the syncplay domain docblock
+  (now ALL EIGHT rows LIVE), header CONTENTS #3, the `GROUP_LIMIT_REACHED`
+  queue-cap stretch note, the `SyncPlayErrorCode` vocabulary line and the
+  `SYNCPLAY_ERROR_CODE_TWINS` absence rationale now state the shipped truth;
+  the COORDINATE CURRENCY header carries the f44275f/7baa398a stamp and its
+  stale "now ride the `invalid_request` generic" clause was re-tensed to the
+  f30e8a7-era past.
+- **Zero wire/registry movement.** Docblock-only: no code added, renamed or
+  removed — census holds at **204 codes / 37 domains**.
+  `dist/error-codes.json` byte-frozen — md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` proven pre/post regen; committed
+  `errors.d.ts`/sourcemaps regenerated from the docblocks only (diff is
+  100% comment lines; the bundle `.js` stays byte-identical — JSDoc does not
+  emit into JS). `npm run verify:cites` exits **0** against hub `f44275f` +
+  server `7baa398a` (431/0 pre-flip → **443/0** post-flip; the added cites
+  are the three hub emit sites and the :676/:1230 split named in the new
+  wording). **No new tag** — nothing consumers pin has changed; the next
+  tag remains an owner-gated decision.
+
 ### Changed — route-manifest regen #35: CONTENT 410→412 tuples at server `758f9149` + cite-currency re-stamp
 
 - **Trigger: phlix-server master advanced `730e55b7` → `758f9149`.**
