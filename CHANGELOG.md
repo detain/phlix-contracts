@@ -16,6 +16,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > ordered by **publication date**, which is why the version numbers are not
 > monotonic between `0.4.1` and `0.4.0`. Details in the `0.3.13` section below.
 
+## [0.5.3] - 2026-10-01
+
+### Added — registry +2 RESERVED mints (202 → 204 codes) + route-manifest regen #35 (410 → 412 tuples) + cite-currency sweeps — first tag since `v0.5.1` to ship new registry bytes
+
+- **Two new RESERVED codes minted (`7fc864c`):**
+  `leaf_hub_id_already_bound` (federation 409 — the three hub sites that
+  today answer bare `conflict`/400 flip to this code in the next coordinated
+  leg) and `syncplay.queue_limit_exceeded` (playback queue-cap, the eighth
+  row of the syncplay family table). Both are declared, not yet emitted —
+  census **204 codes / 37 domains**.
+- **Registry bytes move for the first time since #78 (`v0.5.1`).**
+  `dist/error-codes.json` md5 `b919685d…` →
+  **`40c1da48787f37d00a6fc9af6c64a1ac`**. Unlike `v0.5.2` (byte-identical),
+  this tag REQUIRES the downstream PHP registry-JSON fixture pins
+  (phlix-server, phlix-hub) to rotate when they re-pin to it.
+- **Route-manifest regen #35 (`e2f2d53`):** the server's M-6 book-progress
+  rails add `GET|POST /api/v1/books/{id}/progress` at server `758f9149` —
+  union 410 → **412 tuples**, exactly those two additions, zero removals.
+  `dist/server-route-manifest.json` md5 `915796837d38a77733c169996d97640c`.
+  Consumers still read v0.5.2-era vendored bytes (md5 `06ce7ec9…`) until
+  they re-pin to this tag — this release opens that coordinated re-vendor
+  leg (hub S280 parity fixtures, ui/tizen gates, mobile/roku vendored JSON).
+- **Cite-currency sweeps of `src/errors.ts` docblocks** — `5b8305a`
+  re-anchored 82 drifted spans at hub `14a8a55` / srv `9d3e92b2`; `480ba9f`
+  re-anchored 25 FederationController spans at hub `f30e8a7`; `cf17cab`
+  corrected the `:274` cite's enclosing method to `createPeer`; `bc4d62e`
+  re-anchored 5 spans at srv `b3aece4e`. `npm run verify:cites` is green AT
+  TAG: **431 cites / 0 problems** against sibling tips hub `c9d2900` /
+  server `fa3a15ff`.
+- **Docblock status truth, zero wire effect** (`0f248e0`/`72cb28d` #84,
+  `02a306e`/`fe9b9ef` #85): syncplay twin docblocks made forensic; the
+  `_failed` trio flipped RESERVED → LIVE at srv `9b2394ee`.
+- **Additive only.** The entire `src/` delta since `v0.5.2` is `errors.ts`
+  (additive entries + docblocks) and `routeManifest.generated.ts`; no DTO,
+  route-shape, or scope change. `dist/mcp-scopes.json` ships byte-stable
+  (4 scopes). Third-position bump per the repo's own additive-registry
+  precedent `v0.5.1` (the +55-code #78 expansion also took the last
+  position).
+- **Gate evidence (at this prep commit):** `npm run build` re-derived
+  `dist/` byte-identically (post-build `git status` empty); census re-emitted
+  204 codes; `test:run` **171/171**; `lint` clean; `verify:cites` 431/0.
+
 ## [Unreleased]
 
 ### Changed — route-manifest regen #35: CONTENT 410→412 tuples at server `758f9149` + cite-currency re-stamp
