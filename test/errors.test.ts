@@ -135,7 +135,7 @@ describe('legacy SyncPlay SCREAMING pin', () => {
 });
 
 describe('syncplay dotted twins', () => {
-  it('declares the 8 syncplay rows (7 SCREAMING twins — server emit-wave landed — + 1 RESERVED queue-cap split)', () => {
+  it('declares the 8 syncplay rows (7 SCREAMING twins — server emit-wave landed — + 1 LIVE queue-cap split, srv 7baa398a)', () => {
     expect([...SYNCPLAY_TWIN_ERROR_CODES]).toEqual([
       'syncplay.create_failed',
       'syncplay.join_failed',
@@ -149,9 +149,10 @@ describe('syncplay dotted twins', () => {
   });
 
   it('maps each twin to the legacy SCREAMING code it replaces or un-wraps', () => {
-    // The RESERVED `syncplay.queue_limit_exceeded` row is intentionally NOT in
-    // this table: it splits a dotted condition (the queue-cap stretch of
-    // `syncplay.group_limit_reached`), not a SCREAMING legacy value.
+    // The LIVE `syncplay.queue_limit_exceeded` row (emitted since srv
+    // 7baa398a) is intentionally NOT in this table: it splits a dotted
+    // condition (the queue-cap half of `syncplay.group_limit_reached`), never
+    // a SCREAMING legacy value — so it has no twin edge to map.
     expect(SYNCPLAY_ERROR_CODE_TWINS).toEqual({
       'syncplay.create_failed': 'CREATE_FAILED',
       'syncplay.group_limit_reached': 'CREATE_FAILED',

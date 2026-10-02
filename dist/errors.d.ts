@@ -52,16 +52,16 @@
  * 9b2394eea631739dff8f6e039d50f910c4304d97 (server #798 flipped the
  * reserved `_failed` trio LIVE) and hub b83639fa / server e0e010b0 (the
  * Wave-1b emit-waves). The 2026-09-29 sweep had moved the three syncplay
- * carrier-fallback cites to srv SyncPlayManager.php:1720, :1773 and :1805,
- * the four inner-path cites to :676, :768, :816 and :821, the legacy
+ * carrier-fallback cites to srv SyncPlayManager.php lines 1720, 1773 and 1805,
+ * the four inner-path cites to lines 676, 768, 816 and 821, the legacy
  * SCREAMING set to their post-lane lines, and the hub FederationController,
  * AuthMiddleware, EnrollmentJwtMiddleware, ClientMountController,
  * RelayProxyManager and srv Core/Application.php cites to their then-current
   * coordinates. Latest: server b3aece4e (L-bundle security hygiene) re-anchored
   * a cite cluster — the HubJwtMiddleware deletion re-pointed `hub.jwt_invalid`
-  * to its two remaining emit sites (AccountLinkController.php:432,444 ·
-  * HubTokenController.php:91), and the StreamLimitMiddleware/pre-router twin
-  * rework shifted `stream.limit_exceeded` and `profile.not_found`, plus the
+  * to its two remaining emit sites (srv AccountLinkController.php:432,444 ·
+  * srv HubTokenController.php:91), and the StreamLimitMiddleware/pre-router
+  * twin rework shifted `stream.limit_exceeded` and `profile.not_found`, plus the
   * LibraryController/Application.php insert-driven bumps on
   * `library.delete_all.confirm_required` and `rate_limited` — all re-read at
   * source, not by blanket delta. Currency re-stamp 2026-09-30 (regen #35 lane):
@@ -76,19 +76,25 @@
   * malformed-UUID 400 parse sites at hub FederationController.php:274 in
   * createPeer and :356 in bindPeerLeafHubId, and the 409 already-bound
   * conflict at :378. Server 7baa398a switched the playback-queue cap at srv
-  * SyncPlayManager.php:1230 to emit `syncplay.queue_limit_exceeded` while
-  * the group-count cap keeps `syncplay.group_limit_reached` at :676 — the
+  * SyncPlayManager.php line 1230 to emit `syncplay.queue_limit_exceeded` while
+  * the group-count cap keeps `syncplay.group_limit_reached` at line 676 — the
   * documented split. No registry coordinate span moved under either tip
-  * (the queue-cap cite :1230 already held pre-emit); both entries flipped
+  * (the queue-cap cite 1230 already held pre-emit); both entries flipped
   * RESERVED→LIVE wording in place, and the tripwire re-ran green at these
   * very tips before and after the flip. Cite-currency 2026-10-02 (hub
   * federation channel-bridge lane): hub tip ccefe28 (cross-process master
   * push via the channel broker — touched none of the cited hub lines; every
   * hub cite re-ran green unchanged) and server tip e1f1fa05 (device-M1
   * casting register, +33 net lines above the rate-limit helper) drifted the
-  * lone red cite `common.RATE_LIMITED` to srv Core/Application.php:2838 —
+  * lone red cite `common.RATE_LIMITED` to srv Core/Application.php line 2838 —
   * the 429 emit line, re-read at source, not by blanket delta. Tripwire
-  * 443/0 at hub ccefe28 / srv e1f1fa05. Re-sweep with
+  * 443/0 at hub ccefe28 / srv e1f1fa05. Cite-currency 2026-10-02 (docs-
+  * currency sweep): server 1ef503b7 (MED-2 room-visibility lane) shifted
+  * the SyncPlayManager cite family and, with da430a9d (LiveTV parental
+  * gate), the 429 emit — every drifted srv cite re-read at source at
+  * server tip da430a9d, not by blanket delta; hub cites re-ran green
+  * unchanged at hub tip 56e36d9. Tripwire 433/0 at hub 56e36d9 /
+  * srv da430a9d. Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -121,23 +127,23 @@
  *     history, not dead vocabulary; do not remove.
  *  3. `syncplay` — dotted twins for the coarse `*_FAILED` prose-carrier
  *     family, plus the queue-cap specialization. Wire status
- *     (re-verified at srv 7baa398a, see the domain docblock below for the
+ *     (re-verified at srv da430a9d, see the domain docblock below for the
  *     file:line evidence): ALL EIGHT rows are LIVE on the wire — the seven
  *     twin rows with server #798, and the eighth row
  *     `syncplay.queue_limit_exceeded` with server 7baa398a: the
- *     playback-queue cap at srv SyncPlayManager.php:1230 emits it directly
+ *     playback-queue cap at srv SyncPlayManager.php:1240 emits it directly
  *     while the group-count cap keeps `syncplay.group_limit_reached` at
- *     :676 — the documented split. The four INNER-PATH specializations —
+ *     :688 — the documented split. The four INNER-PATH specializations —
  *     `syncplay.group_limit_reached`, `syncplay.group_not_found`,
  *     `syncplay.invalid_password`, `syncplay.group_full` — reach the client
  *     because the create/join carriers forward any inner code through
  *     `$result['error_code'] ?? '..._failed'` and fall back to the dotted
  *     coarse twin when the inner failure set no code. The `syncplay.*_failed`
  *     trio went LIVE with server #798: `syncplay.create_failed` is the
- *     create-carrier fallback at srv SyncPlayManager.php:1720,
+ *     create-carrier fallback at srv SyncPlayManager.php:1790,
  *     `syncplay.join_failed` the join-carrier fallback at srv
- *     SyncPlayManager.php:1773, and `syncplay.leave_failed` the leave
- *     carrier's direct emit at srv SyncPlayManager.php:1805 (its inner
+ *     SyncPlayManager.php:1843, and `syncplay.leave_failed` the leave
+ *     carrier's direct emit at srv SyncPlayManager.php:1875 (its inner
  *     failure paths carry no `error_code`). The flip was client-unblocked
  *     before it landed: console #167 + roku #90 proved both clients already
  *     resolve either shape. `SYNCPLAY_ERROR_CODE_TWINS` below is the
@@ -705,7 +711,7 @@ declare const CODES: {
      * resource name, emitted by more than one controller (or by both servers).
      */
     readonly common: {
-        /** srv Core/Application.php:2838 · hub Application.php:203 (+3) */
+        /** srv Core/Application.php:2842 · hub Application.php:203 (+3) */
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
@@ -997,16 +1003,16 @@ declare const CODES: {
      * specializations returned by the `createGroup`/`joinGroup` handlers reach
      * the client because the WS carriers forward any inner code on
      * `error_code`: `sendError($connection, $result['error_code'] ??
-     * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1720 and the
-     * join twin at srv SyncPlayManager.php:1773. The four inner-path codes:
-     * `syncplay.group_limit_reached` at srv SyncPlayManager.php:676,
-     * `syncplay.group_not_found` at srv SyncPlayManager.php:768,
-     * `syncplay.invalid_password` at srv SyncPlayManager.php:816,
-     * `syncplay.group_full` at srv SyncPlayManager.php:821.
+     * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1790 and the
+     * join twin at srv SyncPlayManager.php:1843. The four inner-path codes:
+     * `syncplay.group_limit_reached` at srv SyncPlayManager.php:688,
+     * `syncplay.group_not_found` at srv SyncPlayManager.php:780,
+     * `syncplay.invalid_password` at srv SyncPlayManager.php:828,
+     * `syncplay.group_full` at srv SyncPlayManager.php:833.
      * The `_failed` trio proper — `syncplay.create_failed` (srv
-     * SyncPlayManager.php:1720), `syncplay.join_failed` (srv
-     * SyncPlayManager.php:1773) and `syncplay.leave_failed`, emitted directly
-     * by the leave carrier at srv SyncPlayManager.php:1805 (its inner failure
+     * SyncPlayManager.php:1790), `syncplay.join_failed` (srv
+     * SyncPlayManager.php:1843) and `syncplay.leave_failed`, emitted directly
+     * by the leave carrier at srv SyncPlayManager.php:1875 (its inner failure
      * paths carry no `error_code`) — was RESERVED until server #798 replaced
      * the three SCREAMING fallback literals with these dotted twins; the
      * message prose stayed byte-identical and the `error_code` channel and
@@ -1016,33 +1022,33 @@ declare const CODES: {
      * roku #90). See `SYNCPLAY_ERROR_CODE_TWINS` for the migration table. The
      * eighth registry row — `syncplay.queue_limit_exceeded` — is LIVE since
      * server 7baa398a: the playback-queue cap at srv
-     * SyncPlayManager.php:1230 emits it directly (fail-loud on
+     * SyncPlayManager.php:1240 emits it directly (fail-loud on
      * `GroupState::MAX_QUEUE_SIZE` overflow, current queue left untouched),
-     * while the group-count cap keeps `syncplay.group_limit_reached` at :676
+     * while the group-count cap keeps `syncplay.group_limit_reached` at :688
      * — the documented split.
      */
     readonly syncplay: {
-        /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1720 — dotted twin of legacy `CREATE_FAILED` */
+        /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1790 — dotted twin of legacy `CREATE_FAILED` */
         readonly CREATE_FAILED: "syncplay.create_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1773 — dotted twin of legacy `JOIN_FAILED` */
+        /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1843 — dotted twin of legacy `JOIN_FAILED` */
         readonly JOIN_FAILED: "syncplay.join_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1805 — dotted twin of legacy `LEAVE_FAILED` */
+        /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1875 — dotted twin of legacy `LEAVE_FAILED` */
         readonly LEAVE_FAILED: "syncplay.leave_failed";
-        /** LIVE on the wire (srv SyncPlayManager.php:676): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1720; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1230 (server 7baa398a) — this row now covers the group-count cap only */
+        /** LIVE on the wire (srv SyncPlayManager.php:688): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1790; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1240 (server 7baa398a) — this row now covers the group-count cap only */
         readonly GROUP_LIMIT_REACHED: "syncplay.group_limit_reached";
-        /** LIVE on the wire (srv SyncPlayManager.php:768): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
+        /** LIVE on the wire (srv SyncPlayManager.php:780): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1843 */
         readonly GROUP_NOT_FOUND: "syncplay.group_not_found";
-        /** LIVE on the wire (srv SyncPlayManager.php:816): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
+        /** LIVE on the wire (srv SyncPlayManager.php:828): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1843 */
         readonly INVALID_PASSWORD: "syncplay.invalid_password";
-        /** LIVE on the wire (srv SyncPlayManager.php:821): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
+        /** LIVE on the wire (srv SyncPlayManager.php:833): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1843 */
         readonly GROUP_FULL: "syncplay.group_full";
         /**
-         * srv SyncPlayManager.php:1230 — LIVE on the wire since server 7baa398a
+         * srv SyncPlayManager.php:1240 — LIVE on the wire since server 7baa398a
          * (deferred-mint flip landed right after the v0.5.3 pin): the
          * playback-queue cap (`GroupState::MAX_QUEUE_SIZE` overflow in
          * `handlePlaybackQueue`) emits this dedicated code fail-loud, leaving
          * the current queue untouched. The group-count cap keeps
-         * `syncplay.group_limit_reached` at :676 — this row splits the two
+         * `syncplay.group_limit_reached` at :688 — this row splits the two
          * conditions. Not a SCREAMING-legacy twin, so `SYNCPLAY_ERROR_CODE_TWINS`
          * deliberately omits it.
          */
@@ -1059,27 +1065,27 @@ declare const CODES: {
      * Renaming or removing breaks live clients.
      */
     readonly legacy: {
-        /** srv SyncPlayManager.php:614 */
+        /** srv SyncPlayManager.php:626 */
         readonly UNKNOWN_MESSAGE: "UNKNOWN_MESSAGE";
-        /** srv SyncPlayManager.php:617 */
+        /** srv SyncPlayManager.php:629 */
         readonly HANDLER_ERROR: "HANDLER_ERROR";
-        /** srv SyncPlayManager.php:1032 (+11) · srv MessageHandler.php:156 */
+        /** srv SyncPlayManager.php:1042 · srv MessageHandler.php:156 */
         readonly NOT_AUTHENTICATED: "NOT_AUTHENTICATED";
-        /** srv SyncPlayManager.php:1040 (+7) */
+        /** srv SyncPlayManager.php:1050 */
         readonly NOT_IN_GROUP: "NOT_IN_GROUP";
-        /** srv SyncPlayManager.php:1045 (+4) */
+        /** srv SyncPlayManager.php:1055 */
         readonly NOT_HOST: "NOT_HOST";
-        /** srv SyncPlayManager.php:1393 */
-        readonly INVALID_NEW_HOST: "INVALID_NEW_HOST";
-        /** srv SyncPlayManager.php:1398 */
-        readonly MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND";
         /** srv SyncPlayManager.php:1403 */
+        readonly INVALID_NEW_HOST: "INVALID_NEW_HOST";
+        /** srv SyncPlayManager.php:1408 */
+        readonly MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND";
+        /** srv SyncPlayManager.php:1413 */
         readonly SAME_HOST: "SAME_HOST";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1720; still resolved client-side for old-server compatibility */
+        /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1790; still resolved client-side for old-server compatibility */
         readonly CREATE_FAILED: "CREATE_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1773; still resolved client-side for old-server compatibility */
+        /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1843; still resolved client-side for old-server compatibility */
         readonly JOIN_FAILED: "JOIN_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1805; still resolved client-side for old-server compatibility */
+        /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1875; still resolved client-side for old-server compatibility */
         readonly LEAVE_FAILED: "LEAVE_FAILED";
         /** srv MessageHandler.php:188-191 */
         readonly PROTOCOL_VERSION_MISMATCH: "PROTOCOL_VERSION_MISMATCH";
@@ -1571,7 +1577,7 @@ export declare const ERROR_CODE: {
      * resource name, emitted by more than one controller (or by both servers).
      */
     readonly common: {
-        /** srv Core/Application.php:2838 · hub Application.php:203 (+3) */
+        /** srv Core/Application.php:2842 · hub Application.php:203 (+3) */
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
@@ -1863,16 +1869,16 @@ export declare const ERROR_CODE: {
      * specializations returned by the `createGroup`/`joinGroup` handlers reach
      * the client because the WS carriers forward any inner code on
      * `error_code`: `sendError($connection, $result['error_code'] ??
-     * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1720 and the
-     * join twin at srv SyncPlayManager.php:1773. The four inner-path codes:
-     * `syncplay.group_limit_reached` at srv SyncPlayManager.php:676,
-     * `syncplay.group_not_found` at srv SyncPlayManager.php:768,
-     * `syncplay.invalid_password` at srv SyncPlayManager.php:816,
-     * `syncplay.group_full` at srv SyncPlayManager.php:821.
+     * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1790 and the
+     * join twin at srv SyncPlayManager.php:1843. The four inner-path codes:
+     * `syncplay.group_limit_reached` at srv SyncPlayManager.php:688,
+     * `syncplay.group_not_found` at srv SyncPlayManager.php:780,
+     * `syncplay.invalid_password` at srv SyncPlayManager.php:828,
+     * `syncplay.group_full` at srv SyncPlayManager.php:833.
      * The `_failed` trio proper — `syncplay.create_failed` (srv
-     * SyncPlayManager.php:1720), `syncplay.join_failed` (srv
-     * SyncPlayManager.php:1773) and `syncplay.leave_failed`, emitted directly
-     * by the leave carrier at srv SyncPlayManager.php:1805 (its inner failure
+     * SyncPlayManager.php:1790), `syncplay.join_failed` (srv
+     * SyncPlayManager.php:1843) and `syncplay.leave_failed`, emitted directly
+     * by the leave carrier at srv SyncPlayManager.php:1875 (its inner failure
      * paths carry no `error_code`) — was RESERVED until server #798 replaced
      * the three SCREAMING fallback literals with these dotted twins; the
      * message prose stayed byte-identical and the `error_code` channel and
@@ -1882,33 +1888,33 @@ export declare const ERROR_CODE: {
      * roku #90). See `SYNCPLAY_ERROR_CODE_TWINS` for the migration table. The
      * eighth registry row — `syncplay.queue_limit_exceeded` — is LIVE since
      * server 7baa398a: the playback-queue cap at srv
-     * SyncPlayManager.php:1230 emits it directly (fail-loud on
+     * SyncPlayManager.php:1240 emits it directly (fail-loud on
      * `GroupState::MAX_QUEUE_SIZE` overflow, current queue left untouched),
-     * while the group-count cap keeps `syncplay.group_limit_reached` at :676
+     * while the group-count cap keeps `syncplay.group_limit_reached` at :688
      * — the documented split.
      */
     readonly syncplay: {
-        /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1720 — dotted twin of legacy `CREATE_FAILED` */
+        /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1790 — dotted twin of legacy `CREATE_FAILED` */
         readonly CREATE_FAILED: "syncplay.create_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1773 — dotted twin of legacy `JOIN_FAILED` */
+        /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1843 — dotted twin of legacy `JOIN_FAILED` */
         readonly JOIN_FAILED: "syncplay.join_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1805 — dotted twin of legacy `LEAVE_FAILED` */
+        /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1875 — dotted twin of legacy `LEAVE_FAILED` */
         readonly LEAVE_FAILED: "syncplay.leave_failed";
-        /** LIVE on the wire (srv SyncPlayManager.php:676): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1720; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1230 (server 7baa398a) — this row now covers the group-count cap only */
+        /** LIVE on the wire (srv SyncPlayManager.php:688): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1790; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1240 (server 7baa398a) — this row now covers the group-count cap only */
         readonly GROUP_LIMIT_REACHED: "syncplay.group_limit_reached";
-        /** LIVE on the wire (srv SyncPlayManager.php:768): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
+        /** LIVE on the wire (srv SyncPlayManager.php:780): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1843 */
         readonly GROUP_NOT_FOUND: "syncplay.group_not_found";
-        /** LIVE on the wire (srv SyncPlayManager.php:816): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
+        /** LIVE on the wire (srv SyncPlayManager.php:828): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1843 */
         readonly INVALID_PASSWORD: "syncplay.invalid_password";
-        /** LIVE on the wire (srv SyncPlayManager.php:821): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1773 */
+        /** LIVE on the wire (srv SyncPlayManager.php:833): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1843 */
         readonly GROUP_FULL: "syncplay.group_full";
         /**
-         * srv SyncPlayManager.php:1230 — LIVE on the wire since server 7baa398a
+         * srv SyncPlayManager.php:1240 — LIVE on the wire since server 7baa398a
          * (deferred-mint flip landed right after the v0.5.3 pin): the
          * playback-queue cap (`GroupState::MAX_QUEUE_SIZE` overflow in
          * `handlePlaybackQueue`) emits this dedicated code fail-loud, leaving
          * the current queue untouched. The group-count cap keeps
-         * `syncplay.group_limit_reached` at :676 — this row splits the two
+         * `syncplay.group_limit_reached` at :688 — this row splits the two
          * conditions. Not a SCREAMING-legacy twin, so `SYNCPLAY_ERROR_CODE_TWINS`
          * deliberately omits it.
          */
@@ -1925,27 +1931,27 @@ export declare const ERROR_CODE: {
      * Renaming or removing breaks live clients.
      */
     readonly legacy: {
-        /** srv SyncPlayManager.php:614 */
+        /** srv SyncPlayManager.php:626 */
         readonly UNKNOWN_MESSAGE: "UNKNOWN_MESSAGE";
-        /** srv SyncPlayManager.php:617 */
+        /** srv SyncPlayManager.php:629 */
         readonly HANDLER_ERROR: "HANDLER_ERROR";
-        /** srv SyncPlayManager.php:1032 (+11) · srv MessageHandler.php:156 */
+        /** srv SyncPlayManager.php:1042 · srv MessageHandler.php:156 */
         readonly NOT_AUTHENTICATED: "NOT_AUTHENTICATED";
-        /** srv SyncPlayManager.php:1040 (+7) */
+        /** srv SyncPlayManager.php:1050 */
         readonly NOT_IN_GROUP: "NOT_IN_GROUP";
-        /** srv SyncPlayManager.php:1045 (+4) */
+        /** srv SyncPlayManager.php:1055 */
         readonly NOT_HOST: "NOT_HOST";
-        /** srv SyncPlayManager.php:1393 */
-        readonly INVALID_NEW_HOST: "INVALID_NEW_HOST";
-        /** srv SyncPlayManager.php:1398 */
-        readonly MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND";
         /** srv SyncPlayManager.php:1403 */
+        readonly INVALID_NEW_HOST: "INVALID_NEW_HOST";
+        /** srv SyncPlayManager.php:1408 */
+        readonly MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND";
+        /** srv SyncPlayManager.php:1413 */
         readonly SAME_HOST: "SAME_HOST";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1720; still resolved client-side for old-server compatibility */
+        /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1790; still resolved client-side for old-server compatibility */
         readonly CREATE_FAILED: "CREATE_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1773; still resolved client-side for old-server compatibility */
+        /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1843; still resolved client-side for old-server compatibility */
         readonly JOIN_FAILED: "JOIN_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1805; still resolved client-side for old-server compatibility */
+        /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1875; still resolved client-side for old-server compatibility */
         readonly LEAVE_FAILED: "LEAVE_FAILED";
         /** srv MessageHandler.php:188-191 */
         readonly PROTOCOL_VERSION_MISMATCH: "PROTOCOL_VERSION_MISMATCH";
@@ -2056,18 +2062,18 @@ export declare const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[];
  * Wave-2 migration map: each dotted twin → the coarse/legacy code it replaces
  * (or un-wraps from a prose carrier). Status at srv 9b2394ee: ALL SEVEN rows
  * are LIVE. The four inner-path rows ride the `?? ` wrap sites — the carriers
- * forward any inner code at srv SyncPlayManager.php:1720 and srv
- * SyncPlayManager.php:1773. The three `*_failed` rows landed with the server
+ * forward any inner code at srv SyncPlayManager.php:1790 and srv
+ * SyncPlayManager.php:1843. The three `*_failed` rows landed with the server
  * #798 carrier flip: `syncplay.create_failed` is now the create fallback at
- * srv SyncPlayManager.php:1720, `syncplay.join_failed` the join fallback at
- * srv SyncPlayManager.php:1773, and `syncplay.leave_failed` the leave
- * carrier's direct emit at srv SyncPlayManager.php:1805. The SCREAMING legacy
+ * srv SyncPlayManager.php:1790, `syncplay.join_failed` the join fallback at
+ * srv SyncPlayManager.php:1843, and `syncplay.leave_failed` the leave
+ * carrier's direct emit at srv SyncPlayManager.php:1875. The SCREAMING legacy
  * values stay registered for in-flight and older-server traffic; the wire
  * channel (`error_code`) and the read order never change. The eighth syncplay
  * registry row `syncplay.queue_limit_exceeded` is deliberately absent here: it
  * splits a dotted condition (server 7baa398a gave the playback-queue cap its
- * own emit at srv SyncPlayManager.php:1230 while the group-count cap keeps
- * `syncplay.group_limit_reached` at :676), not a SCREAMING legacy value, and
+ * own emit at srv SyncPlayManager.php:1240 while the group-count cap keeps
+ * `syncplay.group_limit_reached` at :688), not a SCREAMING legacy value, and
  * this table maps legacy replacements only.
  */
 export declare const SYNCPLAY_ERROR_CODE_TWINS: {

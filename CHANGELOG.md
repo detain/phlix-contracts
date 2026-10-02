@@ -60,6 +60,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites re-anchored at server `da430a9d` (tripwire 433/0 at hub `56e36d9`) + stale RESERVED test wording flipped to LIVE
+
+- **Trigger: docs-currency sweep against the advanced sibling tips.** Server
+  `1ef503b7` (MED-2 syncplay room-visibility) shifted the whole
+  `SyncPlayManager.php` cite family (inner-path, carrier-fallback, queue-cap
+  and legacy SCREAMING anchors, +10 to +70 per site) and, together with
+  `da430a9d` (LiveTV parental gate), moved the 429 `rate_limited` emit to
+  `Core/Application.php:2842`. All 55 flagged spans were re-read at source
+  at server tip `da430a9d` (not by blanket delta; the stale pending-drift
+  `(+11)/(+7)/(+4)` annotations retired per the `480ba9f` precedent); every
+  hub cite re-ran green unchanged at hub tip `56e36d9`. The three historical
+  stamp lines that narrated the 2026-09-29 and deferred-mint sweeps had
+  their coordinates colon-faded (prose, not live cites) so the tripwire
+  keeps verifying only current-state claims.
+- **`test/errors.test.ts` wording flip:** the queue-cap suite title and the
+  TWINS-map comment still said `RESERVED … stretch` — stale since `0be4146`
+  flipped `syncplay.queue_limit_exceeded` LIVE (emit shipped at srv
+  `7baa398a`). The row's exclusion from `SYNCPLAY_ERROR_CODE_TWINS` stands;
+  its reason is now truthfully "LIVE, never a SCREAMING twin". Assertions
+  untouched (status-independent).
+- **Comment-coordinate + test-wording only:** census holds 204 codes /
+  37 domains; `dist/error-codes.json` byte-frozen md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` re-proven after regen;
+  `errors.d.ts`/sourcemaps regenerate as comment-line diffs (bundle `.js`
+  byte-identical). Header COORDINATE CURRENCY narrative carries the
+  `da430a9d`/`56e36d9` stamp.
+- **Gates:** `npm run verify:cites` exit 0 (**433** cites, 0 problems at hub
+  `56e36d9` / srv `da430a9d`), `npm run test:run` **171/171**, `lint` clean,
+  build re-derives `dist`. No new tag — registry bytes unchanged; tagging
+  remains owner-gated.
+
 ### Changed — docblock cite only: srv `rate_limited` re-anchored at server `e1f1fa05` (tripwire 443/0 at hub `ccefe28`)
 
 - **Trigger: hub federation channel-bridge lane ran the
