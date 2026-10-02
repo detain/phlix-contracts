@@ -81,7 +81,14 @@
   * documented split. No registry coordinate span moved under either tip
   * (the queue-cap cite :1230 already held pre-emit); both entries flipped
   * RESERVED→LIVE wording in place, and the tripwire re-ran green at these
-  * very tips before and after the flip. Re-sweep with
+  * very tips before and after the flip. Cite-currency 2026-10-02 (hub
+  * federation channel-bridge lane): hub tip ccefe28 (cross-process master
+  * push via the channel broker — touched none of the cited hub lines; every
+  * hub cite re-ran green unchanged) and server tip e1f1fa05 (device-M1
+  * casting register, +33 net lines above the rate-limit helper) drifted the
+  * lone red cite `common.RATE_LIMITED` to srv Core/Application.php:2838 —
+  * the 429 emit line, re-read at source, not by blanket delta. Tripwire
+  * 443/0 at hub ccefe28 / srv e1f1fa05. Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -723,7 +730,7 @@ const CODES = {
    * resource name, emitted by more than one controller (or by both servers).
    */
   common: {
-    /** srv Core/Application.php:2805 · hub Application.php:203 (+3) */
+    /** srv Core/Application.php:2838 · hub Application.php:203 (+3) */
     RATE_LIMITED: 'rate_limited',
     /** srv AuthController.php:337,355 (LDAP) */
     PROVIDER_UNAVAILABLE: 'provider_unavailable',

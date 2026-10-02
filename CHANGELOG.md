@@ -60,6 +60,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cite only: srv `rate_limited` re-anchored at server `e1f1fa05` (tripwire 443/0 at hub `ccefe28`)
+
+- **Trigger: hub federation channel-bridge lane ran the
+  `verify:cites` tripwire against its new hub tip.** Hub `ccefe28` (the
+  cross-process master-push channel bridge) moved zero cited hub lines —
+  every FederationController/hub cite re-read green unchanged. The lone
+  drift was inherited from the sibling **server** checkout having advanced
+  `7baa398a` → `e1f1fa05` (device-M1 casting register): the `+33` net lines
+  above the rate-limit helper pushed
+  `common.RATE_LIMITED`'s srv cite `Core/Application.php:2805` to `:2838`
+  (the 429 emit line — re-read at source; nearest-token drift report said
+  `+19 vs cited span` to the docblock at :2824, and the emit, not the
+  docblock, is what the header convention cites, matching the pre-move
+  anchor's semantics). The header's COORDINATE CURRENCY narrative carries
+  the ccefe28/e1f1fa05 stamp.
+- **Zero wire/registry movement.** One comment coordinate: census holds at
+  **204 codes / 37 domains**; `dist/error-codes.json` byte-frozen — md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` re-proven after regen. Committed
+  `errors.d.ts`/sourcemaps regenerate from the docblocks only (comment
+  lines; the bundle `.js` stays byte-identical). `npm run verify:cites`
+  exits **0** (443 cites, 0 problems) at hub `ccefe28` + server `e1f1fa05`;
+  `npm test` **171/171**. **No new tag** — nothing consumers pin has
+  changed; the next tag remains an owner-gated decision.
+
 ### Changed — docblock wording only: deferred-mint pair flipped RESERVED → LIVE (hub `f44275f` + server `7baa398a`)
 
 - **Trigger: the two v0.5.3 deferred mints landed on the wire.** Hub
