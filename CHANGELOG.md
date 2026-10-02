@@ -60,6 +60,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites re-anchored at hub `256aa25f` / server `c42e166a` (tripwire 440/0)
+
+- **Trigger: docs-currency sweep against the advanced sibling tips.** The
+  standing tripwire reported `ok=420 problems=13` since the siblings moved
+  past the previous stamp (`433/0` at hub `56e36d9` / server `da430a9d`).
+  Cause: hub `7748d79` (RequestContext retirement) shifted the
+  `AuthMiddleware.php` trio −5, and hub `3843f8b` + `256aa25f`
+  (ServerProxyController doc expansions, +23 and +11 net) pushed the whole
+  proxy cite family +34 uniform; server `43b04158` (collections
+  ownership) moved the 429 `rate_limited` emit from `Core/Application.php`
+  2842 to 2827. All 13 spans were re-read at source per the `480ba9f`
+  precedent (not blanket offsets): the `proxy.scope_denied` pair re-derived
+  to 1078/1093 despite the tripwire's nearest-token hint pointing at 1078
+  twice, and two window-masked cites inside unchanged files surfaced by the
+  ±3-line heuristic (`RelayProxyBridge.php` 313→315, hub
+  `Application.php` 203→204) were corrected alongside the server 429
+  re-anchor to :2827 — thirteen problems, fifteen coordinate moves.
+- **Header stamp.** The COORDINATE CURRENCY paragraph now records hub
+  `256aa25f` / server `c42e166a` and the drift attribution above; the
+  parsed cite count rose 433 → 440 because the stamp itself carries seven
+  new current-state colon-cites (the unchanged-neighbor spot-checks
+  re-verified in place: srv `AuthMiddleware.php:62`, hub
+  `McpController.php:352`, `RelayProxyManager.php:554,696`,
+  `SubdomainController.php:128`, plus the `scope_denied` pair anchor and
+  the server 429 site). Historical coordinates stay colon-less prose so
+  they never load on the tripwire.
+- **Comment-only proof.** Strip-comments diff of `src/errors.ts` shows zero
+  changed non-comment lines; the registry stays frozen at
+  `dist/error-codes.json` md5 `40c1da48787f37d00a6fc9af6c64a1ac`
+  (204 codes), `dist/errors.js` byte-identical, and `dist/errors.d.ts` /
+  maps churn only in source-embedded comments (VLQ line-offset re-encode),
+  exactly the `bcb6bab` classification.
+- **Gates.** `npm run verify:cites` 440/0 at hub `256aa25f` /
+  server `c42e166a` · `npm run build` reproducible with a clean
+  `git status --porcelain` afterwards · `npm run test:run` 171/171 · lint
+  clean.
+
 ### Changed — docblock cites re-anchored at server `da430a9d` (tripwire 433/0 at hub `56e36d9`) + stale RESERVED test wording flipped to LIVE
 
 - **Trigger: docs-currency sweep against the advanced sibling tips.** Server

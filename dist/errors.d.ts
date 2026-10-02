@@ -94,7 +94,30 @@
   * gate), the 429 emit — every drifted srv cite re-read at source at
   * server tip da430a9d, not by blanket delta; hub cites re-ran green
   * unchanged at hub tip 56e36d9. Tripwire 433/0 at hub 56e36d9 /
-  * srv da430a9d. Re-sweep with
+   * srv da430a9d. Cite-currency 2026-10-02 (branch-hygiene close
+   * re-sweep): hub 7748d79 (owner decision — write-only RequestContext
+   * scaffolding deleted; AuthMiddleware shed 13 net lines above the
+   * challenge trio) and the 3843f8b/256aa25f proxy-doc expansions
+   * (ServerProxyController gained +23/+11 above its gate cluster) drifted 13
+   * cites: the hub AuthMiddleware trio re-anchored 5 lines up, and the hub
+   * ServerProxyController family moved a uniform +34 — the `scope_denied`
+   * pair landing at hub ServerProxyController.php:1093 for its second site,
+   * re-derived by reading both `'code' => 'proxy.scope_denied'` lines rather
+   * than the tripwire's +19 nearest-token hint at line 1078. The 480ba9f
+   * precedent's full-block re-derivation additionally caught two
+   * window-masked stale anchors: hub RelayProxyBridge.php line 313 to 315
+   * (the token now rides its own argument line) and hub Application.php line
+   * 203 to 204 (the json emit line). Server: 43b04158 (collections
+   * ownership Option A) net -5 in the file with -15 above the 429 helper —
+   * srv Core/Application.php:2827. All re-read at source at hub tip
+   * 256aa25f / server tip c42e166a, not by blanket delta; cites in files
+   * untouched since the stamp were spot-verified in place (srv
+   * AuthMiddleware.php:62 · hub McpController.php:352,
+   * hub RelayProxyManager.php:554,696 (`server.offline`,
+   * `gateway.timeout`), hub SubdomainController.php:128).
+   * Tripwire 440/0 at hub 256aa25f / srv c42e166a (the count rose with the
+   * seven current-state colon-cites this stamp re-verifies; historical
+   * coordinates stay colon-less prose). Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -240,13 +263,13 @@ declare const CODES: {
      * emit-wave promotes them.
      */
     readonly auth: {
-        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:117 */
+        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
         readonly REQUIRED: "auth.required";
         /** srv AdminMiddleware.php:101 (+9) · hub AdminMiddleware.php:62 */
         readonly NOT_ADMIN: "auth.not_admin";
-        /** hub AuthMiddleware.php:122, McpController.php:352 */
+        /** hub AuthMiddleware.php:117, McpController.php:352 */
         readonly INVALID_TOKEN: "auth.invalid_token";
-        /** hub AuthMiddleware.php:133 — token subject has no user row */
+        /** hub AuthMiddleware.php:128 — token subject has no user row */
         readonly USER_NOT_FOUND: "auth.user_not_found";
         /** srv SignupDisabledException.php:28 → srv AuthController.php:195 (`SignupDisabledException::ERROR_CODE` passthrough) */
         readonly SIGNUPS_DISABLED: "auth.signups_disabled";
@@ -368,7 +391,7 @@ declare const CODES: {
     /** Hub-side server lookup/tunnel failures (phlix-hub). */
     readonly server: {
         /**
-         * hub ServerProxyController.php:978 (+4 controllers). REUSE TARGET —
+         * hub ServerProxyController.php:1012 (+4 controllers). REUSE TARGET —
          * LANDED (hub #322): hub SubdomainController.php:128 — the
          * subdomain-allocation 404 now carries `server.not_found` on the `code`
          * channel with the legacy SCREAMING `SERVER_NOT_FOUND` parked
@@ -376,11 +399,11 @@ declare const CODES: {
          * clients may match either channel).
          */
         readonly NOT_FOUND: "server.not_found";
-        /** hub ServerProxyController.php:982 (+3 controllers) */
+        /** hub ServerProxyController.php:1016 (+3 controllers) */
         readonly NOT_OWNED: "server.not_owned";
-        /** hub ServerProxyController.php:1000 — relay manager absent */
+        /** hub ServerProxyController.php:1034 — relay manager absent */
         readonly RELAY_UNAVAILABLE: "server.relay_unavailable";
-        /** hub ServerProxyController.php:1007, RelayProxyManager.php:554 */
+        /** hub ServerProxyController.php:1041, RelayProxyManager.php:554 */
         readonly OFFLINE: "server.offline";
         /** hub RelayProxyManager.php:251 */
         readonly NO_TUNNEL: "server.no_tunnel";
@@ -395,12 +418,12 @@ declare const CODES: {
     };
     /** Hub reverse-proxy scope gates. */
     readonly proxy: {
-        /** hub ServerProxyController.php:1044,1059 */
+        /** hub ServerProxyController.php:1078,1093 */
         readonly SCOPE_DENIED: "proxy.scope_denied";
     };
     /** Hub bandwidth quota gate. */
     readonly quota: {
-        /** hub ServerProxyController.php:1019 */
+        /** hub ServerProxyController.php:1053 */
         readonly EXCEEDED: "quota.exceeded";
     };
     /**
@@ -413,7 +436,7 @@ declare const CODES: {
      * (dual placement; clients may match `code`, `error` text or `denial_type`).
      */
     readonly stream: {
-        /** hub ServerProxyController.php:1098 */
+        /** hub ServerProxyController.php:1132 */
         readonly LIMIT: "stream.limit";
         /**
           * srv StreamLimitMiddleware.php:139-143 (429) · PreRouterFastPaths.php:
@@ -440,7 +463,7 @@ declare const CODES: {
     };
     /** Hub→server upstream gateway failures. */
     readonly gateway: {
-        /** hub ServerProxyController.php:1131, RelayProxyManager.php:696, RelayProxyBridge.php:313 */
+        /** hub ServerProxyController.php:1165, RelayProxyManager.php:696, RelayProxyBridge.php:315 */
         readonly TIMEOUT: "gateway.timeout";
     };
     /** Hub relay endpoint-shape refusals. */
@@ -711,7 +734,7 @@ declare const CODES: {
      * resource name, emitted by more than one controller (or by both servers).
      */
     readonly common: {
-        /** srv Core/Application.php:2842 · hub Application.php:203 (+3) */
+        /** srv Core/Application.php:2827 · hub Application.php:204 (+3) */
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
@@ -1106,13 +1129,13 @@ export declare const ERROR_CODE: {
      * emit-wave promotes them.
      */
     readonly auth: {
-        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:117 */
+        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
         readonly REQUIRED: "auth.required";
         /** srv AdminMiddleware.php:101 (+9) · hub AdminMiddleware.php:62 */
         readonly NOT_ADMIN: "auth.not_admin";
-        /** hub AuthMiddleware.php:122, McpController.php:352 */
+        /** hub AuthMiddleware.php:117, McpController.php:352 */
         readonly INVALID_TOKEN: "auth.invalid_token";
-        /** hub AuthMiddleware.php:133 — token subject has no user row */
+        /** hub AuthMiddleware.php:128 — token subject has no user row */
         readonly USER_NOT_FOUND: "auth.user_not_found";
         /** srv SignupDisabledException.php:28 → srv AuthController.php:195 (`SignupDisabledException::ERROR_CODE` passthrough) */
         readonly SIGNUPS_DISABLED: "auth.signups_disabled";
@@ -1234,7 +1257,7 @@ export declare const ERROR_CODE: {
     /** Hub-side server lookup/tunnel failures (phlix-hub). */
     readonly server: {
         /**
-         * hub ServerProxyController.php:978 (+4 controllers). REUSE TARGET —
+         * hub ServerProxyController.php:1012 (+4 controllers). REUSE TARGET —
          * LANDED (hub #322): hub SubdomainController.php:128 — the
          * subdomain-allocation 404 now carries `server.not_found` on the `code`
          * channel with the legacy SCREAMING `SERVER_NOT_FOUND` parked
@@ -1242,11 +1265,11 @@ export declare const ERROR_CODE: {
          * clients may match either channel).
          */
         readonly NOT_FOUND: "server.not_found";
-        /** hub ServerProxyController.php:982 (+3 controllers) */
+        /** hub ServerProxyController.php:1016 (+3 controllers) */
         readonly NOT_OWNED: "server.not_owned";
-        /** hub ServerProxyController.php:1000 — relay manager absent */
+        /** hub ServerProxyController.php:1034 — relay manager absent */
         readonly RELAY_UNAVAILABLE: "server.relay_unavailable";
-        /** hub ServerProxyController.php:1007, RelayProxyManager.php:554 */
+        /** hub ServerProxyController.php:1041, RelayProxyManager.php:554 */
         readonly OFFLINE: "server.offline";
         /** hub RelayProxyManager.php:251 */
         readonly NO_TUNNEL: "server.no_tunnel";
@@ -1261,12 +1284,12 @@ export declare const ERROR_CODE: {
     };
     /** Hub reverse-proxy scope gates. */
     readonly proxy: {
-        /** hub ServerProxyController.php:1044,1059 */
+        /** hub ServerProxyController.php:1078,1093 */
         readonly SCOPE_DENIED: "proxy.scope_denied";
     };
     /** Hub bandwidth quota gate. */
     readonly quota: {
-        /** hub ServerProxyController.php:1019 */
+        /** hub ServerProxyController.php:1053 */
         readonly EXCEEDED: "quota.exceeded";
     };
     /**
@@ -1279,7 +1302,7 @@ export declare const ERROR_CODE: {
      * (dual placement; clients may match `code`, `error` text or `denial_type`).
      */
     readonly stream: {
-        /** hub ServerProxyController.php:1098 */
+        /** hub ServerProxyController.php:1132 */
         readonly LIMIT: "stream.limit";
         /**
           * srv StreamLimitMiddleware.php:139-143 (429) · PreRouterFastPaths.php:
@@ -1306,7 +1329,7 @@ export declare const ERROR_CODE: {
     };
     /** Hub→server upstream gateway failures. */
     readonly gateway: {
-        /** hub ServerProxyController.php:1131, RelayProxyManager.php:696, RelayProxyBridge.php:313 */
+        /** hub ServerProxyController.php:1165, RelayProxyManager.php:696, RelayProxyBridge.php:315 */
         readonly TIMEOUT: "gateway.timeout";
     };
     /** Hub relay endpoint-shape refusals. */
@@ -1577,7 +1600,7 @@ export declare const ERROR_CODE: {
      * resource name, emitted by more than one controller (or by both servers).
      */
     readonly common: {
-        /** srv Core/Application.php:2842 · hub Application.php:203 (+3) */
+        /** srv Core/Application.php:2827 · hub Application.php:204 (+3) */
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
