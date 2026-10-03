@@ -60,6 +60,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — prose-currency: `54977ea`'s commit message mislabeled the comment-only proof instrument as esbuild — actual proof surface was vite build + d.ts strip — 2026-10-03
+
+- **What was said.** The `54977ea` commit message claimed "Comment-only
+  proof: `esbuild --minify` of `src/errors.ts` byte-identical HEAD vs
+  working". This repo has no standalone esbuild step: `npm run build` is
+  `tsc --noEmit && vite build && tsc --declaration --emitDeclarationOnly`
+  plus the emit scripts (`package.json`), and esbuild is present only
+  transitively as a vite dependency. Commit messages are immutable, so the
+  correction is recorded forward here.
+- **What stands.** The comment-only claim itself stands, independently
+  evidenced by the same commit's other recorded facts: the registry stayed
+  byte-frozen (`dist/error-codes.json` md5 `40c1da48787f37d00a6fc9af6c64a1ac`,
+  204 codes), `dist/phlix-contracts.js` was byte-identical, and the real
+  instrument was the reproducible `vite build` plus the strip-comments diff
+  of `dist/errors.d.ts` (maps churning only in embedded sourcesContent
+  comments) — the classification the entry below already carries.
+- **No fictional prose in repo files.** `src/errors.ts` header and
+  `scripts/check-error-cites.mjs` header grepped for esbuild-instrument
+  prose: zero occurrences estate-wide (`grep -rn esbuild` over
+  `src/ scripts/ CHANGELOG.md package.json` hit nothing before this entry) —
+  the mislabel never propagated out of the commit message. CHANGELOG-only
+  correction; no source, dist, or registry change.
+- **Gates.** `npm run verify:cites` **440/0** re-run with the hub sibling at
+  `df39fc9` (hub's newest commit is a test-file docblock carrying no cited
+  coordinate — zero cite drift) · registry md5 re-checked on disk.
+
 ### Changed — docblock cites re-anchored at hub `256aa25f` / server `c42e166a` (tripwire 440/0)
 
 - **Trigger: docs-currency sweep against the advanced sibling tips.** The
