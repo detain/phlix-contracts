@@ -73,9 +73,9 @@
   * f44275f3bb1bbf1eb5ccb16a55e8bd2ae3d831b0 / server tip
   * 7baa398ad81532c8560668bd8d3ca01e357a4132 — hub f44275f flipped all three
   * leaf_hub_id sites onto the dedicated `leaf_hub_id_already_bound`: the two
-  * malformed-UUID 400 parse sites at hub FederationController.php:274 in
-  * createPeer and :356 in bindPeerLeafHubId, and the 409 already-bound
-  * conflict at :378. Server 7baa398a switched the playback-queue cap at srv
+  * malformed-UUID 400 parse sites at hub FederationController.php:311 in
+  * createPeer and :397 in bindPeerLeafHubId, and the 409 already-bound
+  * conflict at :419. Server 7baa398a switched the playback-queue cap at srv
   * SyncPlayManager.php line 1230 to emit `syncplay.queue_limit_exceeded` while
   * the group-count cap keeps `syncplay.group_limit_reached` at line 676 — the
   * documented split. No registry coordinate span moved under either tip
@@ -117,7 +117,26 @@
    * `gateway.timeout`), hub SubdomainController.php:128).
    * Tripwire 440/0 at hub 256aa25f / srv c42e166a (the count rose with the
    * seven current-state colon-cites this stamp re-verifies; historical
-   * coordinates stay colon-less prose). Re-sweep with
+   * coordinates stay colon-less prose). Cite-currency 2026-10-03
+    * (docs-currency sweep): hub 98a10ca (W5 Phase-6 settings program — the
+    * federation.enabled resolver and its per-mutator guards were inserted
+    * above the cited lines; cumulative drift FederationController +33 to
+    * +77, InviteLinkController +27/+36, LibraryShareController +9,
+    * ServerClaimController +6, ClaimRequestHandler +43/+56), server 1f8a09cc
+    * (F7 auth-method toggles — the three AuthProviderController cites +19,
+    * +51, +51) and f4ac242f (W4 header settings — the HttpHandler CSRF-gate
+    * cite +12) drifted 74 cites; all re-anchored at source at hub tip
+    * 5a048a6 / server tip f4326191, not by blanket delta — every moved
+    * anchor is the same statement line re-mapped through the diff (the
+    * leaf-hub-id trio re-read inside createPeer/bindPeerLeafHubId to
+    * disambiguate identical badRequest lines); the hub tip moved to
+    * 5a048a6 (FederationPeerManager docs-truth pass) mid-sweep — it
+    * touches none of the cited files, every anchor holds unchanged there
+    * and that is the stamped base. 98a10ca also added fresh
+    * provider.not_configured emitters (guardFederationDisabled across 11
+    * mutators) — value already registered, no cite added in this
+    * comment-only sweep. Tripwire 440/0 at hub 5a048a6 / srv f4326191.
+    * Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -345,7 +364,7 @@ declare const CODES: {
         /** srv AccountLinkController.php:432,444, HubTokenController.php:91 */
         readonly JWT_INVALID: "hub.jwt_invalid";
         /**
-         * hub ServerClaimController.php:49,162 · hub ServerController.php:64,126 ·
+         * hub ServerClaimController.php:49,168 · hub ServerController.php:64,126 ·
          * hub HubProtocolMiddleware.php:41-42 — 400 when the `protocol` header is
          * absent or not `phlix-hub`. Hub W3 promoted: dotted rides `code`, the
          * SCREAMING `HUB_PROTOCOL_UNSUPPORTED` is parked in the `error` TEXT of
@@ -353,7 +372,7 @@ declare const CODES: {
          */
         readonly PROTOCOL_UNSUPPORTED: "hub.protocol_unsupported";
         /**
-         * hub ServerClaimController.php:174 · hub ServerController.php:246 —
+         * hub ServerClaimController.php:180 · hub ServerController.php:246 —
          * the mapError default 500. Hub W3 promoted: dotted rides `code`, the
          * SCREAMING `HUB_INTERNAL_ERROR` is parked in the `error` TEXT (dual
          * placement; clients may match either).
@@ -371,19 +390,19 @@ declare const CODES: {
     readonly claim: {
         /**
          * hub ServerClaimController.php:144 (404 arm 142-147) ← throws at
-         * hub ClaimRequestHandler.php:162,189 — dotted on `code`, SCREAMING
+         * hub ClaimRequestHandler.php:205,232 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_NOT_FOUND` parked in `error` text (dual).
          */
         readonly CODE_NOT_FOUND: "claim.code_not_found";
         /**
          * hub ServerClaimController.php:150 (410 arm 148-153) ← throw at
-         * hub ClaimRequestHandler.php:199 — dotted on `code`, SCREAMING
+         * hub ClaimRequestHandler.php:242 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_EXPIRED` parked in `error` text (dual).
          */
         readonly CODE_EXPIRED: "claim.code_expired";
         /**
          * hub ServerClaimController.php:156 (409 arm 154-159) ← throw at
-         * hub ClaimRequestHandler.php:206 — dotted on `code`, SCREAMING
+         * hub ClaimRequestHandler.php:249 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_ALREADY_CLAIMED` parked in `error` text (dual).
          */
         readonly CODE_ALREADY_CLAIMED: "claim.code_already_claimed";
@@ -408,8 +427,8 @@ declare const CODES: {
         /** hub RelayProxyManager.php:251 */
         readonly NO_TUNNEL: "server.no_tunnel";
         /**
-         * hub ServerClaimController.php:168 (400 arm 166-171) ← throws at
-         * hub ClaimRequestHandler.php:399,402,405,409 — the server's Ed25519 key
+         * hub ServerClaimController.php:174 (400 arm 172-177) ← throws at
+         * hub ClaimRequestHandler.php:455,458,461,465 — the server's Ed25519 key
          * failed validation during claim. Hub W3 promoted: dotted rides `code`,
          * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
          * placement; clients may match either).
@@ -602,7 +621,7 @@ declare const CODES: {
     };
     /** Server CSRF origin gate. */
     readonly csrf: {
-        /** srv Workerman/HttpHandler.php:182 */
+        /** srv Workerman/HttpHandler.php:194 */
         readonly INVALID_ORIGIN: "csrf.invalid_origin";
     };
     /** The actor resolved from the token itself (hub /me). */
@@ -738,75 +757,75 @@ declare const CODES: {
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
-        /** srv QuickConnectController.php:258,301 · hub InviteLinkController.php:110 */
+        /** srv QuickConnectController.php:258,301 · hub InviteLinkController.php:137 */
         readonly INVALID_REQUEST: "invalid_request";
-        /** hub FederationController.php:106 · InviteLinkController.php:53 · LibraryShareController.php:52,240 */
+        /** hub FederationController.php:139 · InviteLinkController.php:80 · LibraryShareController.php:52,249 */
         readonly INVALID_BODY: "invalid_body";
         /** srv QuickConnectController.php:380-406 · hub AdminUpdatesController.php:109 */
         readonly INVALID_PAYLOAD: "invalid_payload";
-        /** hub InviteLinkController.php:116 (+3) · LibraryShareController.php:138 (+2) */
+        /** hub InviteLinkController.php:143 (+3) · LibraryShareController.php:147 (+2) */
         readonly UNKNOWN_ERROR: "unknown_error";
         /** hub AdminUserController.php:469 */
         readonly VALIDATION_FAILED: "validation_failed";
         /** hub RequestController.php:387 · UserQuotaController.php:332 · AdminUpdatesController.php:165 */
         readonly ADMIN_REQUIRED: "admin_required";
-        /** hub FederationController.php:848,895 */
+        /** hub FederationController.php:917,968 */
         readonly MASTER_ONLY: "master_only";
-        /** hub FederationController.php:139,291 */
+        /** hub FederationController.php:172,328 */
         readonly INVALID_URL: "invalid_url";
-        /** hub FederationController.php:123 */
+        /** hub FederationController.php:156 */
         readonly INVALID_ROLE: "invalid_role";
-        /** hub FederationController.php:615 (also LibraryShareController.php:275) */
+        /** hub FederationController.php:672 (also LibraryShareController.php:284) */
         readonly INVALID_PERMISSION: "invalid_permission";
-        /** hub FederationController.php:278 */
+        /** hub FederationController.php:315 */
         readonly MISSING_URL: "missing_url";
-        /** hub FederationController.php:286 */
+        /** hub FederationController.php:323 */
         readonly MISSING_NAME: "missing_name";
-        /** hub FederationController.php:282 */
+        /** hub FederationController.php:319 */
         readonly MISSING_PUBLIC_KEY: "missing_public_key";
-        /** hub FederationController.php:915 · UserQuotaController.php:350 */
+        /** hub FederationController.php:988 · UserQuotaController.php:350 */
         readonly MISSING_USER_ID: "missing_user_id";
-        /** hub InviteLinkController.php:71 · LibraryController.php:54 · LibraryShareController.php:77 */
+        /** hub InviteLinkController.php:98 · LibraryController.php:54 · LibraryShareController.php:77 */
         readonly MISSING_SERVER_ID: "missing_server_id";
-        /** hub InviteLinkController.php:103 · LibraryController.php:62 · LibraryShareController.php:118 */
+        /** hub InviteLinkController.php:130 · LibraryController.php:62 · LibraryShareController.php:127 */
         readonly NOT_SERVER_OWNER: "not_server_owner";
     };
     /** Hub federation peer/offer/delegation CRUD (bare snake on `code`). */
     readonly federation: {
-        /** hub FederationController.php:299 */
+        /** hub FederationController.php:336 */
         readonly PEER_URL_EXISTS: "peer_url_exists";
-        /** hub FederationController.php:308 */
+        /** hub FederationController.php:345 */
         readonly PEER_KEY_EXISTS: "peer_key_exists";
-        /** hub FederationController.php:363 */
+        /** hub FederationController.php:404 */
         readonly PEER_NOT_FOUND: "peer_not_found";
-        /** hub FederationController.php:752,802 */
+        /** hub FederationController.php:817,871 */
         readonly OFFER_NOT_FOUND: "offer_not_found";
-        /** hub FederationController.php:760,810 */
+        /** hub FederationController.php:825,879 */
         readonly OFFER_ALREADY_RESPONDED: "offer_already_responded";
-        /** hub FederationController.php:956 */
+        /** hub FederationController.php:1033 */
         readonly DELEGATION_NOT_FOUND: "delegation_not_found";
-        /** hub FederationController.php:347 */
+        /** hub FederationController.php:388 */
         readonly MISSING_PEER_ID: "missing_peer_id";
-        /** hub FederationController.php:745,795 */
+        /** hub FederationController.php:810,864 */
         readonly MISSING_OFFER_ID: "missing_offer_id";
-        /** hub FederationController.php:949 */
+        /** hub FederationController.php:1026 */
         readonly MISSING_DELEGATION_ID: "missing_delegation_id";
-        /** hub FederationController.php:599 (also LibraryShareController.php:84) */
+        /** hub FederationController.php:656 (also LibraryShareController.php:84) */
         readonly MISSING_LIBRARY_ID: "missing_library_id";
-        /** hub FederationController.php:619 (also LibraryShareController.php:91) */
+        /** hub FederationController.php:676 (also LibraryShareController.php:91) */
         readonly MISSING_LIBRARY_NAME: "missing_library_name";
         /**
-         * hub FederationController.php:378 — LIVE on the wire since hub f44275f
+         * hub FederationController.php:419 — LIVE on the wire since hub f44275f
          * (deferred-mint flip landed right after the v0.5.3 pin): all three
          * leaf_hub_id sites now emit this dedicated code. The immutable
          * leaf-hub-id bind conflict (409 "already bound to a different value")
-         * emits it at :378 in bindPeerLeafHubId, and the two malformed-UUID 400
-         * parse sites emit it too — :274 in createPeer
-         * (`POST /api/v1/me/federation/peers`) and :356 in bindPeerLeafHubId
+         * emits it at :419 in bindPeerLeafHubId, and the two malformed-UUID 400
+         * parse sites emit it too — :311 in createPeer
+         * (`POST /api/v1/me/federation/peers`) and :397 in bindPeerLeafHubId
          * (`PUT /api/v1/me/federation/peers/{id}/leaf-hub-id`), both via the
          * hub's `badRequest` helper (status 400). The earlier f30e8a7 shape —
          * the unified family riding the registered `invalid_request` generic
-         * with the condition in `reason`, after :274/:356 had dropped their
+         * with the condition in `reason`, after :311/:397 had dropped their
          * never-registered `invalid_leaf_hub_id` literal — is retired; the
          * free-form `reason` still carries the condition for humans and MCP.
          */
@@ -814,32 +833,32 @@ declare const CODES: {
     };
     /** Hub library-share CRUD (bare snake on `code`). */
     readonly share: {
-        /** hub FederationController.php:680 · LibraryShareController.php:196,262 */
+        /** hub FederationController.php:741 · LibraryShareController.php:205,271 */
         readonly NOT_FOUND: "share_not_found";
-        /** hub FederationController.php:673 · LibraryShareController.php:184,232 */
+        /** hub FederationController.php:734 · LibraryShareController.php:193,241 */
         readonly MISSING_SHARE_ID: "missing_share_id";
         /** hub LibraryShareController.php:70 */
         readonly MISSING_COLLABORATOR_EMAIL: "missing_collaborator_email";
-        /** hub LibraryShareController.php:125 */
+        /** hub LibraryShareController.php:134 */
         readonly EXISTS: "share_exists";
-        /** hub LibraryShareController.php:202,268 */
+        /** hub LibraryShareController.php:211,277 */
         readonly NOT_OWNER: "not_share_owner";
-        /** hub LibraryShareController.php:249 */
+        /** hub LibraryShareController.php:258 */
         readonly MISSING_PERMISSION: "missing_permission";
     };
     /** Hub invite-link lifecycle (bare snake on `code`). */
     readonly invite: {
-        /** hub InviteLinkController.php:160 */
+        /** hub InviteLinkController.php:187 */
         readonly MISSING_LINK_ID: "missing_link_id";
-        /** hub InviteLinkController.php:172,230 */
+        /** hub InviteLinkController.php:199,266 */
         readonly LINK_NOT_FOUND: "invite_link_not_found";
-        /** hub InviteLinkController.php:178 */
+        /** hub InviteLinkController.php:205 */
         readonly NOT_LINK_OWNER: "not_link_owner";
-        /** hub InviteLinkController.php:209 */
+        /** hub InviteLinkController.php:236 */
         readonly MISSING_TOKEN: "missing_token";
-        /** hub InviteLinkController.php:223 */
+        /** hub InviteLinkController.php:259 */
         readonly INVALID: "invalid_invite";
-        /** hub InviteLinkController.php:236 — 410 */
+        /** hub InviteLinkController.php:272 — 410 */
         readonly EXPIRED_OR_EXHAUSTED: "invite_expired_or_exhausted";
     };
     /** Hub media-request workflow (bare snake on `code`). */
@@ -941,14 +960,14 @@ declare const CODES: {
      */
     readonly provider: {
         /**
-         * srv AuthProviderController.php:124 (409, text 'not_configured') ·
+         * srv AuthProviderController.php:143 (409, text 'not_configured') ·
          * OidcCallbackController.php:281,488 · GithubCallbackController.php:249,
          * 421 (text 'provider_not_configured').
          */
         readonly NOT_CONFIGURED: "provider.not_configured";
-        /** srv AuthProviderController.php:175 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
+        /** srv AuthProviderController.php:226 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
         readonly UNKNOWN: "provider.unknown";
-        /** srv AuthProviderController.php:195 (404) — provider row missing. Today text 'provider_not_found'. */
+        /** srv AuthProviderController.php:246 (404) — provider row missing. Today text 'provider_not_found'. */
         readonly NOT_FOUND: "provider.not_found";
         /** srv OidcCallbackController.php:289 — registered provider isn't OIDC. Today text 'invalid_provider_type'. */
         readonly INVALID_TYPE: "provider.invalid_type";
@@ -1211,7 +1230,7 @@ export declare const ERROR_CODE: {
         /** srv AccountLinkController.php:432,444, HubTokenController.php:91 */
         readonly JWT_INVALID: "hub.jwt_invalid";
         /**
-         * hub ServerClaimController.php:49,162 · hub ServerController.php:64,126 ·
+         * hub ServerClaimController.php:49,168 · hub ServerController.php:64,126 ·
          * hub HubProtocolMiddleware.php:41-42 — 400 when the `protocol` header is
          * absent or not `phlix-hub`. Hub W3 promoted: dotted rides `code`, the
          * SCREAMING `HUB_PROTOCOL_UNSUPPORTED` is parked in the `error` TEXT of
@@ -1219,7 +1238,7 @@ export declare const ERROR_CODE: {
          */
         readonly PROTOCOL_UNSUPPORTED: "hub.protocol_unsupported";
         /**
-         * hub ServerClaimController.php:174 · hub ServerController.php:246 —
+         * hub ServerClaimController.php:180 · hub ServerController.php:246 —
          * the mapError default 500. Hub W3 promoted: dotted rides `code`, the
          * SCREAMING `HUB_INTERNAL_ERROR` is parked in the `error` TEXT (dual
          * placement; clients may match either).
@@ -1237,19 +1256,19 @@ export declare const ERROR_CODE: {
     readonly claim: {
         /**
          * hub ServerClaimController.php:144 (404 arm 142-147) ← throws at
-         * hub ClaimRequestHandler.php:162,189 — dotted on `code`, SCREAMING
+         * hub ClaimRequestHandler.php:205,232 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_NOT_FOUND` parked in `error` text (dual).
          */
         readonly CODE_NOT_FOUND: "claim.code_not_found";
         /**
          * hub ServerClaimController.php:150 (410 arm 148-153) ← throw at
-         * hub ClaimRequestHandler.php:199 — dotted on `code`, SCREAMING
+         * hub ClaimRequestHandler.php:242 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_EXPIRED` parked in `error` text (dual).
          */
         readonly CODE_EXPIRED: "claim.code_expired";
         /**
          * hub ServerClaimController.php:156 (409 arm 154-159) ← throw at
-         * hub ClaimRequestHandler.php:206 — dotted on `code`, SCREAMING
+         * hub ClaimRequestHandler.php:249 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_ALREADY_CLAIMED` parked in `error` text (dual).
          */
         readonly CODE_ALREADY_CLAIMED: "claim.code_already_claimed";
@@ -1274,8 +1293,8 @@ export declare const ERROR_CODE: {
         /** hub RelayProxyManager.php:251 */
         readonly NO_TUNNEL: "server.no_tunnel";
         /**
-         * hub ServerClaimController.php:168 (400 arm 166-171) ← throws at
-         * hub ClaimRequestHandler.php:399,402,405,409 — the server's Ed25519 key
+         * hub ServerClaimController.php:174 (400 arm 172-177) ← throws at
+         * hub ClaimRequestHandler.php:455,458,461,465 — the server's Ed25519 key
          * failed validation during claim. Hub W3 promoted: dotted rides `code`,
          * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
          * placement; clients may match either).
@@ -1468,7 +1487,7 @@ export declare const ERROR_CODE: {
     };
     /** Server CSRF origin gate. */
     readonly csrf: {
-        /** srv Workerman/HttpHandler.php:182 */
+        /** srv Workerman/HttpHandler.php:194 */
         readonly INVALID_ORIGIN: "csrf.invalid_origin";
     };
     /** The actor resolved from the token itself (hub /me). */
@@ -1604,75 +1623,75 @@ export declare const ERROR_CODE: {
         readonly RATE_LIMITED: "rate_limited";
         /** srv AuthController.php:337,355 (LDAP) */
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
-        /** srv QuickConnectController.php:258,301 · hub InviteLinkController.php:110 */
+        /** srv QuickConnectController.php:258,301 · hub InviteLinkController.php:137 */
         readonly INVALID_REQUEST: "invalid_request";
-        /** hub FederationController.php:106 · InviteLinkController.php:53 · LibraryShareController.php:52,240 */
+        /** hub FederationController.php:139 · InviteLinkController.php:80 · LibraryShareController.php:52,249 */
         readonly INVALID_BODY: "invalid_body";
         /** srv QuickConnectController.php:380-406 · hub AdminUpdatesController.php:109 */
         readonly INVALID_PAYLOAD: "invalid_payload";
-        /** hub InviteLinkController.php:116 (+3) · LibraryShareController.php:138 (+2) */
+        /** hub InviteLinkController.php:143 (+3) · LibraryShareController.php:147 (+2) */
         readonly UNKNOWN_ERROR: "unknown_error";
         /** hub AdminUserController.php:469 */
         readonly VALIDATION_FAILED: "validation_failed";
         /** hub RequestController.php:387 · UserQuotaController.php:332 · AdminUpdatesController.php:165 */
         readonly ADMIN_REQUIRED: "admin_required";
-        /** hub FederationController.php:848,895 */
+        /** hub FederationController.php:917,968 */
         readonly MASTER_ONLY: "master_only";
-        /** hub FederationController.php:139,291 */
+        /** hub FederationController.php:172,328 */
         readonly INVALID_URL: "invalid_url";
-        /** hub FederationController.php:123 */
+        /** hub FederationController.php:156 */
         readonly INVALID_ROLE: "invalid_role";
-        /** hub FederationController.php:615 (also LibraryShareController.php:275) */
+        /** hub FederationController.php:672 (also LibraryShareController.php:284) */
         readonly INVALID_PERMISSION: "invalid_permission";
-        /** hub FederationController.php:278 */
+        /** hub FederationController.php:315 */
         readonly MISSING_URL: "missing_url";
-        /** hub FederationController.php:286 */
+        /** hub FederationController.php:323 */
         readonly MISSING_NAME: "missing_name";
-        /** hub FederationController.php:282 */
+        /** hub FederationController.php:319 */
         readonly MISSING_PUBLIC_KEY: "missing_public_key";
-        /** hub FederationController.php:915 · UserQuotaController.php:350 */
+        /** hub FederationController.php:988 · UserQuotaController.php:350 */
         readonly MISSING_USER_ID: "missing_user_id";
-        /** hub InviteLinkController.php:71 · LibraryController.php:54 · LibraryShareController.php:77 */
+        /** hub InviteLinkController.php:98 · LibraryController.php:54 · LibraryShareController.php:77 */
         readonly MISSING_SERVER_ID: "missing_server_id";
-        /** hub InviteLinkController.php:103 · LibraryController.php:62 · LibraryShareController.php:118 */
+        /** hub InviteLinkController.php:130 · LibraryController.php:62 · LibraryShareController.php:127 */
         readonly NOT_SERVER_OWNER: "not_server_owner";
     };
     /** Hub federation peer/offer/delegation CRUD (bare snake on `code`). */
     readonly federation: {
-        /** hub FederationController.php:299 */
+        /** hub FederationController.php:336 */
         readonly PEER_URL_EXISTS: "peer_url_exists";
-        /** hub FederationController.php:308 */
+        /** hub FederationController.php:345 */
         readonly PEER_KEY_EXISTS: "peer_key_exists";
-        /** hub FederationController.php:363 */
+        /** hub FederationController.php:404 */
         readonly PEER_NOT_FOUND: "peer_not_found";
-        /** hub FederationController.php:752,802 */
+        /** hub FederationController.php:817,871 */
         readonly OFFER_NOT_FOUND: "offer_not_found";
-        /** hub FederationController.php:760,810 */
+        /** hub FederationController.php:825,879 */
         readonly OFFER_ALREADY_RESPONDED: "offer_already_responded";
-        /** hub FederationController.php:956 */
+        /** hub FederationController.php:1033 */
         readonly DELEGATION_NOT_FOUND: "delegation_not_found";
-        /** hub FederationController.php:347 */
+        /** hub FederationController.php:388 */
         readonly MISSING_PEER_ID: "missing_peer_id";
-        /** hub FederationController.php:745,795 */
+        /** hub FederationController.php:810,864 */
         readonly MISSING_OFFER_ID: "missing_offer_id";
-        /** hub FederationController.php:949 */
+        /** hub FederationController.php:1026 */
         readonly MISSING_DELEGATION_ID: "missing_delegation_id";
-        /** hub FederationController.php:599 (also LibraryShareController.php:84) */
+        /** hub FederationController.php:656 (also LibraryShareController.php:84) */
         readonly MISSING_LIBRARY_ID: "missing_library_id";
-        /** hub FederationController.php:619 (also LibraryShareController.php:91) */
+        /** hub FederationController.php:676 (also LibraryShareController.php:91) */
         readonly MISSING_LIBRARY_NAME: "missing_library_name";
         /**
-         * hub FederationController.php:378 — LIVE on the wire since hub f44275f
+         * hub FederationController.php:419 — LIVE on the wire since hub f44275f
          * (deferred-mint flip landed right after the v0.5.3 pin): all three
          * leaf_hub_id sites now emit this dedicated code. The immutable
          * leaf-hub-id bind conflict (409 "already bound to a different value")
-         * emits it at :378 in bindPeerLeafHubId, and the two malformed-UUID 400
-         * parse sites emit it too — :274 in createPeer
-         * (`POST /api/v1/me/federation/peers`) and :356 in bindPeerLeafHubId
+         * emits it at :419 in bindPeerLeafHubId, and the two malformed-UUID 400
+         * parse sites emit it too — :311 in createPeer
+         * (`POST /api/v1/me/federation/peers`) and :397 in bindPeerLeafHubId
          * (`PUT /api/v1/me/federation/peers/{id}/leaf-hub-id`), both via the
          * hub's `badRequest` helper (status 400). The earlier f30e8a7 shape —
          * the unified family riding the registered `invalid_request` generic
-         * with the condition in `reason`, after :274/:356 had dropped their
+         * with the condition in `reason`, after :311/:397 had dropped their
          * never-registered `invalid_leaf_hub_id` literal — is retired; the
          * free-form `reason` still carries the condition for humans and MCP.
          */
@@ -1680,32 +1699,32 @@ export declare const ERROR_CODE: {
     };
     /** Hub library-share CRUD (bare snake on `code`). */
     readonly share: {
-        /** hub FederationController.php:680 · LibraryShareController.php:196,262 */
+        /** hub FederationController.php:741 · LibraryShareController.php:205,271 */
         readonly NOT_FOUND: "share_not_found";
-        /** hub FederationController.php:673 · LibraryShareController.php:184,232 */
+        /** hub FederationController.php:734 · LibraryShareController.php:193,241 */
         readonly MISSING_SHARE_ID: "missing_share_id";
         /** hub LibraryShareController.php:70 */
         readonly MISSING_COLLABORATOR_EMAIL: "missing_collaborator_email";
-        /** hub LibraryShareController.php:125 */
+        /** hub LibraryShareController.php:134 */
         readonly EXISTS: "share_exists";
-        /** hub LibraryShareController.php:202,268 */
+        /** hub LibraryShareController.php:211,277 */
         readonly NOT_OWNER: "not_share_owner";
-        /** hub LibraryShareController.php:249 */
+        /** hub LibraryShareController.php:258 */
         readonly MISSING_PERMISSION: "missing_permission";
     };
     /** Hub invite-link lifecycle (bare snake on `code`). */
     readonly invite: {
-        /** hub InviteLinkController.php:160 */
+        /** hub InviteLinkController.php:187 */
         readonly MISSING_LINK_ID: "missing_link_id";
-        /** hub InviteLinkController.php:172,230 */
+        /** hub InviteLinkController.php:199,266 */
         readonly LINK_NOT_FOUND: "invite_link_not_found";
-        /** hub InviteLinkController.php:178 */
+        /** hub InviteLinkController.php:205 */
         readonly NOT_LINK_OWNER: "not_link_owner";
-        /** hub InviteLinkController.php:209 */
+        /** hub InviteLinkController.php:236 */
         readonly MISSING_TOKEN: "missing_token";
-        /** hub InviteLinkController.php:223 */
+        /** hub InviteLinkController.php:259 */
         readonly INVALID: "invalid_invite";
-        /** hub InviteLinkController.php:236 — 410 */
+        /** hub InviteLinkController.php:272 — 410 */
         readonly EXPIRED_OR_EXHAUSTED: "invite_expired_or_exhausted";
     };
     /** Hub media-request workflow (bare snake on `code`). */
@@ -1807,14 +1826,14 @@ export declare const ERROR_CODE: {
      */
     readonly provider: {
         /**
-         * srv AuthProviderController.php:124 (409, text 'not_configured') ·
+         * srv AuthProviderController.php:143 (409, text 'not_configured') ·
          * OidcCallbackController.php:281,488 · GithubCallbackController.php:249,
          * 421 (text 'provider_not_configured').
          */
         readonly NOT_CONFIGURED: "provider.not_configured";
-        /** srv AuthProviderController.php:175 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
+        /** srv AuthProviderController.php:226 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
         readonly UNKNOWN: "provider.unknown";
-        /** srv AuthProviderController.php:195 (404) — provider row missing. Today text 'provider_not_found'. */
+        /** srv AuthProviderController.php:246 (404) — provider row missing. Today text 'provider_not_found'. */
         readonly NOT_FOUND: "provider.not_found";
         /** srv OidcCallbackController.php:289 — registered provider isn't OIDC. Today text 'invalid_provider_type'. */
         readonly INVALID_TYPE: "provider.invalid_type";

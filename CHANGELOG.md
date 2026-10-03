@@ -60,6 +60,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites re-anchored at hub `5a048a6` / server `f4326191` (74 drifts; tripwire 440/0) — 2026-10-03
+
+- **Trigger: the tripwire fired as designed.** After the hub W5 and server
+  F7/W4 merges `npm run verify:cites` measured **ok=366 problems=74** (was
+  440/0 at hub `df39fc9` / srv `4f06573a`). Drift sources, all additive
+  insertions above cited lines: hub `98a10ca` (W5 Phase-6 — the
+  federation.enabled resolver, the `guardFederationDisabled` helper and the
+  per-mutator guards shifted FederationController cites +33 to +77,
+  InviteLinkController +27/+36, LibraryShareController +9,
+  ServerClaimController +6, ClaimRequestHandler +43/+56), server `1f8a09cc`
+  (F7 auth-method toggles — the three AuthProviderController cites +19,
+  +51, +51) and server `f4ac242f` (W4 header settings — HttpHandler
+  CSRF-gate cite +12).
+- **74 anchors re-anchored, per family:** FederationController 35 (incl.
+  the eight leaf-hub-id mentions across the module-header f44275f stamp and
+  the `LEAF_HUB_ID_ALREADY_BOUND` entry: parse sites 274→311 and 356→397,
+  409 conflict 378→419), InviteLinkController 12, LibraryShareController
+  12, ClaimRequestHandler 8 (throws 162/189→205/232, 199→242, 206→249,
+  399/402/405/409→455/458/461/465), ServerClaimController 3 — with the
+  `(400 arm 166-171)` span re-derived from the arm's six-line shape to
+  172-177 (the neighbouring 404/410/409 arm spans sit above the insertion
+  point and held unchanged) — AuthProviderController 3 (124→143, 175→226,
+  195→246) and Workerman/HttpHandler 1 (182→194).
+- **Method: diff-mapped, not blanket-delta.** Every new coordinate comes
+  from a difflib old→new line map of the cited FILE between the previous
+  stamped base and the current tip, requiring the cited statement text to
+  survive verbatim at the mapped line — then the leaf-hub-id sites and both
+  ServerClaimController arm clusters were additionally re-read in place to
+  disambiguate identical token lines. This mattered: the tool's
+  nearest-token hints pointed at ADJACENT emit sites for several cites (e.g.
+  cite 795 hint "nearest :810 (+15)" while the true bindPeer-response site
+  moved +69 to 864), exactly the window-mask failure class the `256aa25f`
+  sweep logged. Zero cites reported MISS; no semantics changed, position
+  only.
+- **Mid-sweep base move recorded honestly.** The hub tip advanced
+  `8a8780c` → `5a048a6` (FederationPeerManager docs-truth pass) while this
+  sweep ran; `git diff 8a8780c..5a048a6` over the five cited hub files is
+  EMPTY, so every anchor holds unchanged at the newer tip and `5a048a6` is
+  the stamped base (module header carries the note).
+- **Scope honesty.** `98a10ca` also introduced NEW `provider.not_configured`
+  emitters hub-side (`guardFederationDisabled` across 11 federation
+  mutators). The registry already carries that value and this is a
+  comment-only currency sweep — no cite was added for the new emit sites;
+  that is a future semantic re-vendor call, not docs currency.
+- **Comment-only proof.** `src/errors.ts` diff is 100% docblock lines
+  (changed-line census: every added/removed line matches a comment gutter).
+  Registry bytes frozen: `dist/error-codes.json` md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` (204 codes) unchanged before/after.
+  `npm run build` (tsc --noEmit + vite + declaration emit + all three emit
+  scripts) → 30 of 33 dist files byte-identical; `dist/phlix-contracts.js`
+  and `dist/phlix-contracts.umd.cjs` cmp-IDENTICAL; `dist/errors.d.ts`
+  comment-STRIPPED is byte-identical (doc comments re-embedded only); the
+  two `.map` files churn in exactly 2 tokens each, both pure VLQ
+  source-LINE-delta re-encodings (`C8K1B`→`CiM1B`, `C71Ca`→`Ch3Ca`) with
+  6,303/6,285 tokens identical — the `0be4146` precedent class.
+- **Gates.** `npm run verify:cites` **ok=440 problems=0** exit 0 at hub
+  `5a048a6` / srv `f4326191` · `npm run lint` clean · `npm run test:run`
+  **171/171** (measured this lane) · registry md5 re-checked on disk.
+
 ### Fixed — prose-currency: `54977ea`'s commit message mislabeled the comment-only proof instrument as esbuild — actual proof surface was vite build + d.ts strip — 2026-10-03
 
 - **What was said.** The `54977ea` commit message claimed "Comment-only
