@@ -60,6 +60,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites re-anchored at hub `8aba9c9` / server `e55e0ee0` (3 drifts, B2 provider-parity lane; tripwire 442/0) — 2026-10-07
+
+- **Trigger: the tripwire fired as designed.** After the server B2
+  provider-parity merge, `npm run verify:cites` measured **ok=439
+  problems=3** at hub `8aba9c9` / srv `e55e0ee0` — exactly the three
+  `provider`-family cites on `srv AuthProviderController.php`. All three
+  drifted cites re-anchored; every other cite re-ran green unchanged at
+  these tips.
+- **All three drifts are pure relocations, re-read at source (not blanket
+  delta).** Each cited statement is byte-unchanged — only its line moved:
+  the enable-path 409 `'not_configured'` emit `143` to `154` (a +11
+  zero-transaction design docblock inserted above it in `enableProvider`),
+  the `unknownProvider` helper's 404 `'unknown_provider'` emit `226` to
+  `264`, and the `getConfigSchema` registry-miss 404 `'provider_not_found'`
+  emit `246` to `284` (both +38: the disableProvider B2 docblock and the
+  restructured guard arm above them). The old coordinates matched the
+  handoff's claims exactly.
+- **Moved vs wrapped, stated honestly.** The disable refusal envelopes
+  (422 `AuthMethodLockoutException` arm, 500
+  `AuthMethodGuardCheckFailedException` arm) were WRAPPED in the new `guardAndPersist` protocol, not
+  relocated — the 422 body lines are byte-identical, the arm restructured
+  around the typed exception — and no registry cite rides them, so nothing
+  changed doc-side there. No new `provider.not_configured`-style emit sites
+  needed citing: `e55e0ee0` adds no new wire-code emitters (scope: comment
+  currency only).
+- **Stamped base.** Module-header currency stamp extended; base moves from
+  hub `e5f5dd9` / srv `759b0a79` to hub `8aba9c9` / srv `e55e0ee0`. Hub
+  `FederationController.php` is byte-unchanged since `e5f5dd9` (the only
+  hub merges since are the SUPPLEMENTAL_META retirement and
+  ServerProxyController doc prose — neither carries a registry cite).
+- **Comment-only proof.** `src/errors.ts` diff is 100% docblock lines
+  (mechanical census: zero changed lines outside comment gutters).
+  Registry bytes frozen: `dist/error-codes.json` md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` (204 codes); route manifest
+  `915796837d38a77733c169996d97640c` (412 tuples) and
+  `dist/mcp-scopes.json` `8c92c0703eae8a429c509ff16e0d185d` untouched.
+  Bundles `dist/phlix-contracts.js` (`43267ee2…`) and
+  `dist/phlix-contracts.umd.cjs` (`453d2a1f…`) rebuild cmp-IDENTICAL;
+  `dist/errors.d.ts` comment-stripped identical (its raw delta is the +17
+  docblock-line carry, same class as `53b5d7a`'s +13/+5). Maps churn is
+  pure VLQ source-line re-encode: both `.js.map` and `.umd.cjs.map` move
+  exactly the 857 segments whose source is `../src/errors.ts` by a uniform
+  +17 sourceLine delta — zero other-field changes across all segments
+  (genCol/sourceCol/nameIndex verified), non-errors.ts segments byte-ident;
+  `sourcesContent` moves only in the errors.ts entry, exactly matching
+  `src/errors.ts`. `0be4146`/`6519b53` precedent class.
+- **Gates.** `npm run verify:cites` **ok=442 problems=0** exit 0 at hub
+  `8aba9c9` / srv `e55e0ee0` · lint clean · `test:run` **171/171** ·
+  `npm run build` re-derived dist (post-build the only dist churn is the
+  comment-carry class above).
+
 ### Added — docs: `provider.not_configured` gains its hub-side cite at the `guardFederationDisabled` helper (tripwire 440 → 442/0) — 2026-10-07
 
 - **Decision resolved — this entry supersedes and closes the deferral

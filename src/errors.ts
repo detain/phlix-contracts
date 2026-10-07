@@ -148,7 +148,24 @@
      * is byte-unchanged since the 5a048a6 stamp and the lone server merge
      * since f4326191 is the phlix-shared v0.51.0 vendor re-vendor (no src
      * changes, zero cite impact); all prior cites re-ran green unchanged at
-     * these tips. Tripwire 442/0 here.
+     * these tips. Tripwire 442/0 here. Cite-currency 2026-10-07 (the B2
+     * provider-parity lane, srv e55e0ee0): disableProvider's guard and flag
+     * write now run inside one five-key FOR UPDATE transaction
+     * (AuthMethodPolicy::guardAndPersist) — the provider×admin interleave
+     * residual the B2 review documented. Three `provider` cites drifted, all
+     * pure relocations re-read at source (each cited statement byte-unchanged,
+     * only its line moved): the enable-path 409 'not_configured' emit 143 to
+     * 154 (a +11 zero-transaction design docblock inserted above it in
+     * enableProvider), the unknownProvider helper's 404 'unknown_provider'
+     * emit 226 to 264, and the getConfigSchema registry-miss 404
+     * 'provider_not_found' emit 246 to 284 (both +38, the disableProvider
+     * B2 docblock and the restructured guard arm above them). The disable
+     * 422/500 refusal envelopes were WRAPPED in the new protocol, not moved,
+     * and stay byte-identical — no cite rides them. Stamped base hub
+     * 8aba9c9 / srv e55e0ee0 — hub FederationController.php byte-unchanged
+     * since e5f5dd9 (the only hub merges since are the SUPPLEMENTAL_META
+     * retirement and ServerProxyController doc prose, neither cited here);
+     * Tripwire 442/0 at these tips.
      * Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
@@ -1006,7 +1023,7 @@ const CODES = {
    */
   provider: {
     /**
-     * srv AuthProviderController.php:143 (409, text 'not_configured') ·
+     * srv AuthProviderController.php:154 (409, text 'not_configured') ·
      * OidcCallbackController.php:281,488 · GithubCallbackController.php:249,
      * 421 (text 'provider_not_configured') · hub
      * FederationController.php:94 (signature of `guardFederationDisabled`),
@@ -1016,9 +1033,9 @@ const CODES = {
      * at zero registry churn.
      */
     NOT_CONFIGURED: 'provider.not_configured',
-    /** srv AuthProviderController.php:226 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
+    /** srv AuthProviderController.php:264 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
     UNKNOWN: 'provider.unknown',
-    /** srv AuthProviderController.php:246 (404) — provider row missing. Today text 'provider_not_found'. */
+    /** srv AuthProviderController.php:284 (404) — provider row missing. Today text 'provider_not_found'. */
     NOT_FOUND: 'provider.not_found',
     /** srv OidcCallbackController.php:289 — registered provider isn't OIDC. Today text 'invalid_provider_type'. */
     INVALID_TYPE: 'provider.invalid_type',
