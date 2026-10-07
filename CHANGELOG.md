@@ -60,6 +60,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — docs: `provider.not_configured` gains its hub-side cite at the `guardFederationDisabled` helper (tripwire 440 → 442/0) — 2026-10-07
+
+- **Decision resolved — this entry supersedes and closes the deferral
+  flagged in `6519b53` ("Scope honesty" bullet of the 2026-10-03 entry
+  below, kept verbatim as history per the forward-correction precedent).**
+  That sweep deliberately left uncited hub `98a10ca`'s new
+  `provider.not_configured` emitter — the `guardFederationDisabled` gate
+  the eleven FederationController mutators funnel through — pending a
+  semantic re-vendor call. Owner-ratified option A2 resolved it: cite
+  the helper.
+- **Helper cite, call-site enumeration rejected.** The
+  `provider.NOT_CONFIGURED` entry docblock now reads
+  `hub FederationController.php:94` (the `guardFederationDisabled`
+  signature) plus `:100` (its 409 emit line). All eleven
+  FederationController mutators funnel through this single guard (the
+  twelfth mention is the constructor seam, not an emit), so the helper
+  is cited once instead of the call-sites — a future mutator insertion
+  costs zero tripwire churn by construction.
+- **Module-header currency stamp** extended with the resolution note and
+  the new stamped base, hub `e5f5dd9` / srv `759b0a79`. Provenance of
+  the base moves: hub `FederationController.php` is byte-unchanged
+  between the `5a048a6` stamp and `e5f5dd9` (`git log` over the file is
+  empty), and the lone server merge since `f4326191` is the phlix-shared
+  v0.51.0 vendor re-vendor (no `src/` changes, zero cite impact) — every
+  prior cite re-ran green unchanged at the newer tips.
+- **Comment-only proof.** `src/errors.ts` diff is 100% docblock lines
+  (mechanical census: zero changed lines outside comment gutters).
+  Registry bytes frozen: `dist/error-codes.json` md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` (204 codes) untouched.
+- **Gates.** `npm run verify:cites` **ok=442 problems=0** exit 0 at hub
+  `e5f5dd9` / srv `759b0a79` · lint clean · `test:run` counts and
+  dist-identity evidence recorded in the lane report; `0be4146`/`6519b53`
+  precedent class (bundles cmp-identical, d.ts comment-stripped
+  identical, maps churn are pure VLQ source-line re-encodes).
+
 ### Changed — docblock cites re-anchored at hub `5a048a6` / server `f4326191` (74 drifts; tripwire 440/0) — 2026-10-03
 
 - **Trigger: the tripwire fired as designed.** After the hub W5 and server

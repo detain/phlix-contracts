@@ -134,9 +134,22 @@
     * touches none of the cited files, every anchor holds unchanged there
     * and that is the stamped base. 98a10ca also added fresh
     * provider.not_configured emitters (guardFederationDisabled across 11
-    * mutators) — value already registered, no cite added in this
-    * comment-only sweep. Tripwire 440/0 at hub 5a048a6 / srv f4326191.
-    * Re-sweep with
+     * mutators) — value already registered, no cite added in this
+     * comment-only sweep. Tripwire 440/0 at hub 5a048a6 / srv f4326191.
+     * Cite-currency 2026-10-07 (the deferred provider-gate citation
+     * decision, resolved owner-ratified): the `provider.NOT_CONFIGURED`
+     * entry now carries the hub-side cite for the `guardFederationDisabled`
+     * federation gate — the helper signature and its 409 emit line are
+     * cited once (the entry docblock holds the coordinates) instead of the
+     * eleven FederationController call-sites, so future mutator insertions
+     * cost no tripwire churn; this closes the deferral flagged in the
+     * 2026-10-03 sweep above (superseded forward, history kept verbatim).
+     * Stamped base hub e5f5dd9 / srv 759b0a79 — hub FederationController.php
+     * is byte-unchanged since the 5a048a6 stamp and the lone server merge
+     * since f4326191 is the phlix-shared v0.51.0 vendor re-vendor (no src
+     * changes, zero cite impact); all prior cites re-ran green unchanged at
+     * these tips. Tripwire 442/0 here.
+     * Re-sweep with
  * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
  * hub/server error-file churn.
  *
@@ -962,7 +975,12 @@ declare const CODES: {
         /**
          * srv AuthProviderController.php:143 (409, text 'not_configured') ·
          * OidcCallbackController.php:281,488 · GithubCallbackController.php:249,
-         * 421 (text 'provider_not_configured').
+         * 421 (text 'provider_not_configured') · hub
+         * FederationController.php:94 (signature of `guardFederationDisabled`),
+         * :100 (its 409 emit line) — the eleven FederationController mutators
+         * all funnel through this one helper, which is why the helper is cited
+         * once instead of the call-sites, keeping future call-site insertions
+         * at zero registry churn.
          */
         readonly NOT_CONFIGURED: "provider.not_configured";
         /** srv AuthProviderController.php:226 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
@@ -1828,7 +1846,12 @@ export declare const ERROR_CODE: {
         /**
          * srv AuthProviderController.php:143 (409, text 'not_configured') ·
          * OidcCallbackController.php:281,488 · GithubCallbackController.php:249,
-         * 421 (text 'provider_not_configured').
+         * 421 (text 'provider_not_configured') · hub
+         * FederationController.php:94 (signature of `guardFederationDisabled`),
+         * :100 (its 409 emit line) — the eleven FederationController mutators
+         * all funnel through this one helper, which is why the helper is cited
+         * once instead of the call-sites, keeping future call-site insertions
+         * at zero registry churn.
          */
         readonly NOT_CONFIGURED: "provider.not_configured";
         /** srv AuthProviderController.php:226 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
