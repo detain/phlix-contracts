@@ -60,6 +60,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — docblock cites re-anchored at hub `250486c` / server `99eda9c0` (49 flagged drifts + 4 window-masked, SRV-HTTP handoff + hub lanes; tripwire 442/0) — 2026-10-15
+
+- **Trigger: the SRV-HTTP lane's close report (tip `fa68f6ca`) handed off the
+  re-anchor duty; executed as a full tripwire re-sweep.** The first run
+  measured **ok=393 problems=49** (442 cites) against the sibling working
+  trees; the report's own shift table was under-inclusive — the tripwire also
+  caught drifts the handoff missed (srv `Workerman/HttpHandler.php` 194, hub
+  `Application.php` 204, and the whole hub `ClaimRequestHandler.php` claim
+  family from the R19/R20 hub-DB lanes), plus four **window-masked stale cites**
+  the ±3 proximity check let pass on coincidental tokens (the bare `:688` and
+  `:1875` follows in the syncplay comments). All 53 coordinates re-read at
+  source, not by blanket delta.
+- **Family moves.** srv `Core/Application.php` 429 emit 2827 to 2837 (SRV-HTTP
+  reaper/throttle insertions above it; both the sweep-stamp narrative cite and
+  the `common.RATE_LIMITED` entry re-anchored); srv `Workerman/HttpHandler.php`
+  CSRF gate 194 to 203 (85c06de1 static-path denial); hub `Application.php` 429
+  emit 204 to 237 (23a96bf/57b7d88); hub `ClaimRequestHandler.php` throws 205 →
+  212, 232 to 248, 242 to 260, 249 to 267, and 455,458,461,465 to
+  497,500,503,507 (85b1929 + 2b04edb claim transaction and audit arms — the
+  four JWK throws are an identical +42 relocation); the srv
+  `SyncPlayManager.php` family moved 626 to 636, 629 to 639, 688 to 698,
+  780 to 790, 828 to 838, 833 to 843, 1042/1050/1055 to 1058/1066/1071,
+  1403/1408/1413 to 1419/1424/1429, queue-cap guard 1240 to 1253 (literal
+  riding 1256), create wrap 1790 to 1806, leave emit 1875 to 1914.
+- **Join wrap semantic re-anchor (the one REWRITE, not relocation).** The
+  server R17-04 lane restructured the join tail: the `$result['error_code'] ??
+  'syncplay.join_failed'` wrap is now the `$errorCode` local at line 1865,
+  with the per-connection password-throttle arm rejecting-closing inline
+  above the final send — the cite follows the wrap decision, and the legacy
+  `JOIN_FAILED` entry comment gained a literal `syncplay.join_failed` anchor
+  because the SCREAMING word no longer occurs near the wrap line.
+- **Mid-sweep tip move, disclosed.** The server tree advanced `d8cce76c` to
+  `99eda9c0` while the sweep ran (a sibling PSR-12 debt pass shifted the leave
+  emit 1910 to 1914); every coordinate was re-verified against the stamped
+  tips with both trees clean before commit.
+- **Comment-only proof.** `src/errors.ts` diff has **zero changed lines
+  outside comment gutters** (mechanical census). Registry bytes frozen:
+  `dist/error-codes.json` md5 `40c1da48787f37d00a6fc9af6c64a1ac` (204 codes);
+  route manifest `915796837d38a77733c169996d97640c` (412 tuples) and
+  `dist/mcp-scopes.json` `8c92c0703eae8a429c509ff16e0d185d` untouched.
+  Bundles `dist/phlix-contracts.js` (`43267ee2…`) and
+  `dist/phlix-contracts.umd.cjs` (`453d2a1f…`) rebuild cmp-IDENTICAL;
+  `dist/errors.d.ts` comment-stripped identical (raw delta = the +31
+  docblock-line carry). Maps churn is pure VLQ source-line re-encode: both
+  `.js.map` and `.umd.cjs.map` move exactly the 857 segments whose source is
+  `../src/errors.ts` by a uniform **+31** sourceLine delta — zero other-field
+  changes across all segments (genCol/sourceCol/nameIndex verified),
+  non-errors.ts segments byte-ident; `sourcesContent` moves only in the
+  errors.ts entry, byte-matching `src/errors.ts`. `adcacab`/`6519b53`
+  precedent class.
+- **Gates.** `npm run verify:cites` **ok=442 problems=0** exit 0 at hub
+  `250486c` / srv `99eda9c0` · lint clean · `test:run` green ·
+  `npm run build` re-derived dist (post-build the only dist churn is the
+  comment-carry class above).
+
 ### Changed — docblock cites re-anchored at hub `8aba9c9` / server `e55e0ee0` (3 drifts, B2 provider-parity lane; tripwire 442/0) — 2026-10-07
 
 - **Trigger: the tripwire fired as designed.** After the server B2
