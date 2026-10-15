@@ -21,8 +21,20 @@ types.
 
 ## Install
 
-```bash
-npm install @phlix/contracts
+`@phlix/contracts` is distributed as a **git-tagged dependency** (not published to
+npm). Pin an exact tag:
+
+```jsonc
+// package.json
+{
+  "dependencies": {
+    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.3"
+  }
+}
+```
+
+```sh
+npm install
 ```
 
 ## Usage
