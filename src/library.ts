@@ -2,9 +2,11 @@
  * Library query parameters + server settings shapes.
  *
  * `LibraryQuery` mirrors `phlix-shared/schemas/library-query.schema.json` (the
- * canonical `GET /api/v1/media` query shape). `ServerSettings` mirrors
- * `server-settings.schema.json` — the literal dotted setting keys the admin
- * settings endpoint accepts.
+ * canonical `GET /api/v1/media` query shape). `ServerSettings` is a partial,
+ * hand-maintained illustration of the admin settings key vocabulary — the
+ * authoritative writable allow-list is `phlix-shared/schemas/
+ * server-settings.schema.json` plus the `meta` block served live by
+ * `GET /api/v1/admin/settings`; see the interface docblock.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
@@ -58,13 +60,30 @@ export interface LibraryQuery {
 export type SignupMode = 'open' | 'approval' | 'disabled';
 
 /**
- * Editable server settings exposed by `/api/v1/admin/settings`.
+ * Editable server settings exposed by `/api/v1/admin/settings` — a PARTIAL,
+ * HAND-MAINTAINED mirror, NOT an allow-list.
  *
- * Keys are the literal dotted setting keys from server-settings.schema.json
- * (the single source of truth for the writable allow-list). All optional — the
- * GET endpoint returns the runtime defaults, which live in server config, not
- * the schema. `index signature` is intentionally NOT added: this is the exact
- * allow-list.
+ * The single source of truth for the writable admin surface is
+ * `phlix-shared/schemas/server-settings.schema.json` (84 properties as of
+ * 2026-10-30) plus the runtime `meta` block of
+ * `GET /api/v1/admin/settings` — that is what a settings form or gate must
+ * read, per the same retirement law already recorded in
+ * `phlix-ui/src/types/server-settings.ts`. This interface has NO schema-drift
+ * gate and is known to lag: measured at this stamp it lacks 72 schema keys
+ * (including the entire F7 `auth.<provider>.enabled` quintet and the
+ * rate-limit/webhooks/DLNA families) and still advertises 7 GHOST keys the
+ * schema no longer defines (`subtitles.enabled`, `subtitles.burn_in_by_default`,
+ * `hwaccel.probe_timeout`, `marker_detection.similarity_threshold`,
+ * `marker_detection.intro_max_duration`, `discovery.discovery_port`,
+ * `trickplay.interval_seconds`) which the server will 400. Absence here does
+ * NOT mean "not writable"; presence does NOT mean "writable". All listed keys
+ * are optional — the GET endpoint returns the runtime defaults, which live in
+ * server config, not the schema. `index signature` is intentionally NOT added
+ * because membership here is illustrative, not current. Deriving this type at
+ * build time from a vendored schema (with a `git diff` freshness gate like the
+ * registry JSONs get) or retiring the public export entirely is an
+ * API-shape/tag-wave decision — this package is pinned by git tag and a
+ * type-shape move is breaking for it.
  */
 export interface ServerSettings {
   'hwaccel.enabled'?: boolean;

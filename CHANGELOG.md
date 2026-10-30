@@ -18,6 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — `ServerSettings` authority claim retired: honest partial-mirror docblocks, measured drift disclosed (M-CONTRACTS-04) — 2026-10-30
+
+- **Premise re-measured at fix time against `phlix-shared` master**
+  (`server-settings.schema.json`, 84 properties): the 19-key interface lacks
+  **72** schema keys (the whole F7 `auth.<provider>.enabled` quintet, the
+  rate-limit/webhooks/DLNA families) and advertises **7 ghost keys** the
+  schema no longer defines (server 400s them: `subtitles.enabled`,
+  `subtitles.burn_in_by_default`, `hwaccel.probe_timeout`,
+  `marker_detection.similarity_threshold`, `marker_detection.intro_max_duration`,
+  `discovery.discovery_port`, `trickplay.interval_seconds`). (The review era
+  read 73 missing against an older shared tip; 72 is the truth at this stamp.)
+- **Cure (the review's bottom line, "Do not keep the claim"):** the interface
+  docblock and the `src/library.ts` file header no longer claim "the exact
+  allow-list" / "mirrors the schema"; they name the real SSOTs — the shared
+  schema + the runtime `meta` block of `GET /api/v1/admin/settings` (the same
+  retirement law `phlix-ui/src/types/server-settings.ts` records) — spell out
+  that absence ≠ not-writable and presence ≠ writable, and enumerate the
+  ghosts with the measurement stamp.
+- **API shape deliberately NOT moved:** deleting the public export or
+  build-deriving the type from a vendored schema is a breaking type-shape
+  change in a git-tag-pinned package — owner tag-wave territory, named in the
+  docblock itself. The shipped `.d.ts` delta is comment-only (diff proof:
+  zero non-comment lines); all three registry JSONs byte-frozen.
+  `test/types.test.ts:385` two-key pin green UNMODIFIED; suite 171/171.
+
 ### Fixed — CI committed-freshness gate folded from three JSONs to the WHOLE `dist/` tree — bundles, `.d.ts` and maps can no longer ship stale in the tag (M-CONTRACTS-03 + M-CONTRACTS-05) — 2026-10-30
 
 - **Premise (verified at tip):** `ci.yml` ran `npm run build` then exactly
