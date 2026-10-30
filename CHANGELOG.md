@@ -18,6 +18,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — CHANGELOG version-banner hygiene: the three orphaned published tags get their headers (M-CONTRACTS-07) — 2026-10-30
+
+- **What was broken:** tags `v0.5.1`, `v0.5.0` and `v0.4.7` existed on the
+  remote but had no `## [x.y.z]` sections — their shipped content (including
+  the entire W1b +55-code expansion, the largest registry change in the
+  package's life) sat under neighbor banners. A consumer scanning "what
+  shipped in 0.5.1?" could not locate it.
+- **Forward-only cure (no history rewrite, per the review's own shape):**
+  inserted `## [0.5.1] - 2026-09-23`, `## [0.5.0] - 2026-09-23` and
+  `## [0.4.7] - 2026-09-13` immediately above their entry blocks. Tag→content
+  mapping proven from git, not memory: at tag `v0.4.7` (`625a5625`) the newest
+  entry is W83; at `v0.5.0` (`8ef65d30`) the additions since are W1/W111/W89/
+  W85; at `v0.5.1` (`e3c14f07`) the addition is W1b alone. Dates from
+  `git log -1 --format=%ad` on each tag. Entry bodies verbatim.
+- **Already cured before this commit (disclosed, not re-landed):** the
+  three-`[Unreleased]`-banners and ordering half of the finding was folded by
+  W-min25 (`144`-era entry, disk-verified at this tip): one `[Unreleased]` at
+  the very top, the interleaved duplicates renamed
+  `[0.5.3]`/`[0.5.2] — carried-forward notes`.
+- **Zero artifact movement:** CHANGELOG only; `dist/` bytes untouched.
+
 ### Fixed — W-rMOP1 rider: claim-exchange cites re-anchored at hub `5b9de574` / server `0fa8f515`; header currency stamp re-cut — 2026-10-30
 
 - **Trigger (R-CONTRACTS-01, from the `M-HUB-12` disclosure).** The hub claim
@@ -881,6 +902,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   byte-identical before/after (md5-proven), so no tag is cut; the next natural
   tag carries this.**
 
+## [0.5.1] - 2026-09-23
+
 ### Added — W1b (errors): registry expansion — the complete emit-wave vocabulary — 2026-09-23
 
 - **`src/errors.ts` grows from 147 codes / 31 domains to 202 codes / 37
@@ -939,6 +962,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   suite 171 passed; `errors.test.ts` 34 passed — five new per-domain pin
   blocks added), `npm run build` + double-emit md5 idempotency of
   `dist/error-codes.json`, clean `git status`.
+
+## [0.5.0] - 2026-09-23
 
 ### Added — W1 (errors): estate error-code registry, Wave 1 of the error-code doctrine — 2026-09-23
 
@@ -1048,6 +1073,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   value (two code homes only, as ever). Consumers re-vendor the new bytes from
   master in their cs45 legs, hub last.
   **UN-TAGGED regen — thirty-second by design**: the `v0.4.7` tag stays put.
+
+## [0.4.7] - 2026-09-13
 
 ### Changed — W83 (cs44): PROVENANCE-ONLY manifest regen (404 tuples — route bytes unmoved) — 2026-09-13
 
