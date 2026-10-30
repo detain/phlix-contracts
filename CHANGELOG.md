@@ -16,49 +16,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 > ordered by **publication date**, which is why the version numbers are not
 > monotonic between `0.4.1` and `0.4.0`. Details in the `0.3.13` section below.
 
-## [0.5.3] - 2026-10-01
-
-### Added — registry +2 RESERVED mints (202 → 204 codes) + route-manifest regen #35 (410 → 412 tuples) + cite-currency sweeps — first tag since `v0.5.1` to ship new registry bytes
-
-- **Two new RESERVED codes minted (`7fc864c`):**
-  `leaf_hub_id_already_bound` (federation 409 — the three hub sites that
-  today answer bare `conflict`/400 flip to this code in the next coordinated
-  leg) and `syncplay.queue_limit_exceeded` (playback queue-cap, the eighth
-  row of the syncplay family table). Both are declared, not yet emitted —
-  census **204 codes / 37 domains**.
-- **Registry bytes move for the first time since #78 (`v0.5.1`).**
-  `dist/error-codes.json` md5 `b919685d…` →
-  **`40c1da48787f37d00a6fc9af6c64a1ac`**. Unlike `v0.5.2` (byte-identical),
-  this tag REQUIRES the downstream PHP registry-JSON fixture pins
-  (phlix-server, phlix-hub) to rotate when they re-pin to it.
-- **Route-manifest regen #35 (`e2f2d53`):** the server's M-6 book-progress
-  rails add `GET|POST /api/v1/books/{id}/progress` at server `758f9149` —
-  union 410 → **412 tuples**, exactly those two additions, zero removals.
-  `dist/server-route-manifest.json` md5 `915796837d38a77733c169996d97640c`.
-  Consumers still read v0.5.2-era vendored bytes (md5 `06ce7ec9…`) until
-  they re-pin to this tag — this release opens that coordinated re-vendor
-  leg (hub S280 parity fixtures, ui/tizen gates, mobile/roku vendored JSON).
-- **Cite-currency sweeps of `src/errors.ts` docblocks** — `5b8305a`
-  re-anchored 82 drifted spans at hub `14a8a55` / srv `9d3e92b2`; `480ba9f`
-  re-anchored 25 FederationController spans at hub `f30e8a7`; `cf17cab`
-  corrected the `:274` cite's enclosing method to `createPeer`; `bc4d62e`
-  re-anchored 5 spans at srv `b3aece4e`. `npm run verify:cites` is green AT
-  TAG: **431 cites / 0 problems** against sibling tips hub `c9d2900` /
-  server `fa3a15ff`.
-- **Docblock status truth, zero wire effect** (`0f248e0`/`72cb28d` #84,
-  `02a306e`/`fe9b9ef` #85): syncplay twin docblocks made forensic; the
-  `_failed` trio flipped RESERVED → LIVE at srv `9b2394ee`.
-- **Additive only.** The entire `src/` delta since `v0.5.2` is `errors.ts`
-  (additive entries + docblocks) and `routeManifest.generated.ts`; no DTO,
-  route-shape, or scope change. `dist/mcp-scopes.json` ships byte-stable
-  (4 scopes). Third-position bump per the repo's own additive-registry
-  precedent `v0.5.1` (the +55-code #78 expansion also took the last
-  position).
-- **Gate evidence (at this prep commit):** `npm run build` re-derived
-  `dist/` byte-identically (post-build `git status` empty); census re-emitted
-  204 codes; `test:run` **171/171**; `lint` clean; `verify:cites` 431/0.
-
 ## [Unreleased]
+
+### Fixed — W-min25 minors cluster: README install cure recorded; `[Unreleased]` structure folded; errors.ts currency header slimmed; dotted-name correction — 2026-10-30
+
+- **README install idiom (cure `e39ed2b`, recorded here per this file's own
+  "all notable changes" promise):** the Install section had instructed
+  `npm install @phlix/contracts` for a package that is not published to the
+  registry — a trap for exactly the tag-pinned consumers this repo serves.
+  Corrected to the `github:detain/phlix-contracts#<tag>` form.
+- **Notation correction (forward; history kept verbatim):** the pre-`v0.5.3`
+  "two deferred mints" entry below prints
+  `federation.leaf_hub_id_already_bound`; the registered wire value is the
+  BARE `leaf_hub_id_already_bound` (the `v0.5.3` section spells it correctly)
+  — the dotted federation-domain form has never existed on the wire and must
+  not be pinned. Sanctioned prose spellings in this package: the wire value
+  itself, or `DOMAIN.KEY` uppercase for registry coordinates. The
+  `user.NOT_FOUND` entry comment carried the same defect class
+  (`admin.user_not_found`; the admin-domain wire value is bare
+  `user_not_found`) and is corrected in place.
+- **CHANGELOG structure:** the live `[Unreleased]` now sits above
+  `[0.5.3]` as Keep a Changelog prescribes (the file's own header claim);
+  the two stale duplicated `[Unreleased]` headers that sat between released
+  sections are renamed to carried-forward notes of `[0.5.3]` / `[0.5.2]` —
+  the releases that actually shipped their content. Entry text untouched,
+  verbatim (house rule).
+- **`src/errors.ts` module header:** the append-only coordinate-currency
+  narrative (twelve re-anchor eras re-narrated in full — duplicating the
+  CHANGELOG, with visible gutter-indent accretion — net −168 lines)
+  collapses to doctrine + ONE current stamp; the sweep forensics live in
+  the CHANGELOG alone. The narrative had carried thirteen parsed cites of
+  its own (two drifted `RelayProxyManager` follows + eleven passing
+  spot-verification refs), retired with it: the `verify:cites` parsed
+  census moves 442 → 429 accordingly.
+- **Comment-only proof.** `src/errors.ts` and `dist/errors.d.ts` diffs are
+  100% comment gutters (mechanical check: zero changed non-comment lines).
+  Registry bytes frozen: `dist/error-codes.json` md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` (204 codes); route manifest
+  `915796837d38a77733c169996d97640c` (412 tuples) and `dist/mcp-scopes.json`
+  `8c92c0703eae8a429c509ff16e0d185d` untouched. Bundles `dist/phlix-contracts.js`
+  (`43267ee2…`) and `dist/phlix-contracts.umd.cjs` (`453d2a1f…`) rebuild
+  cmp-IDENTICAL; `errors.d.ts` carries the −168 docblock-line delta (+11/−179,
+  same disclosed class as the +31/+17 carries above). Maps: exactly the 857
+  segments whose source is `../src/errors.ts` move by a uniform −168
+  sourceLine delta (VLQ re-encode; genCol/sourceCol/nameIndex otherwise
+  unmoved; non-errors.ts segments byte-ident; `sourcesContent` moves only in
+  the errors.ts entry, byte-matching disk). One disclosed toolchain-era
+  artifact rode the honest rebuild: the committed maps had been emitted with
+  `names: []` while the CURRENT lock's toolchain materializes names (112
+  entries, 266 nameIndex-bearing segments) — proven by a control rebuild at
+  clean `e39ed2b` in a throwaway worktree BEFORE this commit's source edits,
+  which moved the maps identically; the bundles and all three JSON mirrors
+  are byte-stable across both eras, so nothing consumer-pinned depends on
+  it. `dist/` re-derived here; aggregate md5 `ea8feca7df504edf2898d0a2dea61cb7`
+  build ×2 deterministic.
+- **Tripwire state (honest, disclosed).** `npm run verify:cites` against the
+  EXISTING sibling working trees: at HEAD `ok=375 problems=67` (442), here
+  `ok=364 problems=65` (429) — hub `0558d83e` / srv `3012bba9` (the latter
+  the known local ghost-divergence tree, 4 paths dirty) have both moved
+  since the stamped base `250486c`/`99eda9c0`; the 65 reds are pre-existing
+  entry-currency debt for a separate re-anchor sweep (da06733 precedent),
+  not introduced here. `test:run` **171/171** · lint clean · build green.
+- **No new tag, no version bump** — docblock/CHANGELOG only; nothing a
+  tag-pinned consumer resolves has changed (the `v0.5.3` line ships the same
+  registry bytes as before this entry).
 
 ### Changed — docblock cites re-anchored at hub `250486c` / server `99eda9c0` (49 flagged drifts + 4 window-masked, SRV-HTTP handoff + hub lanes; tripwire 442/0) — 2026-10-15
 
@@ -611,7 +632,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `9b2394ee` + hub `7915fdf9` (415 cites, 0 problems). **No new tag** —
   nothing consumers pin has changed (#84 precedent).
 
-## [Unreleased]
+## [0.5.3] - 2026-10-01
+
+### Added — registry +2 RESERVED mints (202 → 204 codes) + route-manifest regen #35 (410 → 412 tuples) + cite-currency sweeps — first tag since `v0.5.1` to ship new registry bytes
+
+- **Two new RESERVED codes minted (`7fc864c`):**
+  `leaf_hub_id_already_bound` (federation 409 — the three hub sites that
+  today answer bare `conflict`/400 flip to this code in the next coordinated
+  leg) and `syncplay.queue_limit_exceeded` (playback queue-cap, the eighth
+  row of the syncplay family table). Both are declared, not yet emitted —
+  census **204 codes / 37 domains**.
+- **Registry bytes move for the first time since #78 (`v0.5.1`).**
+  `dist/error-codes.json` md5 `b919685d…` →
+  **`40c1da48787f37d00a6fc9af6c64a1ac`**. Unlike `v0.5.2` (byte-identical),
+  this tag REQUIRES the downstream PHP registry-JSON fixture pins
+  (phlix-server, phlix-hub) to rotate when they re-pin to it.
+- **Route-manifest regen #35 (`e2f2d53`):** the server's M-6 book-progress
+  rails add `GET|POST /api/v1/books/{id}/progress` at server `758f9149` —
+  union 410 → **412 tuples**, exactly those two additions, zero removals.
+  `dist/server-route-manifest.json` md5 `915796837d38a77733c169996d97640c`.
+  Consumers still read v0.5.2-era vendored bytes (md5 `06ce7ec9…`) until
+  they re-pin to this tag — this release opens that coordinated re-vendor
+  leg (hub S280 parity fixtures, ui/tizen gates, mobile/roku vendored JSON).
+- **Cite-currency sweeps of `src/errors.ts` docblocks** — `5b8305a`
+  re-anchored 82 drifted spans at hub `14a8a55` / srv `9d3e92b2`; `480ba9f`
+  re-anchored 25 FederationController spans at hub `f30e8a7`; `cf17cab`
+  corrected the `:274` cite's enclosing method to `createPeer`; `bc4d62e`
+  re-anchored 5 spans at srv `b3aece4e`. `npm run verify:cites` is green AT
+  TAG: **431 cites / 0 problems** against sibling tips hub `c9d2900` /
+  server `fa3a15ff`.
+- **Docblock status truth, zero wire effect** (`0f248e0`/`72cb28d` #84,
+  `02a306e`/`fe9b9ef` #85): syncplay twin docblocks made forensic; the
+  `_failed` trio flipped RESERVED → LIVE at srv `9b2394ee`.
+- **Additive only.** The entire `src/` delta since `v0.5.2` is `errors.ts`
+  (additive entries + docblocks) and `routeManifest.generated.ts`; no DTO,
+  route-shape, or scope change. `dist/mcp-scopes.json` ships byte-stable
+  (4 scopes). Third-position bump per the repo's own additive-registry
+  precedent `v0.5.1` (the +55-code #78 expansion also took the last
+  position).
+- **Gate evidence (at this prep commit):** `npm run build` re-derived
+  `dist/` byte-identically (post-build `git status` empty); census re-emitted
+  204 codes; `test:run` **171/171**; `lint` clean; `verify:cites` 431/0.
+
+## [0.5.3] — carried-forward notes
+> Renamed 2026-10-30 (W-min25) from a duplicated `[Unreleased]` header —
+> this body shipped in `v0.5.3` (its syncplay-twin forensic pass is named in
+> the tag section). Entries kept verbatim per the house history rule.
 
 ### Changed — docblock wording only: syncplay twin wire-status made forensic
 
@@ -660,7 +726,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `dist/` tree ships unchanged; downstream PHP fixture pins of the registry
   JSON (phlix-server, phlix-hub) stay valid across this tag.
 
-## [Unreleased]
+## [0.5.2] — carried-forward notes
+> Renamed 2026-10-30 (W-min25) from a duplicated `[Unreleased]` header —
+> the 2026-09-24 artifact-freshness/CI-gates/coordinate work shipped in
+> `v0.5.2`; the 2026-09-23 W1b expansion it annotates shipped earlier as
+> `v0.5.1` (#78). Entries kept verbatim per the house history rule.
 
 ### Fixed — registry tickets: honest artifact-freshness claims + CI gates, docblock coordinate currency — 2026-09-24
 

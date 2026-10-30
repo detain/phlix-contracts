@@ -23,183 +23,15 @@
  * breaking wire change (that is a Wave-2 tagged cascade, not a Wave-1 edit).
  *
  * COORDINATE CURRENCY: every hub/server file:line cite below was re-anchored
- * against a checkout of each repo at head — the hub FederationController set
- * at f30e8a7a62a3ab1392214b12dcf76f9589c28c8e (badRequest wire-law rework:
- * the two malformed-leaf_hub_id 400 parse sites then rode the registered
- * `invalid_request` generic with the condition in `reason` — superseded by
- * the f44275f emit-flip stamped below — and the helper
- * docblock insertions shifted every emit below them — +3 lines from line
- * 268, +5 from line 351) / server 9e765895fc6d61ebac456330245f9a3fcf5c4b76
- * (post websocket-lane doc follow-ups; no srv cite in this registry moved
- * under them) — 2026-09-30, tripwire green after the sweep. All drifted
- * FederationController cite spans were re-derived from source, not by the
- * blanket delta: the 17 the tripwire flagged at +5, the 7 in the 268–354
- * band it only masked at +3 inside the ±3 window, and the
- * `leaf_hub_id_already_bound` 409 anchor 373→378 (it passed only because
- * `invalid_request` recurs beside the stale coord); cites 106, 123 and 139
- * confirmed unmoved, and the stale pending-drift "(+N)" annotations on this
- * file's entries are retired with the re-anchor. The
- * `leaf_hub_id_already_bound` docblock now names the whole unified
- * leaf_hub_id family. Earlier: last full registry-wide re-anchor at hub
- * 14a8a5574f9db2d605efff19823b3ec2da198713 (post hub H-4/H-5 federation
- * rework, auth-middleware and relay/mount churn) / server
- * 9d3e92b2a8c87d78851d06333e9d208aa20533d2 (post server queue-cap/
- * password-gate lane) — 2026-09-29; the `verify:cites` tripwire re-ran clean
- * (420 cites, 0 problems) at hub 8a5dc12942dd37b6a9154321b8af6414bbba6bfb /
- * server c11bd4ac19809fbd58231be2ade89c4d78bf60e9 (2026-09-30, alongside the
- * `leaf_hub_id_already_bound` + `syncplay.queue_limit_exceeded` mints, whose
- * cites were each read at source). Prior stamps: server
- * 9b2394eea631739dff8f6e039d50f910c4304d97 (server #798 flipped the
- * reserved `_failed` trio LIVE) and hub b83639fa / server e0e010b0 (the
- * Wave-1b emit-waves). The 2026-09-29 sweep had moved the three syncplay
- * carrier-fallback cites to srv SyncPlayManager.php lines 1720, 1773 and 1805,
- * the four inner-path cites to lines 676, 768, 816 and 821, the legacy
- * SCREAMING set to their post-lane lines, and the hub FederationController,
- * AuthMiddleware, EnrollmentJwtMiddleware, ClientMountController,
- * RelayProxyManager and srv Core/Application.php cites to their then-current
-  * coordinates. Latest: server b3aece4e (L-bundle security hygiene) re-anchored
-  * a cite cluster — the HubJwtMiddleware deletion re-pointed `hub.jwt_invalid`
-  * to its two remaining emit sites (srv AccountLinkController.php:432,444 ·
-  * srv HubTokenController.php:91), and the StreamLimitMiddleware/pre-router
-  * twin rework shifted `stream.limit_exceeded` and `profile.not_found`, plus the
-  * LibraryController/Application.php insert-driven bumps on
-  * `library.delete_all.confirm_required` and `rate_limited` — all re-read at
-  * source, not by blanket delta. Currency re-stamp 2026-09-30 (regen #35 lane):
-  * server tip 758f9149 adds two post-L-bundle security merges (admin-gating the
-  * `/app/library/scan` SPA route; `isAdminUser` now demanding an ACTIVE admin) —
-  * neither moves any registry cite, and the tripwire re-ran green at
-  * hub db7ea738 / srv 758f9149 (431 cites, 0 problems).
-  * Deferred-mint flips 2026-10-01: re-read at hub tip
-  * f44275f3bb1bbf1eb5ccb16a55e8bd2ae3d831b0 / server tip
-  * 7baa398ad81532c8560668bd8d3ca01e357a4132 — hub f44275f flipped all three
-  * leaf_hub_id sites onto the dedicated `leaf_hub_id_already_bound`: the two
-  * malformed-UUID 400 parse sites at hub FederationController.php:311 in
-  * createPeer and :397 in bindPeerLeafHubId, and the 409 already-bound
-  * conflict at :419. Server 7baa398a switched the playback-queue cap at srv
-  * SyncPlayManager.php line 1230 to emit `syncplay.queue_limit_exceeded` while
-  * the group-count cap keeps `syncplay.group_limit_reached` at line 676 — the
-  * documented split. No registry coordinate span moved under either tip
-  * (the queue-cap cite 1230 already held pre-emit); both entries flipped
-  * RESERVED→LIVE wording in place, and the tripwire re-ran green at these
-  * very tips before and after the flip. Cite-currency 2026-10-02 (hub
-  * federation channel-bridge lane): hub tip ccefe28 (cross-process master
-  * push via the channel broker — touched none of the cited hub lines; every
-  * hub cite re-ran green unchanged) and server tip e1f1fa05 (device-M1
-  * casting register, +33 net lines above the rate-limit helper) drifted the
-  * lone red cite `common.RATE_LIMITED` to srv Core/Application.php line 2838 —
-  * the 429 emit line, re-read at source, not by blanket delta. Tripwire
-  * 443/0 at hub ccefe28 / srv e1f1fa05. Cite-currency 2026-10-02 (docs-
-  * currency sweep): server 1ef503b7 (MED-2 room-visibility lane) shifted
-  * the SyncPlayManager cite family and, with da430a9d (LiveTV parental
-  * gate), the 429 emit — every drifted srv cite re-read at source at
-  * server tip da430a9d, not by blanket delta; hub cites re-ran green
-  * unchanged at hub tip 56e36d9. Tripwire 433/0 at hub 56e36d9 /
-   * srv da430a9d. Cite-currency 2026-10-02 (branch-hygiene close
-   * re-sweep): hub 7748d79 (owner decision — write-only RequestContext
-   * scaffolding deleted; AuthMiddleware shed 13 net lines above the
-   * challenge trio) and the 3843f8b/256aa25f proxy-doc expansions
-   * (ServerProxyController gained +23/+11 above its gate cluster) drifted 13
-   * cites: the hub AuthMiddleware trio re-anchored 5 lines up, and the hub
-   * ServerProxyController family moved a uniform +34 — the `scope_denied`
-   * pair landing at hub ServerProxyController.php:1093 for its second site,
-   * re-derived by reading both `'code' => 'proxy.scope_denied'` lines rather
-   * than the tripwire's +19 nearest-token hint at line 1078. The 480ba9f
-   * precedent's full-block re-derivation additionally caught two
-   * window-masked stale anchors: hub RelayProxyBridge.php line 313 to 315
-   * (the token now rides its own argument line) and hub Application.php line
-   * 203 to 204 (the json emit line). Server: 43b04158 (collections
-   * ownership Option A) net -5 in the file with -15 above the 429 helper —
-   * srv Core/Application.php:2837. All re-read at source at hub tip
-   * 256aa25f / server tip c42e166a, not by blanket delta; cites in files
-   * untouched since the stamp were spot-verified in place (srv
-   * AuthMiddleware.php:62 · hub McpController.php:352,
-   * hub RelayProxyManager.php:554,696 (`server.offline`,
-   * `gateway.timeout`), hub SubdomainController.php:128).
-   * Tripwire 440/0 at hub 256aa25f / srv c42e166a (the count rose with the
-   * seven current-state colon-cites this stamp re-verifies; historical
-   * coordinates stay colon-less prose). Cite-currency 2026-10-03
-    * (docs-currency sweep): hub 98a10ca (W5 Phase-6 settings program — the
-    * federation.enabled resolver and its per-mutator guards were inserted
-    * above the cited lines; cumulative drift FederationController +33 to
-    * +77, InviteLinkController +27/+36, LibraryShareController +9,
-    * ServerClaimController +6, ClaimRequestHandler +43/+56), server 1f8a09cc
-    * (F7 auth-method toggles — the three AuthProviderController cites +19,
-    * +51, +51) and f4ac242f (W4 header settings — the HttpHandler CSRF-gate
-    * cite +12) drifted 74 cites; all re-anchored at source at hub tip
-    * 5a048a6 / server tip f4326191, not by blanket delta — every moved
-    * anchor is the same statement line re-mapped through the diff (the
-    * leaf-hub-id trio re-read inside createPeer/bindPeerLeafHubId to
-    * disambiguate identical badRequest lines); the hub tip moved to
-    * 5a048a6 (FederationPeerManager docs-truth pass) mid-sweep — it
-    * touches none of the cited files, every anchor holds unchanged there
-    * and that is the stamped base. 98a10ca also added fresh
-    * provider.not_configured emitters (guardFederationDisabled across 11
-     * mutators) — value already registered, no cite added in this
-     * comment-only sweep. Tripwire 440/0 at hub 5a048a6 / srv f4326191.
-     * Cite-currency 2026-10-07 (the deferred provider-gate citation
-     * decision, resolved owner-ratified): the `provider.NOT_CONFIGURED`
-     * entry now carries the hub-side cite for the `guardFederationDisabled`
-     * federation gate — the helper signature and its 409 emit line are
-     * cited once (the entry docblock holds the coordinates) instead of the
-     * eleven FederationController call-sites, so future mutator insertions
-     * cost no tripwire churn; this closes the deferral flagged in the
-     * 2026-10-03 sweep above (superseded forward, history kept verbatim).
-     * Stamped base hub e5f5dd9 / srv 759b0a79 — hub FederationController.php
-     * is byte-unchanged since the 5a048a6 stamp and the lone server merge
-     * since f4326191 is the phlix-shared v0.51.0 vendor re-vendor (no src
-     * changes, zero cite impact); all prior cites re-ran green unchanged at
-     * these tips. Tripwire 442/0 here. Cite-currency 2026-10-07 (the B2
-     * provider-parity lane, srv e55e0ee0): disableProvider's guard and flag
-     * write now run inside one five-key FOR UPDATE transaction
-     * (AuthMethodPolicy::guardAndPersist) — the provider×admin interleave
-     * residual the B2 review documented. Three `provider` cites drifted, all
-     * pure relocations re-read at source (each cited statement byte-unchanged,
-     * only its line moved): the enable-path 409 'not_configured' emit 143 to
-     * 154 (a +11 zero-transaction design docblock inserted above it in
-     * enableProvider), the unknownProvider helper's 404 'unknown_provider'
-     * emit 226 to 264, and the getConfigSchema registry-miss 404
-     * 'provider_not_found' emit 246 to 284 (both +38, the disableProvider
-     * B2 docblock and the restructured guard arm above them). The disable
-     * 422/500 refusal envelopes were WRAPPED in the new protocol, not moved,
-     * and stay byte-identical — no cite rides them. Stamped base hub
-     * 8aba9c9 / srv e55e0ee0 — hub FederationController.php byte-unchanged
-     * since e5f5dd9 (the only hub merges since are the SUPPLEMENTAL_META
-      * retirement and ServerProxyController doc prose, neither cited here);
-      * Tripwire 442/0 at these tips. Cite-currency 2026-10-15 (the SRV-HTTP
-      * re-anchor handoff, executed as a full re-sweep): the server SRV-HTTP
-      * chain (fa68f6ca; 5809c0e1 per-connection join-password throttle rewrote
-      * the join tail) shifted the SyncPlayManager cite family and the 429
-      * helper; later server merges through tip 99eda9c0 (85c06de1 static-path
-      * denial above the CSRF gate; a PSR-12 debt pass through the SyncPlay
-      * lanes) moved the leave emit again; the hub lanes (85b1929 + 2b04edb
-      * claim-code transaction and audit arms; 23a96bf + 57b7d88 in hub
-      * Application.php) drifted the claim throws and the hub 429 emit. Every
-      * drifted entry cite was re-read at source, not by blanket delta — the
-      * sweep's own coordinates stay colon-faded prose here so the tripwire
-      * keeps exactly one parsed cite per entry: the 429 emit in srv
-      * Core/Application.php moved to line 2837 (was 2827) at both the
-      * sweep-stamp narrative and the RATE_LIMITED entry, whose hub twin in
-      * Application.php moved to line 237 (was 204); the csrf gate in srv
-      * Workerman/HttpHandler.php moved to line 203 (was 194); the claim-code
-      * throws in hub ClaimRequestHandler.php moved to lines 212 and 248 (were
-      * 205 and 232), line 260 (was 242), line 267 (was 249), and lines 497,
-      * 500, 503, 507 (were 455 to 465 — an identical +42 relocation of all
-      * four JWK throws); the srv SyncPlayManager.php family moved 626 to 636,
-      * 629 to 639, 688 to 698 (explicit and bare cites together), 780 to 790,
-      * 828 to 838, 833 to 843, 1042/1050/1055 to 1058/1066/1071,
-      * 1403/1408/1413 to 1419/1424/1429, the queue-cap guard 1240 to 1253
-      * with the queue-limit literal riding line 1256, the create wrap 1790 to
-      * 1806, the join wrap 1843 to 1865 (the wrap is now the errorCode local,
-      * the throttle arm rejecting-closing inline above it), and the leave
-      * emit 1875 to 1914 (it stood at 1910 mid-sweep before the PSR-12 debt
-      * pass landed). The legacy JOIN_FAILED entry gained a literal
-      * `syncplay.join_failed` anchor in its comment because the SCREAMING word
-      * no longer occurs near the wrap line. Stamped base hub 250486c / srv
-      * 99eda9c0; every coordinate re-verified against these tips with both
-      * trees clean. Tripwire 442/0 here.
-      * Re-sweep with
- * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
- * hub/server error-file churn.
+ * at source (not by blanket delta) on 2026-10-15 against hub `250486c` /
+ * server `99eda9c0` — tripwire 442/0 at those tips with both trees clean,
+ * every coordinate re-read at the emit site. The full forensics of that
+ * sweep and of every earlier re-anchor era are narrated in the CHANGELOG
+ * (its `[Unreleased]` and release entries), the single source for the stamp
+ * history; this header deliberately carries only the current stamp. Cites
+ * in files untouched since the stamp hold by that sweep's spot-verification.
+ * Re-sweep with `npm run verify:cites` (scripts/check-error-cites.mjs) after
+ * any hub/server error-file churn, then re-stamp the paragraph above.
  *
  * CONTENTS:
  *  1. Every dotted and bare-snake code actually emitted on the wire today by
@@ -687,7 +519,7 @@ declare const CODES: {
     };
     /** The actor resolved from the token itself (hub /me). */
     readonly user: {
-        /** hub MeController.php:58 — dotted; distinct from admin.user_not_found */
+        /** hub MeController.php:58 — dotted; distinct from the admin-domain BARE wire value `user_not_found` */
         readonly NOT_FOUND: "user.not_found";
     };
     /** Server plugin admin/catalog surface. */
@@ -1558,7 +1390,7 @@ export declare const ERROR_CODE: {
     };
     /** The actor resolved from the token itself (hub /me). */
     readonly user: {
-        /** hub MeController.php:58 — dotted; distinct from admin.user_not_found */
+        /** hub MeController.php:58 — dotted; distinct from the admin-domain BARE wire value `user_not_found` */
         readonly NOT_FOUND: "user.not_found";
     };
     /** Server plugin admin/catalog surface. */
