@@ -22,16 +22,26 @@
  * wire values are listed VERBATIM — they are live traffic and renaming one is a
  * breaking wire change (that is a Wave-2 tagged cascade, not a Wave-1 edit).
  *
- * COORDINATE CURRENCY: every hub/server file:line cite below was re-anchored
- * at source (not by blanket delta) on 2026-10-15 against hub `250486c` /
- * server `99eda9c0` — tripwire 442/0 at those tips with both trees clean,
- * every coordinate re-read at the emit site. The full forensics of that
- * sweep and of every earlier re-anchor era are narrated in the CHANGELOG
- * (its `[Unreleased]` and release entries), the single source for the stamp
- * history; this header deliberately carries only the current stamp. Cites
- * in files untouched since the stamp hold by that sweep's spot-verification.
- * Re-sweep with `npm run verify:cites` (scripts/check-error-cites.mjs) after
- * any hub/server error-file churn, then re-stamp the paragraph above.
+ * COORDINATE CURRENCY: the claim-exchange cites — the claim.code_* trio, the
+ * claim-route auth.unauthenticated and the claim-verification
+ * server.key_invalid (emits living in hub's ClaimRequestHandler and
+ * ServerClaimController) — were re-anchored at source (not by blanket delta)
+ * on 2026-10-30 against hub `5b9de574` / server `0fa8f515`, every coordinate
+ * re-read at the emit site in fresh clones (R-CONTRACTS-01: the hub claim
+ * refactor shifted these sites well beyond the ~4 lines first disclosed). All
+ * other cites hold their 2026-10-15 re-anchor against hub `250486c` / server
+ * `99eda9c0`, tripwire 442/0 at those tips; measured at the 2026-10-30 tips
+ * the dev-only tripwire reports 51 residual coordinates — hub
+ * proxy/share/invite/mount churn, three mixed-file claim-controller cites in
+ * the hub section, and two srv SyncPlayManager wraps — and the FULL estate
+ * re-sweep is a deliberate owner tag-wave item, deliberately not folded into
+ * this rider. The forensics of that sweep and of every earlier re-anchor era
+ * are narrated in the CHANGELOG (its `[Unreleased]` and release entries), the
+ * single source for the stamp history; this header deliberately carries only
+ * the current stamp. Cites in files untouched since a stamp hold by that
+ * sweep's spot-verification. Re-sweep with `npm run verify:cites`
+ * (scripts/check-error-cites.mjs) after any hub/server error-file churn, then
+ * re-stamp the paragraph above.
  *
  * CONTENTS:
  *  1. Every dotted and bare-snake code actually emitted on the wire today by
@@ -192,7 +202,7 @@ declare const CODES: {
         /** srv PasswordChangeRequiredException.php:30 */
         readonly PASSWORD_CHANGE_REQUIRED: "auth.password_change_required";
         /**
-         * hub ServerClaimController.php:110 — 401 on the claim route when no user
+         * hub ServerClaimController.php:200 — 401 on the claim route when no user
          * resolves. Hub W3 promoted the site: dotted `auth.unauthenticated` rides
          * the `code` channel, the SCREAMING `UNAUTHENTICATED` is parked in the
          * `error` TEXT field of the same payload (dual placement).
@@ -282,20 +292,20 @@ declare const CODES: {
      */
     readonly claim: {
         /**
-         * hub ServerClaimController.php:144 (404 arm 142-147) ← throws at
-         * hub ClaimRequestHandler.php:212,248 — dotted on `code`, SCREAMING
+         * hub ServerClaimController.php:256 (404 arm 254-259) ← throws at
+         * hub ClaimRequestHandler.php:288,326 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_NOT_FOUND` parked in `error` text (dual).
          */
         readonly CODE_NOT_FOUND: "claim.code_not_found";
         /**
-         * hub ServerClaimController.php:150 (410 arm 148-153) ← throw at
-         * hub ClaimRequestHandler.php:260 — dotted on `code`, SCREAMING
+         * hub ServerClaimController.php:262 (410 arm 260-265) ← throw at
+         * hub ClaimRequestHandler.php:340 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_EXPIRED` parked in `error` text (dual).
          */
         readonly CODE_EXPIRED: "claim.code_expired";
         /**
-         * hub ServerClaimController.php:156 (409 arm 154-159) ← throw at
-         * hub ClaimRequestHandler.php:267 — dotted on `code`, SCREAMING
+         * hub ServerClaimController.php:268 (409 arm 266-271) ← throw at
+         * hub ClaimRequestHandler.php:349 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_ALREADY_CLAIMED` parked in `error` text (dual).
          */
         readonly CODE_ALREADY_CLAIMED: "claim.code_already_claimed";
@@ -320,8 +330,8 @@ declare const CODES: {
         /** hub RelayProxyManager.php:251 */
         readonly NO_TUNNEL: "server.no_tunnel";
         /**
-         * hub ServerClaimController.php:174 (400 arm 172-177) ← throws at
-         * hub ClaimRequestHandler.php:497,500,503,507 — the server's Ed25519 key
+         * hub ServerClaimController.php:298 (400 arm 296-301) ← throws at
+         * hub ClaimRequestHandler.php:677,680,683,687 — the server's Ed25519 key
          * failed validation during claim. Hub W3 promoted: dotted rides `code`,
          * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
          * placement; clients may match either).
@@ -1063,7 +1073,7 @@ export declare const ERROR_CODE: {
         /** srv PasswordChangeRequiredException.php:30 */
         readonly PASSWORD_CHANGE_REQUIRED: "auth.password_change_required";
         /**
-         * hub ServerClaimController.php:110 — 401 on the claim route when no user
+         * hub ServerClaimController.php:200 — 401 on the claim route when no user
          * resolves. Hub W3 promoted the site: dotted `auth.unauthenticated` rides
          * the `code` channel, the SCREAMING `UNAUTHENTICATED` is parked in the
          * `error` TEXT field of the same payload (dual placement).
@@ -1153,20 +1163,20 @@ export declare const ERROR_CODE: {
      */
     readonly claim: {
         /**
-         * hub ServerClaimController.php:144 (404 arm 142-147) ← throws at
-         * hub ClaimRequestHandler.php:212,248 — dotted on `code`, SCREAMING
+         * hub ServerClaimController.php:256 (404 arm 254-259) ← throws at
+         * hub ClaimRequestHandler.php:288,326 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_NOT_FOUND` parked in `error` text (dual).
          */
         readonly CODE_NOT_FOUND: "claim.code_not_found";
         /**
-         * hub ServerClaimController.php:150 (410 arm 148-153) ← throw at
-         * hub ClaimRequestHandler.php:260 — dotted on `code`, SCREAMING
+         * hub ServerClaimController.php:262 (410 arm 260-265) ← throw at
+         * hub ClaimRequestHandler.php:340 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_EXPIRED` parked in `error` text (dual).
          */
         readonly CODE_EXPIRED: "claim.code_expired";
         /**
-         * hub ServerClaimController.php:156 (409 arm 154-159) ← throw at
-         * hub ClaimRequestHandler.php:267 — dotted on `code`, SCREAMING
+         * hub ServerClaimController.php:268 (409 arm 266-271) ← throw at
+         * hub ClaimRequestHandler.php:349 — dotted on `code`, SCREAMING
          * `CLAIM_CODE_ALREADY_CLAIMED` parked in `error` text (dual).
          */
         readonly CODE_ALREADY_CLAIMED: "claim.code_already_claimed";
@@ -1191,8 +1201,8 @@ export declare const ERROR_CODE: {
         /** hub RelayProxyManager.php:251 */
         readonly NO_TUNNEL: "server.no_tunnel";
         /**
-         * hub ServerClaimController.php:174 (400 arm 172-177) ← throws at
-         * hub ClaimRequestHandler.php:497,500,503,507 — the server's Ed25519 key
+         * hub ServerClaimController.php:298 (400 arm 296-301) ← throws at
+         * hub ClaimRequestHandler.php:677,680,683,687 — the server's Ed25519 key
          * failed validation during claim. Hub W3 promoted: dotted rides `code`,
          * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
          * placement; clients may match either).

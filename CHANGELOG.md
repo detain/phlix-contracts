@@ -18,6 +18,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — W-rMOP1 rider: claim-exchange cites re-anchored at hub `5b9de574` / server `0fa8f515`; header currency stamp re-cut — 2026-10-30
+
+- **Trigger (R-CONTRACTS-01, from the `M-HUB-12` disclosure).** The hub claim
+  refactor retired the per-guess `logFailedAuth` blocks and restructured
+  `ClaimRequestHandler` / `ServerClaimController`, shifting the claim-code
+  throw and `mapError` sites — the disclosure predicted ~4 lines; against the
+  actual origin/master tips the drift is +76 to +170 (later claim-lane churn
+  stacks on the disclosed removals). Re-anchored AT SOURCE (not by blanket
+  delta) against FRESH clones of hub `5b9de574` and server `0fa8f515`, every
+  emit re-read before taking its number — the shared sibling working trees
+  carry live fixer lanes and were deliberately not consulted.
+- **Cites moved (six comment blocks, the full claim-exchange cluster):**
+  `claim.code_not_found` → throws at `ClaimRequestHandler` 288/326, 404 arm
+  254-259 (anchor 256); `claim.code_expired` → throw 340, 410 arm 260-265
+  (262); `claim.code_already_claimed` → throw 349, 409 arm 266-271 (268);
+  `server.key_invalid` → the four JWK-structure throws 677/680/683/687, 400
+  arm 296-301 (298); claim-route `auth.unauthenticated` → 200. The rider's
+  three named cites plus its two same-file siblings — one physical drift,
+  one honest unit; nothing outside the two claim files was touched.
+- **Comment-only proof.** Bundles rebuild cmp-IDENTICAL
+  (`phlix-contracts.js` `6c6039eb…`, `phlix-contracts.umd.cjs` `b1184fe7…`);
+  the frozen trio holds byte-ident — `error-codes.json`
+  `40c1da48787f37d00a6fc9af6c64a1ac` (204 codes), `server-route-manifest.json`
+  `915796837d38a77733c169996d97640c` (412 tuples), `mcp-scopes.json`
+  `8c92c0703eae8a429c509ff16e0d185d`. `errors.d.ts` and the two bundle maps
+  carry the docblock delta; `sourcesContent` moves only in the `errors.ts`
+  entry and byte-matches disk. Parsed-cite census holds at 429.
+- **Tripwire state (honest, disclosed).** `npm run verify:cites` against the
+  fresh clone tips: before this entry `ok=361 problems=68`, after `ok=378
+  problems=51` — the 17 greened coordinates are exactly the claim cluster.
+  The 51 residuals (hub proxy/share/invite/mount churn, three mixed-file
+  claim-controller cites in the `hub` section, two srv `SyncPlayManager`
+  wraps) are pre-existing currency debt owned by the owner tag-wave full
+  re-sweep, untouched here by scope, not introduced here. `test:run`
+  **171/171** · eslint clean · `tsc --noEmit` clean.
+- **No new tag, no version bump** — docblock/CHANGELOG/dist-re-derivation
+  only; nothing a tag-pinned consumer resolves changes value.
+
 ### Fixed — W-min28 minors cluster: ES2019 build target (compatibility contract); README break-on-upgrade Record law + syntax-ceiling note; `sideEffects: false`; cite-walk symlink hardening — 2026-10-30
 
 - **Compatibility target (fedev):** `vite.config.ts` pins
