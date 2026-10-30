@@ -28,28 +28,25 @@ jobs:
       - run: npm run typecheck
       - run: npm run build
 
-      # Committed-artifact freshness for the error-code registry. `npm run
-      # build` just rewrote the working copy from src/, so any diff left here is
-      # the COMMITTED dist/error-codes.json lagging the registry — the drift the
-      # errors.test.ts byte-freeze cannot see in CI (the build heals the working
-      # copy before the suite runs, see test/errors.test.ts describe comment).
-      # A forgotten regen fails loudly instead of shipping a stale vocabulary to
-      # the Node-less PHP consumers that pin this JSON.
-      - name: dist/error-codes.json committed-freshness check
-        run: git diff --exit-code -- dist/error-codes.json
-
-      # Same gate for the other two committed JSONs, each mirrored against its
-      # build-emitted twin: any diff here is the COMMITTED artifact lagging the
-      # TS source (the tests read working-copy bytes, which the build just
-      # healed — see the describe comments in test/mcp.test.ts and
-      # test/routeManifest.test.ts). Node-less/TS-less consumers (phlix-hub,
-      # phlix-roku-client) pin these files, so staleness ships as a wrong
-      # vocabulary unless reddened here.
-      - name: dist/mcp-scopes.json committed-freshness check
-        run: git diff --exit-code -- dist/mcp-scopes.json
-
-      - name: dist/server-route-manifest.json committed-freshness check
-        run: git diff --exit-code -- dist/server-route-manifest.json
+      # Committed-artifact freshness for EVERYTHING under dist/: the three
+      # registry JSONs, both bundles, all .d.ts and the sourcemaps. `npm run
+      # build` just rewrote the working copy from src/, so any diff left here
+      # is the COMMITTED dist/ tree lagging the sources — the drift the
+      # in-suite byte-freeze tests cannot see in CI (the build heals the
+      # working copy before the suite runs, see the describe comment in
+      # test/errors.test.ts). A forgotten regen fails loudly instead of
+      # shipping a stale vocabulary to the Node-less PHP consumers that pin
+      # these JSONs — or a stale runtime bundle and stale types to every JS
+      # client that imports the tagged dist/ tree (mobile Metro require,
+      # tizen/windows/ui vite; "files" ships exactly these committed bytes).
+      # The build is deterministic: the emit-*.mjs scripts derive generatedAt
+      # from TS provenance rather than wall-clock precisely for this gate, and
+      # a full rebuild at every tip has left the tree clean since #79.
+      # (Was three per-JSON steps; M-CONTRACTS-03/05 folded them into the
+      # whole-tree diff, which subsumes them and adds the unguarded
+      # bundle/.d.ts/.map class.)
+      - name: dist/ committed-freshness check
+        run: git diff --exit-code -- dist/
 
       - run: npm run test:run -- --coverage
 

@@ -18,6 +18,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — CI committed-freshness gate folded from three JSONs to the WHOLE `dist/` tree — bundles, `.d.ts` and maps can no longer ship stale in the tag (M-CONTRACTS-03 + M-CONTRACTS-05) — 2026-10-30
+
+- **Premise (verified at tip):** `ci.yml` ran `npm run build` then exactly
+  three `git diff --exit-code` steps — `dist/error-codes.json`,
+  `dist/mcp-scopes.json`, `dist/server-route-manifest.json`. The build ALSO
+  rewrites `dist/phlix-contracts.js`, `.umd.cjs`, all `*.d.ts` and the
+  maps — none of those had a freshness gate, so a src change committed
+  without re-running the build shipped a stale runtime bundle and stale
+  types inside `"files": ["dist"]` with CI fully green. Both reviews (fedev
+  M2 / seceng M2 — this repo's twin queue IDs) name the same defect; the
+  whole-tree fold is seceng's stated stronger shape and subsumes fedev's
+  per-file list.
+- **Cure:** single `git diff --exit-code -- dist/` step after the build,
+  with the doctrine comment rewritten honestly (determinism rationale: the
+  emit scripts derive `generatedAt` from TS provenance, not wall-clock).
+- **Prerequisite proven, not assumed:** full rebuild at this tip leaves
+  `dist/` byte-clean. **Teeth proven by index-level mutation** (no commits
+  touched): a planted stale `dist/error-codes.json` blob reddens the step
+  (exit 1, restored 0) — and a planted stale `dist/index.d.ts` reddens it
+  too, the exact class the three-JSON gates were blind to. Workflow YAML
+  re-parsed with `yaml.safe_load`: valid.
+- **Zero artifact movement:** workflow + CHANGELOG only; `dist/` bytes and
+  all three md5 pins untouched.
+
 ### Fixed — `exports` map now ships the three registry JSON subpaths the estate md5-pins (M-CONTRACTS-02) — 2026-10-30
 
 - **Premise (verified at tip):** `exports` admitted only `"."` and
