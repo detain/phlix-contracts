@@ -12,6 +12,9 @@
       "import": "./dist/phlix-contracts.js",
       "require": "./dist/phlix-contracts.umd.cjs"
     },
+    "./dist/error-codes.json": "./dist/error-codes.json",
+    "./dist/mcp-scopes.json": "./dist/mcp-scopes.json",
+    "./dist/server-route-manifest.json": "./dist/server-route-manifest.json",
     "./package.json": "./package.json"
   },
   "files": [

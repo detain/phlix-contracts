@@ -18,6 +18,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — `exports` map now ships the three registry JSON subpaths the estate md5-pins (M-CONTRACTS-02) — 2026-10-30
+
+- **Premise (verified at tip):** `exports` admitted only `"."` and
+  `"./package.json"`, so `@phlix/contracts/dist/error-codes.json`,
+  `dist/mcp-scopes.json` and `dist/server-route-manifest.json` — the canonical
+  artifacts the estate md5-pins — were NOT importable under Node ESM/vite
+  (`ERR_PACKAGE_PATH_NOT_EXPORTED`). The ui vendoring + md5/sha pin ceremony
+  (and the tizen `package/` copies) exists because of this field.
+- **Cure:** explicit subpath entries for exactly the three JSONs (narrower
+  than the `"./dist/*"` wildcard alternative — no incidental file exposure).
+  Purely additive: zero bytes move in `dist/`, zero behavior change for any
+  consumer importing `"."`.
+- **Live proof:** Node self-reference import of all three subpaths resolves
+  green post-fix (JSON assertions pass), and an unlisted `dist/` path still
+  throws `ERR_PACKAGE_PATH_NOT_EXPORTED` — the map is teeth-live, not widened
+  past the contract.
+
 ### Fixed — forward-correction: registry-growth releases are TYPE-breaking for exhaustive consumers; the "Additive only" label is wire-true and type-false (M-CONTRACTS-06) — 2026-10-30
 
 - **What the `[0.5.3]` entry underplays (entry itself kept verbatim):** its
