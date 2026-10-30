@@ -423,16 +423,20 @@ function ye(e) {
 //#endregion
 //#region src/Rating.ts
 function be(e) {
+	var t;
 	if (e.rating_score !== void 0 && e.rating_score !== null) return e.rating_score;
-	let t = e.metadata_json?.rating;
-	return typeof t == "number" ? t : null;
+	let n = (t = e.metadata_json) == null ? void 0 : t.rating;
+	return typeof n == "number" ? n : null;
 }
 //#endregion
 //#region src/Audio.ts
 function xe(e, t) {
 	if (!e.length || !t.length) return 0;
 	for (let n of t) {
-		let t = n.toLowerCase().split("-")[0], r = e.findIndex((e) => e.language?.toLowerCase().startsWith(t));
+		let t = n.toLowerCase().split("-")[0], r = e.findIndex((e) => {
+			var n;
+			return (n = e.language) == null ? void 0 : n.toLowerCase().startsWith(t);
+		});
 		if (r !== -1) return r;
 	}
 	return 0;

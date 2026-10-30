@@ -14,6 +14,13 @@ import { resolve } from 'node:path';
 export default defineConfig({
   build: {
     assetsInlineLimit: 0,
+    // Compatibility target (estate review 2026-10-28, fedev): the committed
+    // bundle's syntax ceiling becomes a CONTRACT, not an accident of the
+    // current vite default. esbuild LOWERS (optional chaining and friends)
+    // to ES2019 so TV-webview consumers that load dist/ directly can parse
+    // it. `package.json` engines describes the CONSUMABLE floor; this line
+    // is what actually guarantees it.
+    target: 'es2019',
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'PhlixContracts',

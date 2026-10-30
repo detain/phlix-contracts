@@ -51,7 +51,7 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, lstatSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -109,7 +109,12 @@ const HEADS = { hub: headSha(REPOS.hub), srv: headSha(REPOS.srv) };
 function walkPhp(dir, out) {
   for (const entry of readdirSync(dir)) {
     const p = join(dir, entry);
-    if (statSync(p).isDirectory()) walkPhp(p, out);
+    // lstat, never stat (estate review 2026-10-28, m3): stat FOLLOWS
+    // symlinks, so a symlinked directory cycle in a sibling checkout would
+    // recurse until the stack overflows and hangs this dev tool. Tracked
+    // trees hold real directories; symlinked .php FILES still resolve fine
+    // via readFileSync, they are simply never descended into.
+    if (lstatSync(p).isDirectory()) walkPhp(p, out);
     else if (entry.endsWith('.php')) out.push(p);
   }
 }

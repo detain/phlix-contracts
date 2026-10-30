@@ -18,6 +18,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — W-min28 minors cluster: ES2019 build target (compatibility contract); README break-on-upgrade Record law + syntax-ceiling note; `sideEffects: false`; cite-walk symlink hardening — 2026-10-30
+
+- **Compatibility target (fedev):** `vite.config.ts` pins
+  `build.target: 'es2019'`, turning the bundle's syntax ceiling from an
+  accident of the vite default into a mechanical guarantee — esbuild now
+  LOWERS optional chaining and friends (pre-cure `dist/phlix-contracts.js`
+  carried `?.` at :427). README Conventions states the ceiling for the TV
+  webview consumers that load `dist/` directly. Bundles re-emitted
+  (ES `43267ee2…` → `6c6039eb…`, UMD `453d2a1f…` → `b1184fe7…`, maps with
+  them); both formats runtime-smoke-tested; the three byte-frozen JSONs
+  re-verified UNCHANGED (`40c1da48…` / `91579683…` / `8c92c070…`).
+- **Exhaustive-Record law (fedev):** README Conventions now documents the
+  break-on-upgrade contract for `Record<…ErrorCode, …>` consumers — additive
+  mints are minor bumps, consumers must add the new rows (or pin
+  `Partial<…ErrorCode, …>` + default fallback), and a red type-check on the
+  upgrade is by design. Release entries that move registry bytes carry this
+  standing line (forward-only practice; history sections stay verbatim).
+- **Tree-shaking honesty (fedev):** `package.json` declares
+  `"sideEffects": false` — true for a constants + pure-functions package, and
+  it stops Metro (mobile) paying the flattened-bundle retention tax.
+- **Symlink recursion (seceng m3):** `walkPhp` in
+  `scripts/check-error-cites.mjs` switched `statSync` → `lstatSync`: a
+  symlinked directory cycle inside a sibling checkout previously crashed the
+  dev tool with an uncaught `ELOOP` (probe-verified both sides); the walk now
+  skips symlinked dirs and still reads symlinked `.php` files normally.
+
 ### Fixed — W-min27 minors cluster: README codecov-badge removal, `verify:cites` + Node-floor dev docs, three-artifact self-description; `exports` types-first; `verify:cites` anti-vacuity exit floor — 2026-10-30
 
 - **Codecov badge (docmaint / writer, same defect twice):** the README badge
@@ -33,9 +59,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Self-description (writer):** README intro, `package.json` `description` and
   the `src/index.ts` module docblock now name all three most-consumed artifacts
   — the estate error-code registry, the server route manifest, and MCP scopes —
-  "shared across every Phlix client and both servers". `dist/index.d.ts` and
-  the bundle sourcemaps re-emitted for the docblock gutter only; the three
-  byte-frozen JSONs untouched (`40c1da48…` / `91579683…` / `8c92c070…` held).
+  "shared across every Phlix client and both servers". `dist/index.d.ts`
+  re-emitted for the docblock gutter only (bundles and sourcemaps carry no
+  source comments — byte-ident); the three byte-frozen JSONs untouched
+  (`40c1da48…` / `91579683…` / `8c92c070…` held).
 - **`exports` condition order (fedev):** `"types"` moved FIRST in the `"."`
   object so node16/nodenext resolvers cannot fall through the JS conditions
   before seeing the declaration map.

@@ -129,6 +129,18 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
   the server's English `message`/`error` text is a debug fallback, and there is
   no server-side i18n or protocol locale negotiation. Wire values are never
   renamed lightly — a rename is a wire break.
+- **Break-on-upgrade is the contract for exhaustive error-code consumers**:
+  minting codes is additive and lands as a minor bump, but a consumer typed
+  `Record<ErrorCode, …>` (or over any per-domain `…ErrorCode` union) must gain
+  a row for every newly minted code — expect a red type-check on the upgrade
+  that adds registry rows; that is by design, it is how a new wire code cannot
+  silently slip past a handler. A consumer that must not break on upgrade pins
+  `Partial<…ErrorCode, …>` plus a default fallback instead. Release entries
+  that move registry bytes carry this standing line.
+- **Emitted-bundle syntax ceiling**: `vite.config.ts` pins
+  `build.target: 'es2019'`, so `dist/phlix-contracts.js` and
+  `dist/phlix-contracts.umd.cjs` never exceed ES2019 syntax — TV webview
+  consumers may load the committed `dist/` bundles directly.
 - `src/routeManifest.generated.ts`, `dist/mcp-scopes.json`,
   `dist/error-codes.json` and
   `dist/server-route-manifest.json` are generated — regenerate them, never
