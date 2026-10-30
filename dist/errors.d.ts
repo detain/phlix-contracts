@@ -172,7 +172,7 @@ declare const CODES: {
      * TEXT field of the same payloads, so clients may match either channel.
      * `auth.missing_credentials` / `auth.invalid_credentials` (server
      * AccountLink surface) still ride the `error` TEXT field only; the server
-     * emit-wave promotes them.
+     * emit-wave will promote them.
      */
     readonly auth: {
         /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
@@ -227,14 +227,14 @@ declare const CODES: {
         /**
          * srv AccountLinkController.php:295 — 400 when the link-identity POST
          * carries no credentials; the TEXT today is 'missing_credentials'. Rides
-         * the `error` TEXT field only; the server emit-wave promotes it to the
+         * the `error` TEXT field only; the server emit-wave will promote it to the
          * `code` channel; clients match in `error` text until then.
          */
         readonly MISSING_CREDENTIALS: "auth.missing_credentials";
         /**
          * srv AccountLinkController.php:332 — 401 when submitted credentials fail
          * to verify; the TEXT today is 'invalid_credentials'. Rides the `error`
-         * TEXT field only; the server emit-wave promotes it to the `code` channel;
+         * TEXT field only; the server emit-wave will promote it to the `code` channel;
          * clients match in `error` text until then.
          */
         readonly INVALID_CREDENTIALS: "auth.invalid_credentials";
@@ -801,7 +801,7 @@ declare const CODES: {
     /**
      * Server linked-identity failures (account linking + OIDC/GitHub callback
      * completion). CAVEAT (Wave 1b): all seven ride the `error` TEXT field today
-     * as bare snake pseudo-codes with no `code` key; the emit-wave promotes them
+     * as bare snake pseudo-codes with no `code` key; the emit-wave will promote them
      * to the `code` channel — clients match in `error` text until then. Where a
      * twin name collapses two coexisting text spellings (e.g.
      * `invalid_identity` → `identity.invalid`), the dotted form is the single
@@ -846,7 +846,7 @@ declare const CODES: {
      * Server authentication-provider config/lookup failures (account-link
      * rail + OIDC/GitHub admin forms). CAVEAT (Wave 1b): all seven ride the
      * `error` TEXT field today as bare snake pseudo-codes with no `code` key;
-     * the emit-wave promotes them to the `code` channel — clients match in
+     * the emit-wave will promote them to the `code` channel — clients match in
      * `error` text until then. `provider.not_configured` unifies today's two
      * spellings (`not_configured`, `provider_not_configured`) into ONE forward
      * value.
@@ -880,7 +880,7 @@ declare const CODES: {
      * Server OAuth browser-callback flow failures (OIDC + GitHub callback and
      * admin redirect validation). CAVEAT (Wave 1b): all six ride the `error`
      * TEXT field today as bare snake pseudo-codes with no `code` key; the
-     * emit-wave promotes them to the `code` channel — clients match in `error`
+     * emit-wave will promote them to the `code` channel — clients match in `error`
      * text until then. NOT to be confused with the hub's RFC-6749/6750-mandated
      * `error` values (`invalid_grant`, …), which stay excluded per the module
      * header — these six are estate-chosen words, not RFC vocabulary.
@@ -915,7 +915,7 @@ declare const CODES: {
      * `'error'` value of the `testConnection` arrays that srv
      * LdapAdminController.php:352-354 passes THROUGH to the client as JSON
      * (catch-arm `'connection_failed'` at srv LdapAdminController.php:358) —
-     * the emit-wave promotes them to the `code` channel; clients match in
+     * the emit-wave will promote them to the `code` channel; clients match in
      * `error` text until then.
      */
     readonly ldap: {
@@ -1043,7 +1043,7 @@ export declare const ERROR_CODE: {
      * TEXT field of the same payloads, so clients may match either channel.
      * `auth.missing_credentials` / `auth.invalid_credentials` (server
      * AccountLink surface) still ride the `error` TEXT field only; the server
-     * emit-wave promotes them.
+     * emit-wave will promote them.
      */
     readonly auth: {
         /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
@@ -1098,14 +1098,14 @@ export declare const ERROR_CODE: {
         /**
          * srv AccountLinkController.php:295 — 400 when the link-identity POST
          * carries no credentials; the TEXT today is 'missing_credentials'. Rides
-         * the `error` TEXT field only; the server emit-wave promotes it to the
+         * the `error` TEXT field only; the server emit-wave will promote it to the
          * `code` channel; clients match in `error` text until then.
          */
         readonly MISSING_CREDENTIALS: "auth.missing_credentials";
         /**
          * srv AccountLinkController.php:332 — 401 when submitted credentials fail
          * to verify; the TEXT today is 'invalid_credentials'. Rides the `error`
-         * TEXT field only; the server emit-wave promotes it to the `code` channel;
+         * TEXT field only; the server emit-wave will promote it to the `code` channel;
          * clients match in `error` text until then.
          */
         readonly INVALID_CREDENTIALS: "auth.invalid_credentials";
@@ -1672,7 +1672,7 @@ export declare const ERROR_CODE: {
     /**
      * Server linked-identity failures (account linking + OIDC/GitHub callback
      * completion). CAVEAT (Wave 1b): all seven ride the `error` TEXT field today
-     * as bare snake pseudo-codes with no `code` key; the emit-wave promotes them
+     * as bare snake pseudo-codes with no `code` key; the emit-wave will promote them
      * to the `code` channel — clients match in `error` text until then. Where a
      * twin name collapses two coexisting text spellings (e.g.
      * `invalid_identity` → `identity.invalid`), the dotted form is the single
@@ -1717,7 +1717,7 @@ export declare const ERROR_CODE: {
      * Server authentication-provider config/lookup failures (account-link
      * rail + OIDC/GitHub admin forms). CAVEAT (Wave 1b): all seven ride the
      * `error` TEXT field today as bare snake pseudo-codes with no `code` key;
-     * the emit-wave promotes them to the `code` channel — clients match in
+     * the emit-wave will promote them to the `code` channel — clients match in
      * `error` text until then. `provider.not_configured` unifies today's two
      * spellings (`not_configured`, `provider_not_configured`) into ONE forward
      * value.
@@ -1751,7 +1751,7 @@ export declare const ERROR_CODE: {
      * Server OAuth browser-callback flow failures (OIDC + GitHub callback and
      * admin redirect validation). CAVEAT (Wave 1b): all six ride the `error`
      * TEXT field today as bare snake pseudo-codes with no `code` key; the
-     * emit-wave promotes them to the `code` channel — clients match in `error`
+     * emit-wave will promote them to the `code` channel — clients match in `error`
      * text until then. NOT to be confused with the hub's RFC-6749/6750-mandated
      * `error` values (`invalid_grant`, …), which stay excluded per the module
      * header — these six are estate-chosen words, not RFC vocabulary.
@@ -1786,7 +1786,7 @@ export declare const ERROR_CODE: {
      * `'error'` value of the `testConnection` arrays that srv
      * LdapAdminController.php:352-354 passes THROUGH to the client as JSON
      * (catch-arm `'connection_failed'` at srv LdapAdminController.php:358) —
-     * the emit-wave promotes them to the `code` channel; clients match in
+     * the emit-wave will promote them to the `code` channel; clients match in
      * `error` text until then.
      */
     readonly ldap: {

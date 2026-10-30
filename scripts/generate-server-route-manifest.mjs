@@ -28,7 +28,8 @@
  * both routers. Both source files pin their entries as exact
  * `'VERB path -> Handler [Middleware]'` strings with NO substring matching —
  * the tuple-exact discipline this manifest inherits. The handler/middleware
- * suffix is stripped; the manifest is `[method, pathTemplate]` only.
+ * suffix is stripped; the manifest is `[method, pathTemplate]` only. The
+ * generated file's header spells out what that means: routing, not permission.
  *
  * Usage:
  *
@@ -229,8 +230,18 @@ const lines = [
     ' * `ApplicationRouterWirePathGuardTest::ROUTE_MANIFEST` and',
     ' * `WebPortalRouterWirePathGuardTest::ROUTE_MANIFEST` as',
     ' * `[method, pathTemplate]` tuples. This is the AUTHORITATIVE expected set',
-    ' * for EVERY client route gate: every URL a Phlix client issues must be',
-    ' * tuple-exact against one of these entries.',
+    ' * for every client route EXISTENCE gate: every URL a Phlix client issues',
+    ' * must be tuple-exact against one of these entries.',
+    ' *',
+    ' * WHAT THE LIST DOES NOT SAY: it records ROUTING, not authorization.',
+    ' * A listed entry never means the caller is permitted — maintenance mode,',
+    ' * registration, authentication, ownership, rate limits, access schedules,',
+    ' * subscription gating and similar checks run at request time inside the',
+    ' * server (dispatch + handler/middleware code, which the generator strips:',
+    ' * entries are `[method, pathTemplate]` only). An entry ABSENT here is',
+    ' * likewise not proof the server cannot serve it: this is a point-in-time',
+    ' * snapshot of the two guard-test route tables at the recorded commit.',
+    ' * The live gate for any call is its response — never this list.',
     ' *',
     ' * Sources (phlix-server, read-only, at commit `' + serverSha + '`):',
     ...perSource.map((s) => ` * - \`${s.file}\` — ${s.label} (${s.count} entries)`),
@@ -253,6 +264,7 @@ const lines = [
     '/**',
     ' * The EXACT set of `[method, pathTemplate]` tuples phlix-server registers,',
     ' * tuple-exact — a request that matches by substring or prefix is a defect.',
+    ' * Routing only: permission is decided at runtime — see the file header.',
     ' */',
     'export const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [string, string]> = [',
     ...tuples.map(([verb, route]) => `    ['${verb}', '${route}'],`),

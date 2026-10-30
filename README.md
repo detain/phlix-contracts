@@ -59,6 +59,10 @@ import {
   X_PHLIX_DEVICE_ID,
 } from '@phlix/contracts';
 
+// The example assumes values a live client already holds: `accessToken` is the
+// bearer token from the auth store, `sessionId` identifies the SyncPlay session
+// the user joined, and `item` is a `MediaItem` (imported above) from a media
+// response.
 const headers = buildPhlixHeaders({
   deviceId: 'win-123',
   deviceName: 'Living Room PC',
@@ -100,7 +104,8 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 | `ProfileTag.ts` | `ProfileTag` |
 | `StreamSession.ts` | `ProfileStreamLimit`, `StreamType`, `ActiveStream` |
 | `Music.ts`    | `MusicArtist`, `MusicAlbum`, `MusicTrack`, `AudioPreferences` |
-| `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup`/`SyncPlayRoom`, `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` |
+| `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup` (`SyncPlayRoom` is a deprecated alias),
+  `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` |
 | `routeManifest.generated.ts` | `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` (generated — see `scripts/generate-server-route-manifest.mjs`) |
 
 ## Conventions
@@ -146,6 +151,28 @@ npm run test:run -- --coverage   # + v8 coverage; writes ./coverage/lcov.info (C
 # regenerate src/routeManifest.generated.ts from a phlix-server checkout
 node scripts/generate-server-route-manifest.mjs <phlix-server-checkout>
 ```
+
+### Reading conventions
+
+Notation the README, source docblocks, and CHANGELOG use throughout:
+
+- **`(+N)`** — in an emit-site cite (e.g. ``srv AuthMiddleware.php:62 (+24 controller/helper sites)``),
+  "N further emit sites are not enumerated"; the full set lives in the server source.
+- **`#NNN`** — a GitHub PR/issue number in the repo the surrounding prose names.
+- **`SNNN`** — an estate audit-programme ticket (S280 = the route-manifest generation
+  programme; S249 = the MCP-scope census this package also vendors).
+- **`W1`/`W1b`/`W2`/`W3`/`W5`** — the numbered server/hub emit-wave lanes that promoted
+  wire literals onto the dotted `code` channel (each tag names the lane its codes landed in).
+- **`tripwire`** — `npm run verify:cites` (`scripts/check-error-cites.mjs`), which
+  token-verifies every SRV-HTTP/HUB cite against the sibling working trees.
+- **`mint`** — to coin a new `ErrorCode` registry entry; the registry is frozen outside
+  deliberate mint commits.
+- **`carrier`** — an endpoint that relays another service's error verbatim instead of
+  owning its own emit site.
+- **`dual placement`** — a transitional server response that sets the dotted code on
+  `code` while the legacy literal rides the `error` text field.
+- **`stamp`** — the currency annotation (a date plus repo/sha) naming what a verification
+  pass last checked against.
 
 ## License
 

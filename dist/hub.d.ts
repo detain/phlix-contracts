@@ -85,7 +85,7 @@ export interface ClaimRequest {
  * `ClaimResponse::toPayload()`.
  */
 export interface ClaimResponse {
-    /** Human-friendly code like "ABCD-1234" the operator pastes on the portal. */
+    /** Human-friendly code like "ABCD-1234" the server owner pastes into the hub web UI. */
     claimCode: string;
     /** Seconds the claim code is valid (master plan says 600). */
     expiresIn: number;

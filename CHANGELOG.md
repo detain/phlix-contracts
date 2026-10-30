@@ -18,6 +18,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — W-min26 minors cluster: route-manifest authz-semantics cure (generator + generated header); README legend + Usage assumptions; errors.ts pending-promote tense; claimCode/hub-UI wording; SyncPlayRoom deprecation label — 2026-10-30
+
+- **Manifest authz semantics (seceng m1):** `src/routeManifest.generated.ts` and the
+  `scripts/generate-server-route-manifest.mjs` template that emits it now state what the
+  list does NOT say: it records ROUTING at the recorded server commit, not authorization
+  — runtime checks (maintenance, registration, auth, ownership, rate limits, schedules,
+  subscriptions) all happen outside it, a listed entry never proves permission and an
+  absent entry never proves non-service. "EVERY client route gate" is now "every client
+  route EXISTENCE gate". The emitted JSON `$comment` stays un-rotated by design: the
+  manifest md5 is byte-frozen for the cs#22 consumer cascade — comment rotation is a
+  coordinated re-vendor leg, not a minors batch.
+- **README (writer MIN-3/6/8):** new "Reading conventions" legend under Development
+  glossing the notation the package uses throughout (`(+N)`, `#NNN`, `SNNN`, emit-wave
+  tags, tripwire, mint, carrier, dual placement, stamp); the Quick-start example now
+  states where `accessToken`/`sessionId`/`item` come from; the modules table marks
+  `SyncPlayRoom` a deprecated alias (matching `src/SyncPlay.ts`'s `@deprecated`).
+- **errors.ts tense (writer MIN-7):** the seven pending emit-wave notes ("the
+  (server )emit-wave promotes it/them …") now read "will promote" — every one of those
+  waves is still future (each site says clients match in `error` text until then); the
+  landed past-tense forms ("was promoted by the server W2 emit-wave") are untouched.
+  (writer MIN-8 sibling: `src/hub.ts` `ClaimResponse.claimCode` says what actually
+  happens — the server owner pastes the code into the hub web UI; "portal" named
+  nothing this estate serves.)
+- **Measured:** vitest 14 files / 171 tests green (baseline-identical); eslint +
+  `tsc --noEmit` clean; build ×2 deterministic; the canonical dist artifacts are
+  byte-identical (`phlix-contracts.js` 43267ee2…, `phlix-contracts.umd.cjs` 453d2a1f…,
+  error-codes `40c1da48…`, route-manifest `91579683…`, mcp-scopes `8c92c070…` — the
+  frozen trio held); only docblock-carrying d.ts files and the two bundle maps
+  (sourcesContent) moved. `verify:cites` unchanged at ok=364/problems=65 — the 65 are
+  pre-existing currency drift against moved sibling trees, not introduced here.
+
 ### Fixed — W-min25 minors cluster: README install cure recorded; `[Unreleased]` structure folded; errors.ts currency header slimmed; dotted-name correction — 2026-10-30
 
 - **README install idiom (cure `e39ed2b`, recorded here per this file's own

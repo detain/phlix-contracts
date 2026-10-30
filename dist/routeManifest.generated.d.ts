@@ -5,8 +5,18 @@
  * `ApplicationRouterWirePathGuardTest::ROUTE_MANIFEST` and
  * `WebPortalRouterWirePathGuardTest::ROUTE_MANIFEST` as
  * `[method, pathTemplate]` tuples. This is the AUTHORITATIVE expected set
- * for EVERY client route gate: every URL a Phlix client issues must be
- * tuple-exact against one of these entries.
+ * for every client route EXISTENCE gate: every URL a Phlix client issues
+ * must be tuple-exact against one of these entries.
+ *
+ * WHAT THE LIST DOES NOT SAY: it records ROUTING, not authorization.
+ * A listed entry never means the caller is permitted — maintenance mode,
+ * registration, authentication, ownership, rate limits, access schedules,
+ * subscription gating and similar checks run at request time inside the
+ * server (dispatch + handler/middleware code, which the generator strips:
+ * entries are `[method, pathTemplate]` only). An entry ABSENT here is
+ * likewise not proof the server cannot serve it: this is a point-in-time
+ * snapshot of the two guard-test route tables at the recorded commit.
+ * The live gate for any call is its response — never this list.
  *
  * Sources (phlix-server, read-only, at commit `758f91496c068551b310f1078093335f79c20e04`):
  * - `tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php` — ApplicationRouterWirePathGuardTest::ROUTE_MANIFEST (the Application router) (375 entries)
@@ -29,6 +39,7 @@
 /**
  * The EXACT set of `[method, pathTemplate]` tuples phlix-server registers,
  * tuple-exact — a request that matches by substring or prefix is a defect.
+ * Routing only: permission is decided at runtime — see the file header.
  */
 export declare const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [string, string]>;
 /** Provenance — the server commit + generator this manifest was derived from. */
