@@ -22,6 +22,29 @@
  * wire values are listed VERBATIM — they are live traffic and renaming one is a
  * breaking wire change (that is a Wave-2 tagged cascade, not a Wave-1 edit).
  *
+ * SEMVER & COMPATIBILITY (union-growth law): registry mints land as
+ * last-position bumps per the repo's own precedent (`v0.5.1` carried +55
+ * codes, `v0.5.3` carried +2). That numbering is WIRE-true — no code is
+ * renamed, no shape moves — and TYPE-false for exhaustive consumers: every
+ * mint grows the exported domain unions (`ErrorCode`, the `ErrorCodeIn<D>`
+ * projections, `FederationErrorCode`, `SyncPlayTwinErrorCode` and through it
+ * `SyncPlayErrorCode`), so a consumer holding a complete
+ * `Record<…ErrorCode, …>` map or a `switch` closed with `default: never`
+ * hits a COMPILE-TIME break (TS2741-class) at the very re-pin that
+ * "additive" promised was safe — the estate's mobile client hit exactly this
+ * on `queue_limit_exceeded` at `v0.5.3`. The break-on-upgrade is BY DESIGN
+ * (a new wire code must not slip past a handler silently); consumers that
+ * must not break pin `Partial<Record<…>>` plus a default fallback. The
+ * PHP-side counterpart of the same law: any release moving
+ * `dist/error-codes.json` bytes REQUIRES the downstream registry-JSON
+ * fixture pins to rotate. Release law going forward: every CHANGELOG entry
+ * that mints codes carries the type-level-break callout for exhaustive
+ * consumers in the words of the repo's own 0.3.12 precedent ("⚠ Numbered as
+ * a …, but … **breaking** for any consumer that had exhaustively switched
+ * on the old … union. The number understates it.") — adopted via the
+ * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
+ * Conventions break-on-upgrade bullet.
+ *
  * COORDINATE CURRENCY: the claim-exchange cites — the claim.code_* trio, the
  * claim-route auth.unauthenticated and the claim-verification
  * server.key_invalid (emits living in hub's ClaimRequestHandler and

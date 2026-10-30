@@ -18,6 +18,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — `src/errors.ts` gains the SEMVER & COMPATIBILITY union-growth law; mint releases documented as TYPE-breaking for exhaustive consumers (M-CONTRACTS-01) — 2026-10-30
+
+- **Premise (verified at fix tip):** the module header carried DOCTRINE /
+  SHAPE / NAMING / COORDINATE CURRENCY and zero semver-growth law; grep for
+  `semver|exhaustive|TS2741` over `src/errors.ts` hit nothing. The README
+  half of the finding was already cured at W-min28 (the Conventions
+  break-on-upgrade bullet, README.md:132) — disclosed, not re-landed. This
+  commit lands the remaining durable half: the header itself.
+- **Cure:** new `SEMVER & COMPATIBILITY (union-growth law)` header section
+  stating, at the vocabulary's own source: mints land last-position per the
+  repo's precedent (`v0.5.1` +55, `v0.5.3` +2); the numbering is wire-true
+  and type-false for exhaustive `Record<…ErrorCode,…>`/`default: never`
+  consumers (TS2741-class break at re-pin — the mobile cascade named as the
+  real incident); break-on-upgrade is by design; `Partial<Record<…>>` +
+  default is the must-not-break posture; the PHP-side fixture-pin-rotation
+  counterpart; and the going-forward release law adopting the 0.3.12
+  ⚠-callout wording for every mint entry (cross-referenced to the
+  M-CONTRACTS-06 forward-correction CHANGELOG entry).
+- **Bundle-law movement, kept together:** src + `dist/errors.d.ts` (+23
+  comment lines) + both committed sourcemaps (header line-shift only) in one
+  commit. `dist/phlix-contracts.js`/`.umd.cjs` bytes UNMOVED; all three
+  registry JSONs byte-frozen (md5 `40c1da48`/`91579683`/`8c92c070` held).
+- **Tripwire-neutral by construction:** the section cites no hub/server
+  file coordinates; `npm run verify:cites` reads `ok=354 problems=75` before
+  AND after (pre-existing owner tag-wave debt, disclosed raw — see the
+  header's own COORDINATE CURRENCY paragraph). Suite 171/171 serial, lint
+  clean, build deterministic.
+
 ### Fixed — `ServerSettings` authority claim retired: honest partial-mirror docblocks, measured drift disclosed (M-CONTRACTS-04) — 2026-10-30
 
 - **Premise re-measured at fix time against `phlix-shared` master**
