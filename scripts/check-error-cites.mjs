@@ -39,7 +39,9 @@
  * Env:  PHLIX_CONTRACTS_HUB_REPO / PHLIX_CONTRACTS_SRV_REPO override the
  *       sibling-checkout defaults (../phlix-hub, ../phlix-server).
  * Exit: 0 every cite holds · 1 drift/miss/malformation found · 2 the tool
- *       cannot run (missing checkout, bad args) — fix the setup, never ignore.
+ *       cannot run (missing checkout, bad args) — or fewer cites were parsed
+ *       than the anti-vacuity floor below, which means the sweep verified
+ *       nothing and must never report success. Fix the setup, never ignore.
  *
  * NOT wired into CI by design (estate review, 2026-09-24): CI cannot check out
  * the sibling private repos, and gating on a token-heuristic tripwire would
@@ -68,6 +70,16 @@ if (!Number.isInteger(WINDOW) || WINDOW < 0) {
   process.exit(2);
 }
 const AS_JSON = argv.includes('--json');
+
+// Anti-vacuity floor (estate review 2026-10-28, m2): exit 0 must mean "every
+// cite held", never "nothing was checked". A CITE_RE grammar break after an
+// errors.ts reflow — or a wholesale strip of the cites — would leave
+// ok=0/problems=0 and the tool would vacuously "pass" while verifying
+// nothing. The registry only ever grows, so a parsed-cite count under this
+// floor can only mean the sweep itself broke. Measured at the 2026-10-30 cure
+// stamp: 429 cites parsed (ok=364 + problems=65 drift era). Raise only when
+// cites are legitimately REMOVED — never to silence a low count.
+const MIN_VERIFIED_CITES = 400;
 
 // ─── resolve the cited repos; without the code there is nothing to verify ───
 const REPOS = {
@@ -320,5 +332,15 @@ if (AS_JSON) {
   for (const p of problems) {
     console.log(`${p.status.padEnd(13)} ${p.at.padEnd(16)} ${p.cite.padEnd(58)} ${p.note}`);
   }
+}
+const parsedCount = okCount + problems.length;
+if (parsedCount < MIN_VERIFIED_CITES) {
+  console.error(
+    `check-error-cites: only ${parsedCount} cites parsed — below the ` +
+    `anti-vacuity floor ${MIN_VERIFIED_CITES}. A "clean" sweep that checked ` +
+    `nothing is a broken sweep, not a passing one: inspect CITE_RE and the ` +
+    `errors.ts cite blocks. Exit 2 — fix the tool, never ignore.`,
+  );
+  process.exit(2);
 }
 process.exit(problems.length > 0 ? 1 : 0);

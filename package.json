@@ -1,16 +1,16 @@
 {
   "name": "@phlix/contracts",
   "version": "0.5.3",
-  "description": "Framework-agnostic TypeScript REST/wire DTO types + tiny pure helpers for Phlix — the single source of truth for media, playback, auth, hub, library, and event shapes shared across the JS clients (mobile, windows, tizen). Mirrors detain/phlix-shared and the server's JSON response shapes. No Vue/React/axios.",
+  "description": "Framework-agnostic TypeScript REST/wire DTO types + tiny pure helpers for Phlix — the single source of truth for media, playback, auth, hub, library, and event shapes, the estate error-code registry, the server route manifest, and MCP scopes, shared across every Phlix client and both servers. Mirrors detain/phlix-shared and the server's JSON response shapes. No Vue/React/axios.",
   "type": "module",
   "main": "./dist/phlix-contracts.umd.cjs",
   "module": "./dist/phlix-contracts.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/phlix-contracts.js",
-      "require": "./dist/phlix-contracts.umd.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/phlix-contracts.umd.cjs"
     },
     "./package.json": "./package.json"
   },

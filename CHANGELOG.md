@@ -18,6 +18,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — W-min27 minors cluster: README codecov-badge removal, `verify:cites` + Node-floor dev docs, three-artifact self-description; `exports` types-first; `verify:cites` anti-vacuity exit floor — 2026-10-30
+
+- **Codecov badge (docmaint / writer, same defect twice):** the README badge
+  advertised a Codecov integration that has never existed in this repo — CI
+  uploads coverage to Codacy only (`ci.yml`). The badge line is deleted;
+  standing up a real Codecov/Codacy-badge upload is a CI-lane decision, not a
+  doc edit.
+- **`verify:cites` discoverability (docmaint / fedev, same defect twice):** the
+  README Development block now carries the command with its sibling-checkout
+  precondition and its deliberate NOT-in-CI status, plus a line naming the
+  build toolchain floor: CI builds on Node 24 while `engines.node >=18`
+  describes the CONSUMABLE dist, not the vite-8 build.
+- **Self-description (writer):** README intro, `package.json` `description` and
+  the `src/index.ts` module docblock now name all three most-consumed artifacts
+  — the estate error-code registry, the server route manifest, and MCP scopes —
+  "shared across every Phlix client and both servers". `dist/index.d.ts` and
+  the bundle sourcemaps re-emitted for the docblock gutter only; the three
+  byte-frozen JSONs untouched (`40c1da48…` / `91579683…` / `8c92c070…` held).
+- **`exports` condition order (fedev):** `"types"` moved FIRST in the `"."`
+  object so node16/nodenext resolvers cannot fall through the JS conditions
+  before seeing the declaration map.
+- **Vacuous pass (seceng m2):** `scripts/check-error-cites.mjs` now exits 2
+  when fewer than `MIN_VERIFIED_CITES` (400) cites were parsed at all — a
+  `CITE_RE` grammar break can no longer "pass" by verifying nothing. Floor
+  measured against 429 parsed (ok=364, problems=65) at this stamp; the 65
+  drift reds are the owner-queued re-anchor wave input, untouched here.
+
 ### Fixed — W-min26 minors cluster: route-manifest authz-semantics cure (generator + generated header); README legend + Usage assumptions; errors.ts pending-promote tense; claimCode/hub-UI wording; SyncPlayRoom deprecation label — 2026-10-30
 
 - **Manifest authz semantics (seceng m1):** `src/routeManifest.generated.ts` and the

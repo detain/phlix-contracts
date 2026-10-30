@@ -2,7 +2,8 @@
  * @phlix/contracts — framework-agnostic REST/wire DTO types + tiny pure helpers.
  *
  * The single source of truth for the Phlix media/playback/auth/hub/library/
- * event shapes shared across the JS clients (mobile, windows, tizen). Mirrors
+ * event shapes, the estate error-code registry, the server route manifest,
+ * and MCP scopes — shared across every Phlix client and both servers. Mirrors
  * the PHP `detain/phlix-shared` package and the server's JSON response shapes.
  * Pure TypeScript: NO Vue / React / axios / runtime framework deps.
  *

@@ -1,16 +1,15 @@
 # @phlix/contracts
 
 [![CI](https://github.com/detain/phlix-contracts/actions/workflows/ci.yml/badge.svg)](https://github.com/detain/phlix-contracts/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/detain/phlix-contracts/graph/badge.svg)](https://codecov.io/gh/detain/phlix-contracts)
 [![Version](https://img.shields.io/github/v/tag/detain/phlix-contracts?label=version&sort=semver)](https://github.com/detain/phlix-contracts/tags)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 Framework-agnostic TypeScript REST/wire DTO types **plus** a handful of tiny
 pure helpers for Phlix. This is the single source of truth for the
-media / playback / auth / hub / library / event shapes that the JS clients
-(mobile, windows, tizen) consume, so they stop redeclaring divergent local
-types.
+media / playback / auth / hub / library / event shapes, the estate error-code
+registry, the server route manifest, and MCP scopes — shared across every
+Phlix client and both servers, so they stop redeclaring divergent local types.
 
 - **No runtime framework deps** — no Vue, React, axios, or Pinia. Types + pure
   functions only.
@@ -146,10 +145,18 @@ npm run typecheck   # tsc --noEmit (strict)
 npm run build       # typecheck + vite lib (ES+CJS) + d.ts + dist/mcp-scopes.json + dist/server-route-manifest.json + dist/error-codes.json
 npm run test:run    # vitest run
 npm run test:run -- --coverage   # + v8 coverage; writes ./coverage/lcov.info (CI uploads it to Codacy)
+npm run verify:cites  # dev-side cite tripwire over src/errors.ts file:line
+                      # cites (needs sibling phlix-hub/phlix-server checkouts,
+                      # or PHLIX_CONTRACTS_HUB_REPO / PHLIX_CONTRACTS_SRV_REPO;
+                      # deliberately NOT in CI — private siblings + heuristics)
 
 # regenerate src/routeManifest.generated.ts from a phlix-server checkout
 node scripts/generate-server-route-manifest.mjs <phlix-server-checkout>
 ```
+
+Building this package (not consuming it) needs the CI toolchain: Node 24, per
+`.github/workflows/ci.yml`. The `engines.node >=18` field describes the
+CONSUMABLE `dist/`, not the vite-8 build itself.
 
 ### Reading conventions
 
