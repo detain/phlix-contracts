@@ -18,6 +18,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — forward-correction: registry-growth releases are TYPE-breaking for exhaustive consumers; the "Additive only" label is wire-true and type-false (M-CONTRACTS-06) — 2026-10-30
+
+- **What the `[0.5.3]` entry underplays (entry itself kept verbatim):** its
+  "**Additive only.**" bullet is true of the wire vocabulary and the JSON
+  registry bytes, but the two mints widened the exported `ErrorCode` union
+  (via the federation + syncplay domains) and the `SyncPlayErrorCode` family
+  19 → 20 (202 → 204 census). For any consumer holding an exhaustive
+  `Record<…ErrorCode, …>` map or a `switch` closed with `default: never`, a
+  union growth is a COMPILE-TIME BREAK the moment it re-pins — not an
+  addition. This is documented-true, not hypothetical: the estate's own mobile
+  client hit TS2741 on `queue_limit_exceeded` re-pinning at this exact tag and
+  needed a coordinated catalog fix (the v0.5.3 consumer-cascade record).
+- **Same law, earlier victim:** the W1b expansion shipped as `v0.5.1` under
+  "strictly additive" prose while growing the union 147 → 202 (a 39%
+  widening) with no type-consumer warning.
+- **Going-forward release-note law (durable statement now in the
+  `src/errors.ts` module header, SEMVER & COMPATIBILITY section, and the
+  README Conventions break-on-upgrade bullet):** every release entry that
+  mints registry codes carries the type-level-break callout in the words of
+  the repo's own 0.3.12 precedent — "⚠ Numbered as a …, but … **breaking** for
+  any consumer that had exhaustively switched on the old … union. The number
+  understates it." — plus the PHP-side counterpart line (registry-JSON
+  fixture-pin rotation), which `v0.5.3` already shipped for that audience.
+- **History untouched:** the `[0.5.3]`, W1b and W1 entries stay verbatim per
+  the house history-verbatim rule; this entry is the correction-forward.
+  CHANGELOG-only; `dist/` bytes untouched.
+
 ### Fixed — CHANGELOG version-banner hygiene: the three orphaned published tags get their headers (M-CONTRACTS-07) — 2026-10-30
 
 - **What was broken:** tags `v0.5.1`, `v0.5.0` and `v0.4.7` existed on the
