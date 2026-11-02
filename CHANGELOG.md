@@ -18,6 +18,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-11-02
+
+### Changed — v0.5.4: additive exports surface + whole-dist freshness gate + release law and docblock truths — **registry byte-FROZEN this mint** (no mints; 204 codes / 412 tuples / 4 scopes held)
+
+- **No ⚠ callout to carry — zero codes minted.** Under the `src/errors.ts`
+  SEMVER & COMPATIBILITY union-growth law this release itself adopted
+  (M-CONTRACTS-01/06), mint-class entries must carry the TS2741-class
+  type-break warning for exhaustive consumers; this release ships **no
+  registry growth** — all three artifacts byte-frozen since `v0.5.3`
+  (`error-codes.json` md5 `40c1da48787f37d00a6fc9af6c64a1ac`, 204 codes /
+  37 domains; `server-route-manifest.json` md5 `915796837d38a77733c169996d97640c`,
+  412 tuples @ srv `758f9149`; `mcp-scopes.json` md5
+  `8c92c0703eae8a429c509ff16e0d185d`, 4 scopes), md5-proven at tag↔master
+  and re-asserted after fresh rebuilds at this prep commit. A consumer
+  re-pinning `#v0.5.3` → `#v0.5.4` sees **no union member added**: no
+  exhaustive `Record<…ErrorCode, …>` map or `default: never` switch can
+  break in this bump class (the mobile TS2741 incident class — absent by
+  construction).
+- **Additive import surface (`fa6a435`, M-CONTRACTS-02):** the `exports`
+  map now ships the three md5-pinned registry-JSON subpaths +
+  `./package.json`, types-first order — estate consumers can import the
+  canonical artifacts instead of vendoring byte copies. `sideEffects:
+  false` and the `source-map-js` override ride the same batch (`709abc1`).
+- **CI gate hardening (`be98131`, M-CONTRACTS-03/05):** committed-
+  freshness check folded from three JSON diffs to the WHOLE `dist/` tree
+  — stale bundles, `.d.ts` and sourcemaps can no longer ship inside a
+  tag; mutation-proven at the step itself.
+- **Release law + docblock truths:** the union-growth header (`0919f63`,
+  M-CONTRACTS-01) and its README twin; `ServerSettings` authority claim
+  retired to measured partial-mirror honesty (`b33bf55`, M-CONTRACTS-04);
+  the registry-growth forward-correction entry (`0d56622`, M-CONTRACTS-06);
+  CHANGELOG banner hygiene — tag-proven headers for `0.5.1`/`0.5.0`/
+  `0.4.7` (`dc5d387`, M-CONTRACTS-07) and the single-top `[Unreleased]`
+  fold (`33c6c0c`, W-min25).
+- **Minors batches W-min26/-27/-28** (`addc3a8`/`2ca4877`/`709abc1`,
+  16 items): ES2019 build target (compatibility contract), route-manifest
+  generator authz-semantics cure, README legend/Usage/assumption truths,
+  `verify:cites` anti-vacuity exit floor + Node-floor dev docs, errors.ts
+  tense and wording cures, dotted-name correction.
+- **Cite-currency sweeps — comment-only, zero wire movement:** `54977ea`
+  (13 spans @ hub `256aa25f` / srv `c42e166a`), `6519b53` (74 spans @
+  `5a048a6` / `f4326191`), `53b5d7a` (provider helper cites), `adcacab`
+  (3 spans @ srv `e55e0ee0`), `bcb6bab`/`ecbb00c` (syncplay family +
+  `rate_limited` re-anchors), `da06733` (53 spans @ hub `250486c` / srv
+  `99eda9c0`), `e615acd` (R-CONTRACTS-01 claim-exchange cluster @ hub
+  `5b9de574` / srv `0fa8f515`); the deferred-mint pair flipped RESERVED →
+  LIVE doc-side (`0be4146`) once hub `f44275f` + srv `7baa398a` landed
+  the wire.
+- **Honest tripwire state at cut (disclosed, non-gating):** `verify:cites`
+  is a DEV-ONLY tripwire, deliberately not a CI step (needs sibling
+  checkouts). Measured at this prep commit: exit 1, `ok=334 problems=95`
+  against sibling tips hub `de19413e` / server `5980afc4` (planner's
+  pre-server-move read at tag-wave planning was `ok=354 problems=75`;
+  the delta is later server LDAP/SyncPlay churn — pre-existing currency
+  debt, NOT introduced by any entry in this release). The full estate
+  re-anchor is **Wave 3's remit** (`.reviews/TAGWAVE-MATRIX.md` §1.3-P4);
+  it does not gate this cut because cite coordinates live in docblocks
+  only — no shipped wire or type artifact reads them.
+- **Gate evidence (at this prep commit):** `npm run build` ×2
+  deterministic; whole-dist committed-freshness `git diff --exit-code --
+  dist/` = 0 (bundles embed no package version — the bump moves no dist
+  bytes); vitest serial **171/171** (14 files); `npm run lint` clean;
+  trio md5 re-asserted post-build (emitters re-derive from frozen src).
+- **Fold mechanics (verbatim-history law):** the previous `##
+  [Unreleased]` header takes its released identity `## [0.5.4] -
+  2026-11-02`; entry bodies are untouched. A fresh empty `[Unreleased]`
+  placeholder stays at the top. Pre-`v0.5.3` detail entries that rode
+  under the old banner since the tag prep (`430981e` left them there) are
+  re-bannered to a batch-2 carried-forward header at their true boundary
+  below — W-min25/M-CONTRACTS-07 precedent, headers only, bodies verbatim.
+
 ### Fixed — `src/errors.ts` gains the SEMVER & COMPATIBILITY union-growth law; mint releases documented as TYPE-breaking for exhaustive consumers (M-CONTRACTS-01) — 2026-10-30
 
 - **Premise (verified at fix tip):** the module header carried DOCTRINE /
@@ -694,6 +765,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   are the three hub emit sites and the :676/:1230 split named in the new
   wording). **No new tag** — nothing consumers pin has changed; the next
   tag remains an owner-gated decision.
+
+## [0.5.3] — carried-forward notes (batch 2)
+> Re-bannered forward-only at the `v0.5.4` cut (2026-11-02): these bodies
+> shipped in `v0.5.3` — every entry below is an ancestor of the tag commit
+> `430981e` (`git merge-base --is-ancestor` proven at this prep) — but rode
+> under the `[Unreleased]` banner because the tag prep left them there.
+> Entries kept verbatim per the house history rule; the `## [0.5.3]`
+> summary further below stays the authoritative release note for them.
+> (Batch 1 of this class was renamed by W-min25 — its header sits under
+> the `## [0.5.3]` section.)
 
 ### Changed — route-manifest regen #35: CONTENT 410→412 tuples at server `758f9149` + cite-currency re-stamp
 
