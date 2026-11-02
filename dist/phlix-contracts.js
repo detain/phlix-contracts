@@ -1,4 +1,4 @@
-//#region src/playback.ts
+// src/playback.ts
 var e = "auto";
 function t(e, t) {
 	if (e.length !== 0) {
@@ -395,8 +395,7 @@ function me(e) {
 	};
 	return e.sessionId !== void 0 && e.sessionId !== "" && (t[Y] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
 }
-//#endregion
-//#region src/ticks.ts
+// src/ticks.ts
 var X = 1e7, Z = 6e8, Q = 36e9;
 function he(e) {
 	return e / X;
@@ -420,16 +419,14 @@ function ye(e) {
 	let t = Math.floor(e / Q), n = Math.floor(e % Q / Z);
 	return t > 0 ? `${t}h ${n}m` : `${n}m`;
 }
-//#endregion
-//#region src/Rating.ts
+// src/Rating.ts
 function be(e) {
 	var t;
 	if (e.rating_score !== void 0 && e.rating_score !== null) return e.rating_score;
 	let n = (t = e.metadata_json) == null ? void 0 : t.rating;
 	return typeof n == "number" ? n : null;
 }
-//#endregion
-//#region src/Audio.ts
+// src/Audio.ts
 function xe(e, t) {
 	if (!e.length || !t.length) return 0;
 	for (let n of t) {
@@ -441,8 +438,7 @@ function xe(e, t) {
 	}
 	return 0;
 }
-//#endregion
-//#region src/SyncPlay.ts
+// src/SyncPlay.ts
 var Se = [
 	"id",
 	"name",
@@ -911,7 +907,6 @@ var Se = [
 	shared: 11,
 	total: 412
 };
-//#endregion
 export { _ as ACCESS_ERROR_CODES, R as ADMIN_ERROR_CODES, S as ALEXA_ERROR_CODES, r as AUDIO_TRACK_KEYS, u as AUTH_ERROR_CODES, e as AUTO_QUALITY, j as CASTING_ERROR_CODES, f as CLAIM_ERROR_CODES, N as COMMON_ERROR_CODES, w as CSRF_ERROR_CODES, A as DLNA_ERROR_CODES, ce as ERROR_CODE, de as ERROR_CODES, l as ERROR_DOMAINS, ae as EVENT, P as FEDERATION_ERROR_CODES, v as GATEWAY_ERROR_CODES, d as HUB_ERROR_CODES, B as IDENTITY_ERROR_CODES, I as INVITE_ERROR_CODES, te as JWT_AUD, ee as JWT_ISS, ne as JWT_TYPE, U as LDAP_ERROR_CODES, G as LEGACY_SYNCPLAY_ERROR_CODES, D as LIBRARY_ERROR_CODES, b as MCP_ERROR_CODES, s as MCP_SCOPE, oe as MCP_SCOPES, x as MCP_TOKEN_ERROR_CODES, se as MCP_TOKEN_PREFIX, le as METADATA_ERROR_CODES, H as OAUTH_ERROR_CODES, E as PLUGIN_ERROR_CODES, a as PLUGIN_EVENT, O as POSTER_ERROR_CODES, k as PROFILE_ERROR_CODES, V as PROVIDER_ERROR_CODES, m as PROXY_ERROR_CODES, M as QUICKCONNECT_ERROR_CODES, h as QUOTA_ERROR_CODES, y as RELAY_ERROR_CODES, L as REQUEST_ERROR_CODES, p as SERVER_ERROR_CODES, Ne as SERVER_ROUTE_MANIFEST, Pe as SERVER_ROUTE_MANIFEST_PROVENANCE, re as SERVER_STATUS, F as SHARE_ERROR_CODES, g as STREAM_ERROR_CODES, n as SUBTITLE_TRACK_KEYS, fe as SYNCPLAY_ERROR_CODES, pe as SYNCPLAY_ERROR_CODE_TWINS, W as SYNCPLAY_TWIN_ERROR_CODES, De as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, je as SYNC_PLAY_ERROR_RESPONSE_KEYS, Oe as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, we as SYNC_PLAY_GROUP_KEYS, Te as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, ke as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, Me as SYNC_PLAY_KEY_TIES, Ae as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, Ee as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, Se as SYNC_PLAY_MEMBER_KEYS, Ce as SYNC_PLAY_QUEUE_ITEM_KEYS, Q as TICKS_PER_HOUR, Z as TICKS_PER_MINUTE, X as TICKS_PER_SECOND, C as TLS_ERROR_CODES, i as TRACK_KEY_TIES, z as UPDATES_ERROR_CODES, T as USER_ERROR_CODES, o as WEBHOOK_EVENT, ie as WEBHOOK_EVENT_RESERVED, K as X_PHLIX_DEVICE_ID, q as X_PHLIX_DEVICE_NAME, J as X_PHLIX_DEVICE_TYPE, Y as X_PHLIX_SESSION_ID, me as buildPhlixHeaders, ye as formatDuration, ve as formatRuntime, xe as pickDefaultAudio, t as pickDefaultRendition, be as pickDisplayRating, ge as secondsToTicks, _e as ticksToHms, $ as ticksToMinutes, he as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map
