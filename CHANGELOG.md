@@ -18,6 +18,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — one RESERVED mint: `common.not_found` (census 204 → 205) + two no-byte wave rulings — contracts wave over `.reviews/CONTRACTS-WAVE-BRIEF.md` — 2026-11-03
+
+- **⚠ Numbered as a patch, but TYPE-breaking for exhaustive consumers.** Under
+  the `src/errors.ts` SEMVER & COMPATIBILITY union-growth law, this release
+  grows the `ErrorCode` union by one member, so any consumer holding an
+  exhaustive `Record<ErrorCode, string>` / `switch` with a `default: never`
+  reddens at re-pin (TS2741 class) before it can ship the new row. Measured
+  victim, named so nobody rediscovers it: **phlix-ui** keeps seven such catalogs
+  — `EN`/`ES`/`FR`/`DE`/`IT`/`PT_BR`/`JA` at `src/i18n/errors.ts:47,336,602,837,1074,1308,1542`,
+  all typed `PhlixErrorCatalog = Record<ErrorCode, string>` — so re-pinning to
+  this tag reds **7 typecheck errors** until a `not_found` row lands in each
+  locale. Mobile's `syncplayErrors` is `Record<SyncPlayErrorCode, string>` and
+  the `syncplay` domain did not move, so it is NOT in the blast radius. The wire
+  itself stays additive: no existing code changed a byte or an order.
+- **`common.not_found` (RESERVED, `not_found`).** Registered on request
+  (R-HUB-W2-C1) for the hub's two unmatched-route fallbacks: hub
+  `AuthController.php:67` (the `default =>` arm of the `/auth/{action}`
+  dispatcher — 404, body `['error' => 'Not Found']`) and hub `Router.php:443`
+  (`notFound()` — 404, body `['error' => 'Not Found', 'message' => …]`). Both
+  emit prose-only bodies with no `code`, and the hub's own vendored-registry
+  law (`tests/Unit/Contracts/ErrorCodesContractTest.php`) forbids emitting an
+  unregistered word — this entry is that permission. The entry docblock records
+  the unification ruling the hub leg implements: one human sentence co-mirrored
+  in `error` AND `message` (the pinned `extractError` read order is
+  error-then-message), the machine word in `code`, and the sentence chosen is
+  Router's shipped `The requested resource was not found` rather than the HTTP
+  phrase `Not Found` — the latter is on the hub envelope test's member-facing
+  HTTP-phrase ban list. Kept undotted on purpose: the fallback knows no
+  resource, which is why the generic word was never registered before. **No wire
+  byte carries it until the hub flips the two literals and rotates its own
+  fixture + law pins in the release that pins this tag.**
+- **Two rulings that move NO registry bytes.** (1) R-TIZEN-W2-C1 — the
+  QuickConnect approve rail's vocabulary is verified COMPLETE at srv
+  `20a4749d`: the six `quickconnect` rows plus `common.invalid_request`
+  (:259, :302) and `common.invalid_payload` (:381-:407) are every literal the
+  controller emits, and `POST /api/v1/auth/quick-connect/{code}/approve` is
+  already in the generated manifest. An external approver surface needs no mint;
+  what is missing is a client that offers the button (ui/mobile feature ask).
+  (2) R-SP-W2-01 — `legacy.PROTOCOL_VERSION_MISMATCH` is ruled THE registered
+  protocol-version refusal rail (`:8097` emits it and drops the frame); no
+  dotted `syncplay.*` twin minted for the same condition. The rest of that wave
+  item (a one-time "client too old" signal, the `:8804` inbound value-check, the
+  MUST read of `protocol_version` on every receiver) is handshake law for the
+  syncplay SPEC and its producers, and rides as a cascade item; if the wave
+  later needs its own code, that arrives as a fresh mint.
+- **Dist moves INTENTIONALLY:** `dist/error-codes.json` 204 → 205 codes, md5
+  `40c1da48787f37d00a6fc9af6c64a1ac` → `5d1783a71a3c4e128b2021327cad3717`
+  (ordered insertion at the end of `common`; every existing position untouched),
+  plus `errors.d.ts`, both bundles and both maps. The other two artifacts of the
+  trio are FROZEN and re-asserted: `dist/server-route-manifest.json` stays
+  `915796837d38a77733c169996d97640c` (412 tuples @ srv `758f9149` — no route
+  added this wave) and `dist/mcp-scopes.json` stays
+  `8c92c0703eae8a429c509ff16e0d185d`. Build ×2 deterministic, whole-dist
+  aggregate md5 `9e0525c8f08090dec5295ab7b72e1f08`.
+- **Test pins updated by measurement, in the adding commit:** the mint reddened
+  exactly four assertions — the exact-count pin (204 → 205), the `common`
+  ordered-list pin (extended with the RESERVED provenance note), and the two
+  committed-`dist/error-codes.json` freshness pins (ordered-vocabulary mirror +
+  byte-identical re-emit). Suite holds 171/171 serial across 14 files; no new
+  test was needed (the family pattern for one additive row is pin extension).
+- **Consumers that owe work at re-pin (this is the cascade list, not a claim
+  that any of it is done here):** phlix-server and phlix-hub must re-vendor the
+  byte-copy fixtures (`tests/Fixtures/Contracts/error-codes.json`,
+  `tests/fixtures/contracts/error-codes.json`) and rotate their md5/count pins;
+  phlix-hub additionally owns the two producer flips +
+  `ErrorCodesContractTest`/`ErrorCodesOpenApiEnumContractTest` law pins;
+  phlix-ui must add the `not_found` row to all seven locale catalogs (⚠ above);
+  tizen/windows/mobile/roku carry prose pin-cites of `40c1da48…`
+  (`phlix-tizen-client/tests/unit/routeManifest.gate.test.ts:69`,
+  `phlix-windows-client/scripts/lockwalk.mjs:161`,
+  `phlix-mobile-client/src/__tests__/syncplay/syncplayErrors.test.ts:31`) that
+  are comment-only at their pins and advance when those repos next move codes.
+
 ## [0.5.4] - 2026-11-02
 
 ### Changed — v0.5.4: additive exports surface + whole-dist freshness gate + release law and docblock truths — **registry byte-FROZEN this mint** (no mints; 204 codes / 412 tuples / 4 scopes held)
