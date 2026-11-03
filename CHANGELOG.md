@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added — one RESERVED mint: `common.not_found` (census 204 → 205) + two no-byte wave rulings — contracts wave over `.reviews/CONTRACTS-WAVE-BRIEF.md` — 2026-11-03
+## [0.5.5] - 2026-11-03
+
+### Added — one RESERVED mint: `common.not_found` (census 204 → 205) + three no-byte wave rulings — contracts wave over `.reviews/CONTRACTS-WAVE-BRIEF.md` — 2026-11-03
 
 - **⚠ Numbered as a patch, but TYPE-breaking for exhaustive consumers.** Under
   the `src/errors.ts` SEMVER & COMPATIBILITY union-growth law, this release
@@ -88,9 +90,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   coordinates on sites that do not emit this word yet are prose (`line NN`), not
   `File.php:NN` cites — a cite on a pre-flip site is a claim the currency
   tripwire cannot check, and the re-anchor wave converts them when the producers
-  flip. `npm run verify:cites` at this prep reports zero problems in any region
-  this wave touched (hub `51e415ee` / srv `f50e2df3`; the 159 problems it still
-  lists are pre-existing estate drift owned by the tag-wave re-anchor).
+  flip. `npm run verify:cites` reports zero problems in any region this wave
+  touched — measured twice, at hub `51e415ee` / srv `f50e2df3` and again at the
+  release prep against hub `51e415ee` / srv `358719c4`: `ok=270 problems=159`
+  both times, and every one of the 159 is pre-existing estate drift owned by the
+  tag-wave re-anchor (it does not gate the cut; no shipped artifact reads
+  docblock coordinates).
 - **Test pins updated by measurement, in the adding commit:** the mint reddened
   exactly four assertions — the exact-count pin (204 → 205), the `common`
   ordered-list pin (extended with the RESERVED provenance note), and the two
