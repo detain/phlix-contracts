@@ -71,7 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `915796837d38a77733c169996d97640c` (412 tuples @ srv `758f9149` — no route
   added this wave) and `dist/mcp-scopes.json` stays
   `8c92c0703eae8a429c509ff16e0d185d`. Build ×2 deterministic, whole-dist
-  aggregate md5 `9e0525c8f08090dec5295ab7b72e1f08`.
+  aggregate md5 `e593472333597788f309c712b9df442c`. The wave docblocks'
+  coordinates on sites that do not emit this word yet are prose (`line NN`), not
+  `File.php:NN` cites — a cite on a pre-flip site is a claim the currency
+  tripwire cannot check, and the re-anchor wave converts them when the producers
+  flip. `npm run verify:cites` at this prep reports zero problems in any region
+  this wave touched (hub `51e415ee` / srv `f50e2df3`; the 159 problems it still
+  lists are pre-existing estate drift owned by the tag-wave re-anchor).
 - **Test pins updated by measurement, in the adding commit:** the mint reddened
   exactly four assertions — the exact-count pin (204 → 205), the `common`
   ordered-list pin (extended with the RESERVED provenance note), and the two

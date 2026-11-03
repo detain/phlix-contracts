@@ -686,14 +686,16 @@ const CODES = {
   /**
    * Server QuickConnect device-pairing rail (bare snake on the `code` field).
    * Wave audit (R-TIZEN-W2-C1): the approve rail's vocabulary is COMPLETE. At
-   * srv 20a4749d the controller emits exactly these six words plus
-   * `common.invalid_request` (:259, :302) and `common.invalid_payload`
-   * (:381-:407) — every literal is already registered, and the approve route is
-   * already in the generated manifest
-   * (`POST /api/v1/auth/quick-connect/{code}/approve`). So an external approver
-   * surface (phone, tablet, plain browser page) needs NO new mint: what is
-   * missing is a client that offers the button, which is a ui/mobile feature
-   * ask, not a wire-contract change.
+   * srv f50e2df3 the controller emits exactly these six words plus
+   * `common.invalid_request` (QuickConnectController lines 259 and 302) and
+   * `common.invalid_payload` (lines 381 to 407) — every literal the rail speaks
+   * is already registered, and the approve route is already in the generated
+   * manifest (`POST /api/v1/auth/quick-connect/{code}/approve`). So an external
+   * approver surface (phone, tablet, plain browser page) needs NO new mint: what
+   * is missing is a client that offers the button, which is a ui/mobile feature
+   * ask, not a wire-contract change. Coordinates here are prose by design — this
+   * header cites nothing; the per-entry lines below carry the machine-checked
+   * emits.
    */
   quickconnect: {
     /** srv QuickConnectController.php:245 */
@@ -756,10 +758,13 @@ const CODES = {
     /**
      * RESERVED — minted on request (R-HUB-W2-C1), no wire byte carries it yet.
      * The hub's two unmatched-route fallbacks are the producers this row was
-     * registered for: hub AuthController.php:67 (the `default =>` arm of the
-     * `/auth/{action}` dispatcher, status 404, body `['error' => 'Not Found']`)
-     * and hub Router.php:443 (`notFound()`, status 404, body
-     * `['error' => 'Not Found', 'message' => …]`). Both emit bare HTTP prose
+     * registered for; their coordinates are prose (`line NN`), not emit cites —
+     * neither site speaks this word yet, so a `File.php:NN` cite here would be a
+     * claim the currency tripwire cannot check, and the next re-anchor wave
+     * converts them the moment the hub flips. Hub AuthController.php line 67
+     * (the `default =>` arm of the `/auth/{action}` dispatcher, status 404, body
+     * `['error' => 'Not Found']`) and hub Router.php line 443 (`notFound()`,
+     * status 404, body `['error' => 'Not Found', 'message' => …]`). Both emit
      * with NO `code`, which the hub's own vendored registry law forbids them
      * from adding until the word exists here — this entry is that permission.
      * The unification ruling the hub leg implements: one human sentence in BOTH
@@ -1138,12 +1143,12 @@ const CODES = {
     /**
      * srv MessageHandler.php:188-191. Wave ruling (R-SP-W2-01, protocol-version
      * half): this SCREAMING legacy row IS the registered version-refusal rail —
-     * `:8097` emits it on a too-high/invalid inbound `protocol_version` and
+     * port 8097 emits it on a too-high/invalid inbound `protocol_version` and
      * drops the frame. No dotted `syncplay.*` twin is minted for the same
      * condition; a client that must branch on "this server speaks a different
      * protocol" switches on this value, which the domain header keeps
      * registered forever. The rest of that wave item — a one-time "client too
-     * old / update required" signal, the `:8804` inbound value-check, and the
+     * old / update required" signal, the port 8804 inbound value-check, and the
      * MUST read of `protocol_version` on every receiver — is handshake law for
      * the syncplay SPEC and its producers, not new registry words. If the wave
      * finally decides the too-old case needs a code of its own, that arrives as
