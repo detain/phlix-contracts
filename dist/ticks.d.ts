@@ -6,6 +6,20 @@
  * by `10000000` (seconds), `600000000` (minutes), and `36000000000` (hours);
  * see mobile `src/utils/formatters.ts` and tizen `app/js/utils/Helpers.js`.
  * These helpers consolidate that math. All functions are pure.
+ *
+ * THIS FILE IS THE ESTATE'S NORMATIVE UNIT TABLE (re-confirmed by the
+ * 2026-11-04 contracts wave, R-SRV-W2-03): every `*_ticks` field on the wire —
+ * `resume_position_ticks` / `playback_position_ticks` (see `media.ts`) and the
+ * server's `position_ticks` / `duration_ticks` — is 100-ns ticks, i.e. the
+ * values below. The two neighbours that are NOT ticks and must not be
+ * conflated: SyncPlay group state speaks MILLISECONDS
+ * (`playback_position`, `current_media_duration` in `SyncPlay.ts`) and
+ * `run_time` is MINUTES (see {@link formatRuntime}). What the wave did NOT
+ * decide is a migration aid (a parallel `_ms` key on the REST rails) and
+ * whether the server payload docblocks state the unit inline — both are
+ * producer-side calls, tracked for v0.5.6; nothing here changes until one of
+ * them lands, and no existing field's meaning moved.
+ *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 /** Ticks per second (100-ns ticks). */

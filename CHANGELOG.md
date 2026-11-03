@@ -49,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   resource, which is why the generic word was never registered before. **No wire
   byte carries it until the hub flips the two literals and rotates its own
   fixture + law pins in the release that pins this tag.**
-- **Two rulings that move NO registry bytes.** (1) R-TIZEN-W2-C1 — the
+- **Three rulings that move NO registry bytes.** (1) R-TIZEN-W2-C1 — the
   QuickConnect approve rail's vocabulary is verified COMPLETE at srv
   `20a4749d`: the six `quickconnect` rows plus `common.invalid_request`
   (:259, :302) and `common.invalid_payload` (:381-:407) are every literal the
@@ -62,7 +62,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   item (a one-time "client too old" signal, the `:8804` inbound value-check, the
   MUST read of `protocol_version` on every receiver) is handshake law for the
   syncplay SPEC and its producers, and rides as a cascade item; if the wave
-  later needs its own code, that arrives as a fresh mint.
+  later needs its own code, that arrives as a fresh mint. (3) R-SRV-W2-03 — the
+  playback-position unit question is answered by what already ships here:
+  `src/ticks.ts` IS the estate's normative unit table (100-ns ticks;
+  `TICKS_PER_SECOND` = 10,000,000 plus `_MINUTE`/`_HOUR`), re-confirmed against
+  the server's own payload example at srv `f50e2df3` (`position_ticks:
+  36000000000` at `progress_percent: 45.5` = 60 minutes) and against `media.ts`
+  (`resume_position_ticks`, `playback_position_ticks`). The file header now
+  states the three-scale map on purpose, so nothing conflates ticks with the
+  MILLISECONDS of SyncPlay group state (`SyncPlay.ts`) or the MINUTES of
+  `run_time`. The undecided halves stay open by design — a parallel `_ms` key on
+  the REST rails, and whether server payload docblocks name the unit inline —
+  both producer-side calls tracked for v0.5.6; no field's meaning moved here.
 - **Dist moves INTENTIONALLY:** `dist/error-codes.json` 204 → 205 codes, md5
   `40c1da48787f37d00a6fc9af6c64a1ac` → `5d1783a71a3c4e128b2021327cad3717`
   (ordered insertion at the end of `common`; every existing position untouched),
@@ -71,7 +82,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `915796837d38a77733c169996d97640c` (412 tuples @ srv `758f9149` — no route
   added this wave) and `dist/mcp-scopes.json` stays
   `8c92c0703eae8a429c509ff16e0d185d`. Build ×2 deterministic, whole-dist
-  aggregate md5 `e593472333597788f309c712b9df442c`. The wave docblocks'
+  aggregate md5 `63cfaa33306d4429299609618090a228` (the wave's three
+  doc-block-only rebuilds each re-emit the maps and `.d.ts`; the bundles and all
+  three registry JSONs are byte-stable across them). The wave docblocks'
   coordinates on sites that do not emit this word yet are prose (`line NN`), not
   `File.php:NN` cites — a cite on a pre-flip site is a claim the currency
   tripwire cannot check, and the re-anchor wave converts them when the producers
