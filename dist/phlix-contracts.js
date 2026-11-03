@@ -230,7 +230,8 @@ var n = [
 		MISSING_PUBLIC_KEY: "missing_public_key",
 		MISSING_USER_ID: "missing_user_id",
 		MISSING_SERVER_ID: "missing_server_id",
-		NOT_SERVER_OWNER: "not_server_owner"
+		NOT_SERVER_OWNER: "not_server_owner",
+		NOT_FOUND: "not_found"
 	},
 	federation: {
 		PEER_URL_EXISTS: "peer_url_exists",

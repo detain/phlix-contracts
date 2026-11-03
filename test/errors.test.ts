@@ -81,11 +81,11 @@ const SERVER_SYNCPLAY_SEND_ERROR_CODES = [
 const DOTTED_OR_SNAKE = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)*$/;
 
 describe('error-code registry invariants', () => {
-  it('is non-vacuous: exactly the 204 derived codes, each a non-empty string', () => {
+  it('is non-vacuous: exactly the 205 derived codes, each a non-empty string', () => {
     // Anti-vacuity floor + exact pin. A consumer gating against this list must
     // be able to trust that an empty or undefined export cannot pass as "equal".
     expect(ERROR_CODES.length).toBeGreaterThanOrEqual(200);
-    expect(ERROR_CODES).toHaveLength(204);
+    expect(ERROR_CODES).toHaveLength(205);
     for (const code of ERROR_CODES) {
       expect(typeof code).toBe('string');
       expect(code.length).toBeGreaterThan(0);
@@ -379,6 +379,11 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'missing_user_id',
       'missing_server_id',
       'not_server_owner',
+      // R-HUB-W2-C1 (v0.5.5): RESERVED shared 404 rail. The hub's two
+      // prose-only unmatched-route fallbacks (AuthController.php:67,
+      // Router.php:443) switch onto this word in the release pinning v0.5.5;
+      // no wire byte carries it before that.
+      'not_found',
     ]);
   });
 

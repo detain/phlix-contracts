@@ -683,7 +683,18 @@ const CODES = {
     DISABLED: 'casting.disabled',
   },
 
-  /** Server QuickConnect device-pairing rail (bare snake on the `code` field). */
+  /**
+   * Server QuickConnect device-pairing rail (bare snake on the `code` field).
+   * Wave audit (R-TIZEN-W2-C1): the approve rail's vocabulary is COMPLETE. At
+   * srv 20a4749d the controller emits exactly these six words plus
+   * `common.invalid_request` (:259, :302) and `common.invalid_payload`
+   * (:381-:407) — every literal is already registered, and the approve route is
+   * already in the generated manifest
+   * (`POST /api/v1/auth/quick-connect/{code}/approve`). So an external approver
+   * surface (phone, tablet, plain browser page) needs NO new mint: what is
+   * missing is a client that offers the button, which is a ui/mobile feature
+   * ask, not a wire-contract change.
+   */
   quickconnect: {
     /** srv QuickConnectController.php:245 */
     UNAUTHORIZED: 'unauthorized',
@@ -702,6 +713,8 @@ const CODES = {
   /**
    * Cross-surface validation/envelope codes: bare snake words carrying no
    * resource name, emitted by more than one controller (or by both servers).
+   * One row is a RESERVED shared rail whose producers have not flipped their
+   * literal yet — the entry docblock says so.
    */
   common: {
     /** srv Core/Application.php:2837 · hub Application.php:237 (+3) */
@@ -740,6 +753,31 @@ const CODES = {
     MISSING_SERVER_ID: 'missing_server_id',
     /** hub InviteLinkController.php:130 · LibraryController.php:62 · LibraryShareController.php:127 */
     NOT_SERVER_OWNER: 'not_server_owner',
+    /**
+     * RESERVED — minted on request (R-HUB-W2-C1), no wire byte carries it yet.
+     * The hub's two unmatched-route fallbacks are the producers this row was
+     * registered for: hub AuthController.php:67 (the `default =>` arm of the
+     * `/auth/{action}` dispatcher, status 404, body `['error' => 'Not Found']`)
+     * and hub Router.php:443 (`notFound()`, status 404, body
+     * `['error' => 'Not Found', 'message' => …]`). Both emit bare HTTP prose
+     * with NO `code`, which the hub's own vendored registry law forbids them
+     * from adding until the word exists here — this entry is that permission.
+     * The unification ruling the hub leg implements: one human sentence in BOTH
+     * `error` and `message` (the pinned `extractError` read order is
+     * error-then-message, so co-mirroring is what the ui contract wants), the
+     * machine word in `code`, and the sentence is Router's existing
+     * `The requested resource was not found` rather than the HTTP phrase
+     * `Not Found` — the latter is on the member-facing HTTP-phrase ban list the
+     * hub's envelope test already enforces, and Router already ships the
+     * former verbatim. The hub flips the two literals and rotates its vendored
+     * fixture + law pins in the release that pins this tag; until then the
+     * server's per-resource dotted rows (`server.not_found`, `user.not_found`,
+     * `claim.code_not_found`, `syncplay.group_not_found`, …) stay the only
+     * `not_found`-shaped codes on the wire. Deliberately NOT dotted: the
+     * fallback knows no resource, which is exactly why the generic word was
+     * never registered before — the two prose-only 404s are the missing use.
+     */
+    NOT_FOUND: 'not_found',
   },
 
   /** Hub federation peer/offer/delegation CRUD (bare snake on `code`). */
@@ -1097,7 +1135,20 @@ const CODES = {
     JOIN_FAILED: 'JOIN_FAILED',
     /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1914; still resolved client-side for old-server compatibility */
     LEAVE_FAILED: 'LEAVE_FAILED',
-    /** srv MessageHandler.php:188-191 */
+    /**
+     * srv MessageHandler.php:188-191. Wave ruling (R-SP-W2-01, protocol-version
+     * half): this SCREAMING legacy row IS the registered version-refusal rail —
+     * `:8097` emits it on a too-high/invalid inbound `protocol_version` and
+     * drops the frame. No dotted `syncplay.*` twin is minted for the same
+     * condition; a client that must branch on "this server speaks a different
+     * protocol" switches on this value, which the domain header keeps
+     * registered forever. The rest of that wave item — a one-time "client too
+     * old / update required" signal, the `:8804` inbound value-check, and the
+     * MUST read of `protocol_version` on every receiver — is handshake law for
+     * the syncplay SPEC and its producers, not new registry words. If the wave
+     * finally decides the too-old case needs a code of its own, that arrives as
+     * a fresh mint request; nothing here pre-empts it.
+     */
     PROTOCOL_VERSION_MISMATCH: 'PROTOCOL_VERSION_MISMATCH',
   },
 } as const;
