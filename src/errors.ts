@@ -45,25 +45,28 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the FULL estate re-sweep (WAVE 3, run once the tag-wave
- * cascade had banked its campaign-final tips) re-anchored every drifted
- * coordinate AT SOURCE — 159 coordinates across the hub
- * claim/proxy/share/invite/request/mount families, the hub federation CRUD
- * and the W5 provider-gate helper, hub rate-limit and ServerController/
- * HeartbeatHandler maps, and the srv SyncPlayManager/LDAP/fast-path/stream-
- * gate wraps — against hub `bd47bc5a` / server `de38620b` on 2026-11-03, each
+ * COORDINATE CURRENCY: the FULL estate re-sweep (WAVE 4 — gate-4 of the
+ * 2026-11-04 fix program, run at the campaign-final tips) re-anchored every
+ * drifted coordinate AT SOURCE — 112 drifted coordinates plus 10 adjacent
+ * stale coords verified in the same comments — across the srv SyncPlayManager
+ * carrier wraps and legacy SCREAMING sites, the srv hub-token/account-link
+ * rails (the SRV-M22 envelope rebuild relocated the HubTokenController trio),
+ * the quick-connect consent and pairing legs, the LDAP + OIDC/GitHub provider
+ * and identity rails, the srv rate-limit wrap, the hub proxy
+ * tunnel/scope/quota/stream rows, and the hub federation/invite CRUD
+ * families — against hub `ee481593` / server `009ae7fb` on 2026-11-04, each
  * coordinate re-read at its emit site in the working trees (no blanket-delta
- * shifts). The one semantic re-map in the sweep: `server.not_owned` no longer
- * rides the hub proxy's ownership leg — that path answers the byte-identical
- * 404 law (M-HUB-27), so the cite moved to the owner-known surfaces that do
- * emit it. The dev-only tripwire reports ok=433 problems=0 at those tips.
- * Preceding eras (2026-10-15 hub `250486c` / server `99eda9c0`, tripwire
- * 442/0; 2026-10-30 hub `5b9de574` / server `0fa8f515`, claim-cluster
- * re-anchor with 51 residuals disclosed as an owner tag-wave item — that
- * item is what this sweep closed) are narrated in the CHANGELOG (its
- * `[Unreleased]` and release entries), the single source for the stamp
- * history; this header deliberately carries only the current stamp. Cites in
- * files untouched since a stamp hold by that sweep's spot-verification.
+ * shifts; two-site pairs like `offer_not_found` were re-anchored by handler
+ * identity, not by the tripwire's nearest-token suggestion, which would have
+ * collapsed each pair onto one emit). The dev-only tripwire reports ok=433
+ * problems=0 at those tips. Preceding eras (2026-11-03 hub `bd47bc5a` /
+ * server `de38620b`, 159 coords, tripwire 433/0 — the sweep that closed the
+ * 2026-10-30 `5b9de574`/`0fa8f515` claim-cluster residuals; 2026-10-15 hub
+ * `250486c` / server `99eda9c0`, tripwire 442/0) are narrated in the
+ * CHANGELOG (its `[Unreleased]` and release entries), the single source for
+ * the stamp history; this header deliberately carries only the current stamp.
+ * Cites in files untouched since a stamp hold by that sweep's
+ * spot-verification.
  * Re-sweep with `npm run verify:cites` (scripts/check-error-cites.mjs) after
  * any hub/server error-file churn, then re-stamp the paragraph above.
  *
@@ -100,19 +103,19 @@
  *     file:line evidence): ALL EIGHT rows are LIVE on the wire — the seven
  *     twin rows with server #798, and the eighth row
  *     `syncplay.queue_limit_exceeded` with server 7baa398a: the
- *     playback-queue cap at srv SyncPlayManager.php:1267 emits it directly
+ *     playback-queue cap at srv SyncPlayManager.php:1278 emits it directly
  *     while the group-count cap keeps `syncplay.group_limit_reached` at
- *     :698 — the documented split. The four INNER-PATH specializations —
+ *     :707 — the documented split. The four INNER-PATH specializations —
  *     `syncplay.group_limit_reached`, `syncplay.group_not_found`,
  *     `syncplay.invalid_password`, `syncplay.group_full` — reach the client
  *     because the create/join carriers forward any inner code through
  *     `$result['error_code'] ?? '..._failed'` and fall back to the dotted
  *     coarse twin when the inner failure set no code. The `syncplay.*_failed`
  *     trio went LIVE with server #798: `syncplay.create_failed` is the
- *     create-carrier fallback at srv SyncPlayManager.php:1849,
+ *     create-carrier fallback at srv SyncPlayManager.php:1860,
  *     `syncplay.join_failed` the join-carrier fallback at srv
- *     SyncPlayManager.php:1908, and `syncplay.leave_failed` the leave
- *     carrier's direct emit at srv SyncPlayManager.php:1957 (its inner
+ *     SyncPlayManager.php:1919, and `syncplay.leave_failed` the leave
+ *     carrier's direct emit at srv SyncPlayManager.php:1968 (its inner
  *     failure paths carry no `error_code`). The flip was client-unblocked
  *     before it landed: console #167 + roku #90 proved both clients already
  *     resolve either shape. `SYNCPLAY_ERROR_CODE_TWINS` below is the
@@ -212,7 +215,7 @@ const CODES = {
   auth: {
     /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
     REQUIRED: 'auth.required',
-    /** srv AdminMiddleware.php:101 (+9) · hub AdminMiddleware.php:62 */
+    /** srv AdminMiddleware.php:106 (+9) · hub AdminMiddleware.php:62 */
     NOT_ADMIN: 'auth.not_admin',
     /** hub AuthMiddleware.php:117, McpController.php:352 */
     INVALID_TOKEN: 'auth.invalid_token',
@@ -224,7 +227,7 @@ const CODES = {
     ACCOUNT_PENDING: 'auth.account_pending',
     /** srv AccountInactiveException.php:32 */
     ACCOUNT_DISABLED: 'auth.account_disabled',
-    /** srv PasswordChangeRequiredException.php:30 */
+    /** srv PasswordChangeRequiredException.php:56 */
     PASSWORD_CHANGE_REQUIRED: 'auth.password_change_required',
     /**
      * hub ServerClaimController.php:211 — 401 on the claim route when no user
@@ -286,11 +289,11 @@ const CODES = {
    * the SCREAMING originals ride the `error` TEXT field (dual placement).
    */
   hub: {
-    /** srv AccountLinkController.php:412, HubTokenController.php:67 */
+    /** srv AccountLinkController.php:415, HubTokenController.php:110 */
     NOT_ENROLLED: 'hub.not_enrolled',
-    /** srv AccountLinkController.php:422, HubTokenController.php:79 */
+    /** srv AccountLinkController.php:423, HubTokenController.php:118 */
     TOKEN_REQUIRED: 'hub.token_required',
-    /** srv AccountLinkController.php:432,444, HubTokenController.php:91 */
+    /** srv AccountLinkController.php:429,437, HubTokenController.php:124 */
     JWT_INVALID: 'hub.jwt_invalid',
     /**
      * hub ServerClaimController.php:129,311 · hub ServerController.php:64,140 ·
@@ -341,7 +344,7 @@ const CODES = {
   /** Hub-side server lookup/tunnel failures (phlix-hub). */
   server: {
     /**
-     * hub ServerProxyController.php:1012 (+4 controllers). REUSE TARGET —
+     * hub ServerProxyController.php:1019 (+4 controllers). REUSE TARGET —
      * LANDED (hub #322): hub SubdomainController.php:128 — the
      * subdomain-allocation 404 now carries `server.not_found` on the `code`
      * channel with the legacy SCREAMING `SERVER_NOT_FOUND` parked
@@ -349,11 +352,11 @@ const CODES = {
      * clients may match either channel).
      */
     NOT_FOUND: 'server.not_found',
-    /** hub ServerManageController.php:73,117 · ServerDetailController.php:92 · ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy path's ownership leg answers the byte-identical 404 `server.not_found` law (M-HUB-27) at hub ServerProxyController.php:1029 */
+    /** hub ServerManageController.php:73,117 · ServerDetailController.php:92 · ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy path's ownership leg answers the byte-identical 404 `server.not_found` law (M-HUB-27) at hub ServerProxyController.php:1034 */
     NOT_OWNED: 'server.not_owned',
-    /** hub ServerProxyController.php:1047 — relay tunnel not connected */
+    /** hub ServerProxyController.php:1052 — relay tunnel not connected */
     RELAY_UNAVAILABLE: 'server.relay_unavailable',
-    /** hub ServerProxyController.php:1054, RelayProxyManager.php:582 */
+    /** hub ServerProxyController.php:1059, RelayProxyManager.php:582 */
     OFFLINE: 'server.offline',
     /** hub RelayProxyManager.php:251 */
     NO_TUNNEL: 'server.no_tunnel',
@@ -369,13 +372,13 @@ const CODES = {
 
   /** Hub reverse-proxy scope gates. */
   proxy: {
-    /** hub ServerProxyController.php:1088,1103 */
+    /** hub ServerProxyController.php:1093,1108 */
     SCOPE_DENIED: 'proxy.scope_denied',
   },
 
   /** Hub bandwidth quota gate. */
   quota: {
-    /** hub ServerProxyController.php:1393 */
+    /** hub ServerProxyController.php:1398 */
     EXCEEDED: 'quota.exceeded',
   },
 
@@ -389,7 +392,7 @@ const CODES = {
    * (dual placement; clients may match `code`, `error` text or `denial_type`).
    */
   stream: {
-    /** hub ServerProxyController.php:1148 */
+    /** hub ServerProxyController.php:1153 */
     LIMIT: 'stream.limit',
     /**
       * srv StreamLimitMiddleware.php:139-143 (429) · PreRouterFastPaths.php:
@@ -418,7 +421,7 @@ const CODES = {
 
   /** Hub→server upstream gateway failures. */
   gateway: {
-    /** hub ServerProxyController.php:1181, RelayProxyManager.php:724, RelayProxyBridge.php:315 */
+    /** hub ServerProxyController.php:1186, RelayProxyManager.php:724, RelayProxyBridge.php:315 */
     TIMEOUT: 'gateway.timeout',
   },
 
@@ -705,11 +708,11 @@ const CODES = {
     INVALID_SECRET: 'invalid_secret',
     /** srv QuickConnectController.php:272 */
     PAIRING_NOT_PENDING: 'pairing_not_pending',
-    /** srv QuickConnectController.php:372 — consent gate on telemetry heartbeat */
+    /** srv QuickConnectController.php:388 — consent gate on telemetry heartbeat */
     CONSENT_REQUIRED: 'consent_required',
-    /** srv QuickConnectController.php:490 */
+    /** srv QuickConnectController.php:505 */
     PAIRING_NOT_FOUND: 'pairing_not_found',
-    /** srv QuickConnectController.php:501 */
+    /** srv QuickConnectController.php:516 */
     STORAGE_UNAVAILABLE: 'storage_unavailable',
   },
 
@@ -720,41 +723,41 @@ const CODES = {
    * literal yet — the entry docblock says so.
    */
   common: {
-    /** srv Core/Application.php:2745 · hub Application.php:266 (+3) */
+    /** srv Core/Application.php:2787 · hub Application.php:266 (+3) */
     RATE_LIMITED: 'rate_limited',
-    /** srv AuthController.php:337,355 (LDAP) */
+    /** srv AuthController.php:351,386 (LDAP) */
     PROVIDER_UNAVAILABLE: 'provider_unavailable',
-    /** srv QuickConnectController.php:258,301 · hub InviteLinkController.php:214 */
+    /** srv QuickConnectController.php:260,303 · hub InviteLinkController.php:224 */
     INVALID_REQUEST: 'invalid_request',
-    /** hub FederationController.php:172 · InviteLinkController.php:167 · LibraryShareController.php:85,231 */
+    /** hub FederationController.php:185 · InviteLinkController.php:167 · LibraryShareController.php:85,231 */
     INVALID_BODY: 'invalid_body',
-    /** srv QuickConnectController.php:380-406 · hub AdminUpdatesController.php:109 */
+    /** srv QuickConnectController.php:396-422 · hub AdminUpdatesController.php:109 */
     INVALID_PAYLOAD: 'invalid_payload',
-    /** hub InviteLinkController.php:216 (+2) · LibraryShareController.php:157 (+2) */
+    /** hub InviteLinkController.php:226 (+2) · LibraryShareController.php:157 (+2) */
     UNKNOWN_ERROR: 'unknown_error',
     /** hub AdminUserController.php:469 */
     VALIDATION_FAILED: 'validation_failed',
     /** hub RequestController.php:426 · UserQuotaController.php:332 · AdminUpdatesController.php:165 */
     ADMIN_REQUIRED: 'admin_required',
-    /** hub FederationController.php:961,1012 */
+    /** hub FederationController.php:1005,1056 */
     MASTER_ONLY: 'master_only',
-    /** hub FederationController.php:208,368 */
+    /** hub FederationController.php:225,387 */
     INVALID_URL: 'invalid_url',
-    /** hub FederationController.php:189 */
+    /** hub FederationController.php:202 */
     INVALID_ROLE: 'invalid_role',
-    /** hub FederationController.php:716 (also LibraryShareController.php:253) */
+    /** hub FederationController.php:741 (also LibraryShareController.php:253) */
     INVALID_PERMISSION: 'invalid_permission',
-    /** hub FederationController.php:355 */
+    /** hub FederationController.php:374 */
     MISSING_URL: 'missing_url',
-    /** hub FederationController.php:363 */
+    /** hub FederationController.php:382 */
     MISSING_NAME: 'missing_name',
-    /** hub FederationController.php:359 */
+    /** hub FederationController.php:378 */
     MISSING_PUBLIC_KEY: 'missing_public_key',
-    /** hub FederationController.php:1032 · UserQuotaController.php:350 */
+    /** hub FederationController.php:1076 · UserQuotaController.php:350 */
     MISSING_USER_ID: 'missing_user_id',
     /** hub InviteLinkController.php:182 · LibraryController.php:54 · LibraryShareController.php:108 */
     MISSING_SERVER_ID: 'missing_server_id',
-    /** hub InviteLinkController.php:211 · LibraryController.php:62 · LibraryShareController.php:149 */
+    /** hub InviteLinkController.php:221 · LibraryController.php:62 · LibraryShareController.php:149 */
     NOT_SERVER_OWNER: 'not_server_owner',
     /**
      * RESERVED — minted on request (R-HUB-W2-C1), no wire byte carries it yet.
@@ -788,40 +791,40 @@ const CODES = {
 
   /** Hub federation peer/offer/delegation CRUD (bare snake on `code`). */
   federation: {
-    /** hub FederationController.php:380 */
+    /** hub FederationController.php:399 */
     PEER_URL_EXISTS: 'peer_url_exists',
-    /** hub FederationController.php:389 */
+    /** hub FederationController.php:408 */
     PEER_KEY_EXISTS: 'peer_key_exists',
-    /** hub FederationController.php:448 */
+    /** hub FederationController.php:467 */
     PEER_NOT_FOUND: 'peer_not_found',
-    /** hub FederationController.php:861,915 */
+    /** hub FederationController.php:905,959 */
     OFFER_NOT_FOUND: 'offer_not_found',
-    /** hub FederationController.php:869,923 */
+    /** hub FederationController.php:913,967 */
     OFFER_ALREADY_RESPONDED: 'offer_already_responded',
-    /** hub FederationController.php:1077 */
+    /** hub FederationController.php:1121 */
     DELEGATION_NOT_FOUND: 'delegation_not_found',
-    /** hub FederationController.php:432 */
+    /** hub FederationController.php:451 */
     MISSING_PEER_ID: 'missing_peer_id',
-    /** hub FederationController.php:854,908 */
+    /** hub FederationController.php:898,952 */
     MISSING_OFFER_ID: 'missing_offer_id',
-    /** hub FederationController.php:1070 */
+    /** hub FederationController.php:1114 */
     MISSING_DELEGATION_ID: 'missing_delegation_id',
-    /** hub FederationController.php:700 (also LibraryShareController.php:112) */
+    /** hub FederationController.php:725 (also LibraryShareController.php:112) */
     MISSING_LIBRARY_ID: 'missing_library_id',
-    /** hub FederationController.php:720 (also LibraryShareController.php:116) */
+    /** hub FederationController.php:745 (also LibraryShareController.php:116) */
     MISSING_LIBRARY_NAME: 'missing_library_name',
     /**
-     * hub FederationController.php:463 — LIVE on the wire since hub f44275f
+     * hub FederationController.php:482 — LIVE on the wire since hub f44275f
      * (deferred-mint flip landed right after the v0.5.3 pin): all three
      * leaf_hub_id sites now emit this dedicated code. The immutable
      * leaf-hub-id bind conflict (409 "already bound to a different value")
-     * emits it at :463 in bindPeerLeafHubId, and the two malformed-UUID 400
-     * parse sites emit it too — :351 in createPeer
-     * (`POST /api/v1/me/federation/peers`) and :441 in bindPeerLeafHubId
+     * emits it at :482 in bindPeerLeafHubId, and the two malformed-UUID 400
+     * parse sites emit it too — :370 in createPeer
+     * (`POST /api/v1/me/federation/peers`) and :460 in bindPeerLeafHubId
      * (`PUT /api/v1/me/federation/peers/{id}/leaf-hub-id`), both via the
      * hub's `badRequest` helper (status 400). The earlier f30e8a7 shape —
      * the unified family riding the registered `invalid_request` generic
-     * with the condition in `reason`, after :351/:441 had dropped their
+     * with the condition in `reason`, after :370/:460 had dropped their
      * never-registered `invalid_leaf_hub_id` literal — is retired; the
      * free-form `reason` still carries the condition for humans and MCP.
      */
@@ -830,9 +833,9 @@ const CODES = {
 
   /** Hub library-share CRUD (bare snake on `code`). */
   share: {
-    /** hub FederationController.php:785 · LibraryShareController.php:203,247 */
+    /** hub FederationController.php:824 · LibraryShareController.php:203,247 */
     NOT_FOUND: 'share_not_found',
-    /** hub FederationController.php:778 · LibraryShareController.php:194,226 */
+    /** hub FederationController.php:817 · LibraryShareController.php:194,226 */
     MISSING_SHARE_ID: 'missing_share_id',
     /** hub LibraryShareController.php:102 */
     MISSING_COLLABORATOR_EMAIL: 'missing_collaborator_email',
@@ -846,17 +849,17 @@ const CODES = {
 
   /** Hub invite-link lifecycle (bare snake on `code`). */
   invite: {
-    /** hub InviteLinkController.php:251 */
+    /** hub InviteLinkController.php:261 */
     MISSING_LINK_ID: 'missing_link_id',
-    /** hub InviteLinkController.php:260,314 */
+    /** hub InviteLinkController.php:270,324 */
     LINK_NOT_FOUND: 'invite_link_not_found',
-    /** hub InviteLinkController.php:263 */
+    /** hub InviteLinkController.php:273 */
     NOT_LINK_OWNER: 'not_link_owner',
-    /** hub InviteLinkController.php:284 */
+    /** hub InviteLinkController.php:294 */
     MISSING_TOKEN: 'missing_token',
-    /** hub InviteLinkController.php:311 */
+    /** hub InviteLinkController.php:321 */
     INVALID: 'invalid_invite',
-    /** hub InviteLinkController.php:317 — 410 */
+    /** hub InviteLinkController.php:327 — 410 */
     EXPIRED_OR_EXHAUSTED: 'invite_expired_or_exhausted',
   },
 
@@ -927,25 +930,25 @@ const CODES = {
      */
     LAST_SIGN_IN_METHOD: 'identity.last_sign_in_method',
     /**
-     * srv AccountLinkController.php:583 · OidcCallbackController.php:743 ·
-     * GithubCallbackController.php:740 (409) — provider account already bound
+     * srv AccountLinkController.php:574 · OidcCallbackController.php:756 ·
+     * GithubCallbackController.php:750 (409) — provider account already bound
      * to another identity. Today text 'identity_already_linked'.
      */
     ALREADY_LINKED: 'identity.already_linked',
     /**
-     * srv OidcCallbackController.php:632 · GithubCallbackController.php:646
+     * srv OidcCallbackController.php:645 · GithubCallbackController.php:656
      * (400) — provider returned no usable identity. Today text
      * 'invalid_identity'.
      */
     INVALID: 'identity.invalid',
     /**
-     * srv OidcCallbackController.php:623 · GithubCallbackController.php:638
+     * srv OidcCallbackController.php:636 · GithubCallbackController.php:648
      * (503) — identity repository absent, linking disabled. Today text
      * 'link_unavailable'.
      */
     LINK_UNAVAILABLE: 'identity.link_unavailable',
     /**
-     * srv OidcCallbackController.php:615 · GithubCallbackController.php:630
+     * srv OidcCallbackController.php:628 · GithubCallbackController.php:640
      * (400) — link flow state lost its initiating user. Today text
      * 'invalid_link_state'.
      */
@@ -964,10 +967,10 @@ const CODES = {
   provider: {
     /**
      * srv AuthProviderController.php:154 (409, text 'not_configured') ·
-     * OidcCallbackController.php:281,488 · GithubCallbackController.php:249,
-     * 421 (text 'provider_not_configured') · hub
-     * FederationController.php:127 (signature of `guardFederationDisabled`),
-     * :133 (its 409 emit line) — the eleven FederationController mutators
+     * OidcCallbackController.php:282,489 · GithubCallbackController.php:250,
+     * 422 (text 'provider_not_configured') · hub
+     * FederationController.php:140 (signature of `guardFederationDisabled`),
+     * :146 (its 409 emit line) — the eleven FederationController mutators
      * all funnel through this one helper, which is why the helper is cited
      * once instead of the call-sites, keeping future call-site insertions
      * at zero registry churn.
@@ -1016,7 +1019,7 @@ const CODES = {
      * redirect URI not on the allowlist. Text 'invalid_redirect_uri'.
      */
     INVALID_REDIRECT_URI: 'oauth.invalid_redirect_uri',
-    /** srv OidcCallbackController.php:815 · GithubCallbackController.php:808 — server has no configured callback URL. Text 'callback_url_not_configured'. */
+    /** srv OidcCallbackController.php:828 · GithubCallbackController.php:818 — server has no configured callback URL. Text 'callback_url_not_configured'. */
     CALLBACK_URL_NOT_CONFIGURED: 'oauth.callback_url_not_configured',
   },
 
@@ -1056,16 +1059,16 @@ const CODES = {
    * specializations returned by the `createGroup`/`joinGroup` handlers reach
    * the client because the WS carriers forward any inner code on
    * `error_code`: `sendError($connection, $result['error_code'] ??
-   * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1849 and the
-   * join twin at srv SyncPlayManager.php:1908. The four inner-path codes:
-   * `syncplay.group_limit_reached` at srv SyncPlayManager.php:698,
-   * `syncplay.group_not_found` at srv SyncPlayManager.php:790,
-   * `syncplay.invalid_password` at srv SyncPlayManager.php:838,
-   * `syncplay.group_full` at srv SyncPlayManager.php:843.
+   * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1860 and the
+   * join twin at srv SyncPlayManager.php:1919. The four inner-path codes:
+   * `syncplay.group_limit_reached` at srv SyncPlayManager.php:707,
+   * `syncplay.group_not_found` at srv SyncPlayManager.php:799,
+   * `syncplay.invalid_password` at srv SyncPlayManager.php:847,
+   * `syncplay.group_full` at srv SyncPlayManager.php:852.
    * The `_failed` trio proper — `syncplay.create_failed` (srv
-   * SyncPlayManager.php:1849), `syncplay.join_failed` (srv
-   * SyncPlayManager.php:1908) and `syncplay.leave_failed`, emitted directly
-   * by the leave carrier at srv SyncPlayManager.php:1957 (its inner failure
+   * SyncPlayManager.php:1860), `syncplay.join_failed` (srv
+   * SyncPlayManager.php:1919) and `syncplay.leave_failed`, emitted directly
+   * by the leave carrier at srv SyncPlayManager.php:1968 (its inner failure
    * paths carry no `error_code`) — was RESERVED until server #798 replaced
    * the three SCREAMING fallback literals with these dotted twins; the
    * message prose stayed byte-identical and the `error_code` channel and
@@ -1075,33 +1078,33 @@ const CODES = {
    * roku #90). See `SYNCPLAY_ERROR_CODE_TWINS` for the migration table. The
    * eighth registry row — `syncplay.queue_limit_exceeded` — is LIVE since
    * server 7baa398a: the playback-queue cap at srv
-   * SyncPlayManager.php:1267 emits it directly (fail-loud on
+   * SyncPlayManager.php:1278 emits it directly (fail-loud on
    * `GroupState::MAX_QUEUE_SIZE` overflow, current queue left untouched),
-   * while the group-count cap keeps `syncplay.group_limit_reached` at :698
+   * while the group-count cap keeps `syncplay.group_limit_reached` at :707
    * — the documented split.
    */
   syncplay: {
-    /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1849 — dotted twin of legacy `CREATE_FAILED` */
+    /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1860 — dotted twin of legacy `CREATE_FAILED` */
     CREATE_FAILED: 'syncplay.create_failed',
-    /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1908 — dotted twin of legacy `JOIN_FAILED` */
+    /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1919 — dotted twin of legacy `JOIN_FAILED` */
     JOIN_FAILED: 'syncplay.join_failed',
-    /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1957 — dotted twin of legacy `LEAVE_FAILED` */
+    /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1968 — dotted twin of legacy `LEAVE_FAILED` */
     LEAVE_FAILED: 'syncplay.leave_failed',
-    /** LIVE on the wire (srv SyncPlayManager.php:698): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1849; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1267 (server 7baa398a) — this row now covers the group-count cap only */
+    /** LIVE on the wire (srv SyncPlayManager.php:707): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1860; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1278 (server 7baa398a) — this row now covers the group-count cap only */
     GROUP_LIMIT_REACHED: 'syncplay.group_limit_reached',
-    /** LIVE on the wire (srv SyncPlayManager.php:790): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1908 */
+    /** LIVE on the wire (srv SyncPlayManager.php:799): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
     GROUP_NOT_FOUND: 'syncplay.group_not_found',
-    /** LIVE on the wire (srv SyncPlayManager.php:838): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1908 */
+    /** LIVE on the wire (srv SyncPlayManager.php:847): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
     INVALID_PASSWORD: 'syncplay.invalid_password',
-    /** LIVE on the wire (srv SyncPlayManager.php:843): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1908 */
+    /** LIVE on the wire (srv SyncPlayManager.php:852): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
     GROUP_FULL: 'syncplay.group_full',
     /**
-     * srv SyncPlayManager.php:1267 — LIVE on the wire since server 7baa398a
+     * srv SyncPlayManager.php:1278 — LIVE on the wire since server 7baa398a
      * (deferred-mint flip landed right after the v0.5.3 pin): the
      * playback-queue cap (`GroupState::MAX_QUEUE_SIZE` overflow in
      * `handlePlaybackQueue`) emits this dedicated code fail-loud, leaving
      * the current queue untouched. The group-count cap keeps
-     * `syncplay.group_limit_reached` at :698 — this row splits the two
+     * `syncplay.group_limit_reached` at :707 — this row splits the two
      * conditions. Not a SCREAMING-legacy twin, so `SYNCPLAY_ERROR_CODE_TWINS`
      * deliberately omits it.
      */
@@ -1121,25 +1124,25 @@ const CODES = {
   legacy: {
     /** srv SyncPlayManager.php:636 */
     UNKNOWN_MESSAGE: 'UNKNOWN_MESSAGE',
-    /** srv SyncPlayManager.php:639 */
+    /** srv SyncPlayManager.php:647 */
     HANDLER_ERROR: 'HANDLER_ERROR',
-    /** srv SyncPlayManager.php:1071 · srv MessageHandler.php:156 */
+    /** srv SyncPlayManager.php:1082 · srv MessageHandler.php:156 */
     NOT_AUTHENTICATED: 'NOT_AUTHENTICATED',
-    /** srv SyncPlayManager.php:1079 */
+    /** srv SyncPlayManager.php:1090 */
     NOT_IN_GROUP: 'NOT_IN_GROUP',
-    /** srv SyncPlayManager.php:1084 */
+    /** srv SyncPlayManager.php:1095 */
     NOT_HOST: 'NOT_HOST',
-    /** srv SyncPlayManager.php:1432 */
+    /** srv SyncPlayManager.php:1443 */
     INVALID_NEW_HOST: 'INVALID_NEW_HOST',
-    /** srv SyncPlayManager.php:1437 */
+    /** srv SyncPlayManager.php:1448 */
     MEMBER_NOT_FOUND: 'MEMBER_NOT_FOUND',
-    /** srv SyncPlayManager.php:1442 */
+    /** srv SyncPlayManager.php:1453 */
     SAME_HOST: 'SAME_HOST',
-    /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1849; still resolved client-side for old-server compatibility */
+    /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1860; still resolved client-side for old-server compatibility */
     CREATE_FAILED: 'CREATE_FAILED',
-    /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin `syncplay.join_failed` at srv SyncPlayManager.php:1908; still resolved client-side for old-server compatibility */
+    /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin `syncplay.join_failed` at srv SyncPlayManager.php:1919; still resolved client-side for old-server compatibility */
     JOIN_FAILED: 'JOIN_FAILED',
-    /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1957; still resolved client-side for old-server compatibility */
+    /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1968; still resolved client-side for old-server compatibility */
     LEAVE_FAILED: 'LEAVE_FAILED',
     /**
      * srv MessageHandler.php:188-191. Wave ruling (R-SP-W2-01, protocol-version
@@ -1366,18 +1369,18 @@ export const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[] = [
  * Wave-2 migration map: each dotted twin → the coarse/legacy code it replaces
  * (or un-wraps from a prose carrier). Status at srv 9b2394ee: ALL SEVEN rows
  * are LIVE. The four inner-path rows ride the `?? ` wrap sites — the carriers
- * forward any inner code at srv SyncPlayManager.php:1849 and srv
- * SyncPlayManager.php:1908. The three `*_failed` rows landed with the server
+ * forward any inner code at srv SyncPlayManager.php:1860 and srv
+ * SyncPlayManager.php:1919. The three `*_failed` rows landed with the server
  * #798 carrier flip: `syncplay.create_failed` is now the create fallback at
- * srv SyncPlayManager.php:1849, `syncplay.join_failed` the join fallback at
- * srv SyncPlayManager.php:1908, and `syncplay.leave_failed` the leave
- * carrier's direct emit at srv SyncPlayManager.php:1957. The SCREAMING legacy
+ * srv SyncPlayManager.php:1860, `syncplay.join_failed` the join fallback at
+ * srv SyncPlayManager.php:1919, and `syncplay.leave_failed` the leave
+ * carrier's direct emit at srv SyncPlayManager.php:1968. The SCREAMING legacy
  * values stay registered for in-flight and older-server traffic; the wire
  * channel (`error_code`) and the read order never change. The eighth syncplay
  * registry row `syncplay.queue_limit_exceeded` is deliberately absent here: it
  * splits a dotted condition (server 7baa398a gave the playback-queue cap its
- * own emit at srv SyncPlayManager.php:1267 while the group-count cap keeps
- * `syncplay.group_limit_reached` at :698), not a SCREAMING legacy value, and
+ * own emit at srv SyncPlayManager.php:1278 while the group-count cap keeps
+ * `syncplay.group_limit_reached` at :707), not a SCREAMING legacy value, and
  * this table maps legacy replacements only.
  */
 export const SYNCPLAY_ERROR_CODE_TWINS = {

@@ -18,6 +18,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — WAVE-4 coordinate re-anchor of all drifted `src/errors.ts` cites (comment currency only; zero wire change) — 2026-11-04
+
+- **112 drifted coordinates (plus 10 adjacent stale coords inside the same
+  comments) re-anchored at source** against the campaign-final tips hub
+  `ee481593` / server `009ae7fb` — every moved cite was re-read at the current
+  emit site in the (read-only) working trees, never guessed from offsets. The
+  dev-only tripwire `npm run verify:cites` goes **ok=321 / problems=112 →
+  ok=433 / problems=0**; the 433 parsed cites stay above the tool's 400-cite
+  anti-vacuity floor. Families moved: the srv SyncPlayManager carrier wraps and
+  legacy SCREAMING sites (dispatch-copy commits `9b75bf70`/`d390f2a1` shifted
+  them), the hub-token/account-link rail (the SRV-M22 envelope rebuild at
+  `009ae7fb` relocated the `HubTokenController` trio off its old prose coords),
+  the quick-connect consent/pairing legs (`dd9c848c`), the srv rate-limit wrap,
+  the LDAP + OIDC/GitHub provider and identity rails, and on the hub side the
+  proxy tunnel/scope/quota/stream rows plus the federation/invite CRUD
+  families. No emit site itself changed; only docblock prose moved.
+- **Two-site pairs re-anchored by handler identity, disclosed:**
+  `offer_not_found` `:905,:959`, `offer_already_responded` `:913,:967`,
+  `missing_offer_id` `:898,:952`, `master_only` `:1005,:1056` — the tripwire's
+  nearest-token suggestion would have collapsed each pair onto one emit; the
+  pairs were mapped to their two handlers in old-cite order instead.
+- **Manifest regen probed and honestly omitted:** the route-manifest generator
+  was re-run against the final server tip `009ae7fb`; the 415-tuple payload is
+  byte-identical to regen #36 (`90b79e35`) — only the provenance stamp would
+  move — so no content regen and no provenance-only churn was committed. The
+  owner D2 call (tag `v0.5.6` vs the untagged regen #36) is unaffected: the
+  payload is stable at the final tips.
+- **Build bytes:** `dist/errors.d.ts` and both source maps re-vendored (docblock
+  text + the re-stamped header shift `sourcesContent`/VLQ); the JS bundles are
+  byte-identical and the trio `dist/error-codes.json` /
+  `dist/server-route-manifest.json` / `dist/mcp-scopes.json` md5s
+  (`5d1783a7` / `90b79e35` / `8c92c070`) all held unchanged. Zero registry
+  values moved, zero new wire codes.
+
 ### Changed — route-manifest regen #36: CONTENT 412→415 tuples at server `58530ec2`
 
 - **Trigger: phlix-server master advanced `758f9149` → `58530ec2` with route
