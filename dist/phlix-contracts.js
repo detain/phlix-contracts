@@ -628,6 +628,7 @@ var Se = [
 	["GET", "/api/v1/libraries/{id}/theme-media"],
 	["GET", "/api/v1/libraries/{libraryId}/collections"],
 	["GET", "/api/v1/me/continue-watching"],
+	["GET", "/api/v1/me/history"],
 	["GET", "/api/v1/me/playback/preferences"],
 	["GET", "/api/v1/me/recommendations"],
 	["GET", "/api/v1/me/sessions"],
@@ -694,6 +695,7 @@ var Se = [
 	["GET", "/api/v1/roku/devices"],
 	["GET", "/api/v1/roku/devices/{id}/status"],
 	["GET", "/api/v1/servers"],
+	["GET", "/api/v1/servers/{id}"],
 	["GET", "/api/v1/sessions/{id}/progress"],
 	["GET", "/api/v1/shows/{id}/markers/bulk"],
 	["GET", "/api/v1/syncplay/groups"],
@@ -703,6 +705,7 @@ var Se = [
 	["GET", "/api/v1/transcode/{jobId}/status"],
 	["GET", "/api/v1/users/me/continue-watching"],
 	["GET", "/api/v1/users/me/favorites"],
+	["GET", "/api/v1/users/me/history"],
 	["GET", "/api/v1/users/me/next-up"],
 	["GET", "/api/v1/users/me/recently-watched"],
 	["GET", "/api/v1/users/me/settings"],
@@ -895,18 +898,18 @@ var Se = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], Pe = {
-	serverSha: "758f91496c068551b310f1078093335f79c20e04",
-	generatedAt: "2026-09-30T18:26:49Z",
+	serverSha: "58530ec207b0d40c3386ed10215d5bda3eaf54af",
+	generatedAt: "2026-11-04T07:29:19Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
-		count: 375
+		count: 376
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
-		count: 48
+		count: 50
 	}],
 	shared: 11,
-	total: 412
+	total: 415
 };
 export { _ as ACCESS_ERROR_CODES, R as ADMIN_ERROR_CODES, S as ALEXA_ERROR_CODES, r as AUDIO_TRACK_KEYS, u as AUTH_ERROR_CODES, e as AUTO_QUALITY, j as CASTING_ERROR_CODES, f as CLAIM_ERROR_CODES, N as COMMON_ERROR_CODES, w as CSRF_ERROR_CODES, A as DLNA_ERROR_CODES, ce as ERROR_CODE, de as ERROR_CODES, l as ERROR_DOMAINS, ae as EVENT, P as FEDERATION_ERROR_CODES, v as GATEWAY_ERROR_CODES, d as HUB_ERROR_CODES, B as IDENTITY_ERROR_CODES, I as INVITE_ERROR_CODES, te as JWT_AUD, ee as JWT_ISS, ne as JWT_TYPE, U as LDAP_ERROR_CODES, G as LEGACY_SYNCPLAY_ERROR_CODES, D as LIBRARY_ERROR_CODES, b as MCP_ERROR_CODES, s as MCP_SCOPE, oe as MCP_SCOPES, x as MCP_TOKEN_ERROR_CODES, se as MCP_TOKEN_PREFIX, le as METADATA_ERROR_CODES, H as OAUTH_ERROR_CODES, E as PLUGIN_ERROR_CODES, a as PLUGIN_EVENT, O as POSTER_ERROR_CODES, k as PROFILE_ERROR_CODES, V as PROVIDER_ERROR_CODES, m as PROXY_ERROR_CODES, M as QUICKCONNECT_ERROR_CODES, h as QUOTA_ERROR_CODES, y as RELAY_ERROR_CODES, L as REQUEST_ERROR_CODES, p as SERVER_ERROR_CODES, Ne as SERVER_ROUTE_MANIFEST, Pe as SERVER_ROUTE_MANIFEST_PROVENANCE, re as SERVER_STATUS, F as SHARE_ERROR_CODES, g as STREAM_ERROR_CODES, n as SUBTITLE_TRACK_KEYS, fe as SYNCPLAY_ERROR_CODES, pe as SYNCPLAY_ERROR_CODE_TWINS, W as SYNCPLAY_TWIN_ERROR_CODES, De as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, je as SYNC_PLAY_ERROR_RESPONSE_KEYS, Oe as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, we as SYNC_PLAY_GROUP_KEYS, Te as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, ke as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, Me as SYNC_PLAY_KEY_TIES, Ae as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, Ee as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, Se as SYNC_PLAY_MEMBER_KEYS, Ce as SYNC_PLAY_QUEUE_ITEM_KEYS, Q as TICKS_PER_HOUR, Z as TICKS_PER_MINUTE, X as TICKS_PER_SECOND, C as TLS_ERROR_CODES, i as TRACK_KEY_TIES, z as UPDATES_ERROR_CODES, T as USER_ERROR_CODES, o as WEBHOOK_EVENT, ie as WEBHOOK_EVENT_RESERVED, K as X_PHLIX_DEVICE_ID, q as X_PHLIX_DEVICE_NAME, J as X_PHLIX_DEVICE_TYPE, Y as X_PHLIX_SESSION_ID, me as buildPhlixHeaders, ye as formatDuration, ve as formatRuntime, xe as pickDefaultAudio, t as pickDefaultRendition, be as pickDisplayRating, ge as secondsToTicks, _e as ticksToHms, $ as ticksToMinutes, he as ticksToSeconds };
 

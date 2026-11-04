@@ -18,6 +18,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — route-manifest regen #36: CONTENT 412→415 tuples at server `58530ec2`
+
+- **Trigger: phlix-server master advanced `758f9149` → `58530ec2` with route
+  movement.** Regenerated `src/routeManifest.generated.ts` + the committed dist
+  with the repo's own `scripts/generate-server-route-manifest.mjs` against the
+  live server checkout. CONTENT regen: the server's history-alias commit
+  (`a86e0999`) adds the two watch-history GET tuples to the WebPortal guard
+  table (48→50) and `8bb435cf` adds `GET /api/v1/servers/{id}` to the
+  Application table (375→376); the shared overlap holds at 11, so the union
+  grows 412→415 `[method, path]` tuples. The empirical tuple diff is EXACTLY
+  those three additions — zero removals, zero other movement. The span's other
+  commits that touched the guard files (the markers signature fix, the copy
+  clusters, the collections route regroup) moved only the
+  ` -> Handler [Middleware]` annotations the generator strips.
+- **Test pins rotate in the same commit** (regen #35 precedent): provenance
+  sha, source/total counts, and the byte-freeze md5 re-pinned to the new
+  committed artifact. The cs#47 merge-ritual survival token deliberately does
+  NOT rotate: it is a PAIR with the hub-side const and advances only in a
+  coordinated consumer re-vendor leg — which lands on hub in the immediately
+  following commit of this same currency wave.
+- **Consumers verified unperturbed.** Every downstream master gate reads a
+  VENDORED copy pinned to a release tag, not this master artifact; the new
+  bytes are master-only until the next release tag, exactly as in regen #35.
+  Zero registry movement: 205 codes / frozen error-codes bytes held;
+  `dist/mcp-scopes.json` byte-identical. Gates: lint 0, typecheck 0, tests
+  green, `npm run build` re-run leaves `dist/` clean (CI committed-freshness
+  leg).
+
 ### Fixed — WAVE-3 coordinate re-anchor of all drifted `src/errors.ts` cites (comment currency only; zero wire change) — 2026-11-03
 
 - **159 drifted coordinates re-anchored at source** against the campaign-final

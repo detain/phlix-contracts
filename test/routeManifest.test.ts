@@ -56,11 +56,11 @@ function isServed(method: string, concretePath: string): boolean {
 }
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 758f9149 (regen #35 CONTENT regen — fa30b871 M-6 adds the two book-progress tuples: App-router inventory 373→375, total 410→412; other manifest-file commits in the span change annotations only)', () => {
+  it('is derived from phlix-server master 58530ec2 (regen #36 CONTENT regen — a86e0999 adds the WebPortal history-alias pair (48→50) and 8bb435cf adds the Application GET /api/v1/servers/{id} (375→376): total 412→415; other manifest-file commits in the span change annotations only)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '758f91496c068551b310f1078093335f79c20e04',
+      '58530ec207b0d40c3386ed10215d5bda3eaf54af',
     );
   });
 
@@ -68,15 +68,15 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.sources).toEqual([
       {
         file: 'tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php',
-        count: 375,
+        count: 376,
       },
       {
         file: 'tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php',
-        count: 48,
+        count: 50,
       },
     ]);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
-    expect(SERVER_ROUTE_MANIFEST.length).toBe(412);
+    expect(SERVER_ROUTE_MANIFEST.length).toBe(415);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
   });
 });
@@ -212,7 +212,7 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '915796837d38a77733c169996d97640c';
+  const CS22_MANIFEST_MD5 = '90b79e355055307d5ba2cc0ef98e2300';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
