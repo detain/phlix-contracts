@@ -18,6 +18,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — WAVE-3 coordinate re-anchor of all drifted `src/errors.ts` cites (comment currency only; zero wire change) — 2026-11-03
+
+- **159 drifted coordinates re-anchored at source** against the campaign-final
+  tips hub `bd47bc5a` / server `de38620b` — every moved cite was re-read at the
+  current emit site in the (read-only) working trees, never guessed from
+  offsets. The dev-only tripwire `npm run verify:cites` goes **ok=270 /
+  problems=159 → ok=433 / problems=0**, and the 433 parsed cites stay above the
+  tool's 400-cite anti-vacuity floor. No emit site changed; only docblock
+  prose moved.
+- **One semantic re-map disclosed:** the `server.not_owned` docblock no longer
+  rides the hub-proxy ownership leg — that leg is now the M-HUB-27
+  byte-identical-404 law (hub `ServerProxyController.php:1029` era, which never
+  emits `not_owned`). Its cites now name the owner-known emitting surfaces hub
+  `ServerManageController.php:73,117`, `ServerDetailController.php:92` and
+  `ClientRelayTokenController.php:103`.
+- **Build bytes:** `dist/errors.d.ts` and both source maps re-vendored (docblock
+  text + the two added header-stamp lines shift `sourcesContent`/VLQ); the JS
+  bundle `dist/phlix-contracts.js` is byte-identical and the frozen trio
+  `dist/error-codes.json` / `dist/server-route-manifest.json` /
+  `dist/mcp-scopes.json` md5s all held unchanged. Zero registry values moved,
+  zero new wire codes.
+
 ## [0.5.5] - 2026-11-03
 
 ### Added — one RESERVED mint: `common.not_found` (census 204 → 205) + three no-byte wave rulings — contracts wave over `.reviews/CONTRACTS-WAVE-BRIEF.md` — 2026-11-03
