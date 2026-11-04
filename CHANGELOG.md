@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-11-04
+
 ### Fixed — WAVE-4 coordinate re-anchor of all drifted `src/errors.ts` cites (comment currency only; zero wire change) — 2026-11-04
 
 - **112 drifted coordinates (plus 10 adjacent stale coords inside the same
