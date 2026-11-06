@@ -61,8 +61,14 @@ const here = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(here, 'fixtures', 'stream-track-vectors.json');
 const fixture = JSON.parse(readFileSync(FIXTURE_PATH, 'utf8')) as DumpFixture;
 
-/** The S404 authority ruling was verified at this server commit. */
-const AUTHORITY_SERVER_SHA = '0134063318bf601dcc152c6c175368cdf9168378';
+/** The S404 authority ruling, RE-VERIFIED at the LW-069 dump authority (server
+ * `a63dc0db`): the vectors re-generated identically at the newer commit — the
+ * ONLY delta is S507's additive `delivery: 'external'` member on every
+ * subtitle row (src/Media/Library/StreamTrackShaper.php now stamps it on both
+ * the external and the embedded-text branch). The S404 ruling itself (no
+ * `display_title`, `title ?? language ?? 'Subtitle N'` label, per-type
+ * ordinals) holds verbatim. */
+const AUTHORITY_SERVER_SHA = 'a63dc0db72d67beed7e1e9b7824cfec6b5ac80d0';
 
 /** Keys that existed ONLY in the pre-S404 contracts fiction — never emitted. */
 const FICTION_KEYS = ['display_title', 'is_forced', 'is_default'];

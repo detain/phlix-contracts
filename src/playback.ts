@@ -4,10 +4,19 @@
  * Field names are the server's snake_case verbatim. The two playback-related
  * server endpoints are:
  *
- *   - `GET /api/v1/media/{id}/playback-info` — the PlaybackInfo marker +
- *     quality-ladder shape (`item_id`, `intro_marker`, `outro_marker`,
- *     `chapters[]`, `skip_button_spec`, `quality_ladder[]`), produced by
- *     `MediaItemController::getPlaybackInfo()`. (The distinct
+ *   - `GET /api/v1/media/{id}/playback-info` — the {@link PlaybackInfo}
+ *     envelope produced by `MediaItemController::getPlaybackInfo()`:
+ *     `item_id`, `intro_marker`, `outro_marker`, `chapters[]`,
+ *     `skip_button_spec`, `quality_ladder` (always-present key),
+ *     `audio_tracks[]`, `subtitle_tracks[]`, `crossfade` — ALL nine keys
+ *     ALWAYS emitted — plus the add-only `playback_constraints` block when
+ *     `?forceTranscode`/`?excludeHevc` are supplied. LW-069 (estate review
+ *     contracts__srphp #1 [Critical]): the pre-cure declaration here claimed
+ *     camelCase chapters-with-`index`, a `trickplay` member, and an OPTIONAL
+ *     `quality_ladder` — none of which the endpoint ever sent. The truth is
+ *     the executed dump `test/fixtures/playback-info-vectors.json`
+ *     (scripts/dump-server-playback-info-vectors.php), pinned by
+ *     `test/playbackShapeParity.test.ts`. (The distinct
  *     `GET /api/v1/media/{id}/playback` route returns a differently-wrapped
  *     `{playback_info:{…media_sources…}}` shape and is NOT this type.)
  *   - the play/stream descriptors the clients consume (`stream_url`, `url`,
@@ -15,7 +24,8 @@
  *
  * The {@link AudioTrack}/{@link SubtitleTrack} pair models the
  * `audio_tracks[]`/`subtitle_tracks[]` arrays exactly as the server's
- * `Media/Library/StreamTrackShaper.php` emits them (S404 authority ruling);
+ * `Media/Library/StreamTrackShaper.php` emits them (S404 authority ruling,
+ * re-verified with the S507 `delivery` member against the LW-069 dump);
  * the DB-row mirrors live in `AudioTrack.ts`/`SubtitleTrack.ts` as the
  * `Stream*` types — do not conflate the two vocabularies.
  *
@@ -24,7 +34,6 @@
  */
 
 import type { MediaItem } from './media';
-import type { ChapterMarker, TrickplaySprite } from './Chapter';
 import type { WireKeysExact } from './internal/wireKeys';
 
 /** Stream transport protocol. */
@@ -125,11 +134,29 @@ export interface Rendition {
 }
 
 /**
+ * Ordered wire keys of {@link Rendition} — exported so
+ * `test/playbackShapeParity.test.ts` pins the playback-info ladder rows
+ * against the executed dump. Keep in lockstep with the interface.
+ */
+export const RENDITION_KEYS = [
+  'id',
+  'label',
+  'width',
+  'height',
+  'bitrate',
+  'codecs',
+  'url',
+  'is_original',
+  'is_copy',
+  'video_bitrate',
+] as const;
+
+/**
  * A soft subtitle track on a transcode job (`variants`-adjacent). Distinct from
  * {@link SubtitleTrack}: the transcode pipeline emits `{index,language,label,
  * default,url}` (matching `TranscodeManager` job readiness), not the
  * playback-info {@link SubtitleTrack} wire shape (which carries
- * `id/index/stream_index/language/label/codec/source/hearing_impaired/url`).
+ * `id/index/stream_index/language/label/codec/source/delivery/hearing_impaired/url`).
  */
 export interface TranscodeSubtitleTrack {
   index: number;
@@ -232,6 +259,7 @@ export const SUBTITLE_TRACK_KEYS = [
   'label',
   'codec',
   'source',
+  'delivery',
   'hearing_impaired',
   'url',
 ] as const;
@@ -242,8 +270,9 @@ export const SUBTITLE_TRACK_KEYS = [
  * server's authoritative `Phlix\Media\Library\StreamTrackShaper::
  * subtitleTracks()`.
  *
- * S404 authority ruling (2026-08-31, verified at server `01340633`): this is
- * the REAL wire shape. The pre-S404 declaration here carried a required
+ * S404 authority ruling (2026-08-31, verified at server `01340633`,
+ * re-verified with the S507 additive member at the LW-069 dump authority
+ * `a63dc0db`): this is the REAL wire shape. The pre-S404 declaration here carried a required
  * `display_title` and optional `url` — a fiction no endpoint ever emitted
  * (`git grep display_title` in phlix-server `src/`: ZERO hits). `label` is the
  * display string the server derives (`title ?? language ?? 'Subtitle N'`).
@@ -256,6 +285,12 @@ export const SUBTITLE_TRACK_KEYS = [
  * - `label` — always a non-empty display string (server-coerced).
  * - `source` — `null` for embedded rows; provenance for downloaded external
  *   subtitle rows (`media_streams.storage_path` rows).
+ * - `delivery` — S507 (AD-8) member, verified present in the LW-069 executed
+ *   dump: every subtitle row playback-info hands the player is delivered
+ *   EXTERNALLY (a signed WebVTT sidecar URL a `<track>` loads alongside the
+ *   stream; nothing is muxed into the container), so the live wire value is
+ *   the literal `'external'`. Tizen-class panels use it to stop expecting
+ *   in-container rendering of ass/ssa/pgssub.
  * - `hearing_impaired` — stored-flag boolean (never "forced": the wire has no
  *   forced concept).
  * - `url` — SIGNED path to the extraction endpoint
@@ -271,6 +306,7 @@ export interface SubtitleTrack {
   label: string;
   codec: string;
   source: string | null;
+  delivery: 'external';
   hearing_impaired: boolean;
   url: string | null;
 }
@@ -394,6 +430,14 @@ export interface SkipButtonSpec {
   skip_outro_end: number | null;
 }
 
+/** Ordered wire keys of {@link SkipButtonSpec} (`SkipButtonSpec::toArray()`). */
+export const SKIP_BUTTON_SPEC_KEYS = [
+  'skip_intro_start',
+  'skip_intro_end',
+  'skip_outro_start',
+  'skip_outro_end',
+] as const;
+
 /** Alias matching the mobile client's `SkipMarkers` name. */
 export type SkipMarkers = SkipButtonSpec;
 
@@ -406,31 +450,152 @@ export interface TimeMarker {
   end_seconds: number;
 }
 
+/** Ordered wire keys of {@link TimeMarker}. */
+export const TIME_MARKER_KEYS = ['start_seconds', 'end_seconds'] as const;
+
 /**
- * The marker/skip + quality-ladder response from
+ * One chapter row on the `GET /api/v1/media/{id}/playback-info` wire.
+ *
+ * LW-069: this is NOT the client-side {@link ChapterMarker} (camelCase
+ * `startSeconds`/`endSeconds` + an `index`) — the server's
+ * `MediaItemController::getPlaybackInfo()` chapters are the snake_case
+ * `{start_seconds,end_seconds,title}` triple decoded from `media_items.
+ * chapters_json`, with NO per-row index, emitted under the ALWAYS-present
+ * `chapters` key (empty list when the item has none).
+ */
+export interface PlaybackInfoChapter {
+  start_seconds: number;
+  end_seconds: number;
+  title: string;
+}
+
+/** Ordered wire keys of {@link PlaybackInfoChapter}. */
+export const PLAYBACK_INFO_CHAPTER_KEYS = ['start_seconds', 'end_seconds', 'title'] as const;
+
+/**
+ * The `crossfade` member of {@link PlaybackInfo} — the gapless/crossfade
+ * profile `GaplessPlaybackManager` derives for the requesting user
+ * (`CrossfadeProfile::fromRaw()`). ALWAYS emitted; for an anonymous/absent
+ * profile the server's defaults shape it as
+ * `{enabled:false, duration:0, fade_out:0.3, fade_in:0.3}` (verified in the
+ * LW-069 executed dump — `enabled` is a real boolean on the wire, not a
+ * null sentinel). Durations are seconds.
+ */
+export interface Crossfade {
+  enabled: boolean;
+  duration: number;
+  fade_out: number;
+  fade_in: number;
+}
+
+/** Ordered wire keys of {@link Crossfade}. */
+export const CROSSFADE_KEYS = ['enabled', 'duration', 'fade_out', 'fade_in'] as const;
+
+/**
+ * The add-only `playback_constraints` block of {@link PlaybackInfo}.
+ *
+ * The key appears ONLY when the client supplied `?forceTranscode` /
+ * `?excludeHevc` query params, and then carries ONLY the supplied members
+ * (each parsed truthy `'1'|'true'|'yes'` case-insensitively; `'0'` is
+ * present-but-false). Order when both are present is
+ * `force_transcode`, `exclude_hevc`.
+ */
+export interface PlaybackConstraints {
+  force_transcode?: boolean;
+  exclude_hevc?: boolean;
+}
+
+/** Ordered wire keys of {@link PlaybackConstraints} (both-member arm). */
+export const PLAYBACK_CONSTRAINTS_KEYS = ['force_transcode', 'exclude_hevc'] as const;
+
+/**
+ * The marker/skip + quality-ladder + track + gapless response from
  * `GET /api/v1/media/{id}/playback-info`, produced by
- * `MediaItemController::getPlaybackInfo()`. `intro_marker`/`outro_marker` are null
- * when no marker was detected. (Do not confuse with `GET …/playback`, a distinct
- * route returning a `{playback_info:{…media_sources…}}` wrapper.)
+ * `MediaItemController::getPlaybackInfo()`.
+ *
+ * LW-069 authority ruling (estate review contracts__srphp #1 [Critical],
+ * re-verified by executed dump at server `a63dc0db`): the nine base keys are
+ * ALWAYS emitted — `intro_marker`/`outro_marker`/`quality_ladder` are
+ * explicitly null when absent, `chapters`/`audio_tracks`/`subtitle_tracks`
+ * are explicitly empty lists when there are none, and `crossfade` always
+ * carries the derived profile. `playback_constraints` is the ONLY optional
+ * member (present iff the corresponding query params were supplied). The
+ * pre-cure declaration's `trickplay` member and camelCase indexed `chapters`
+ * were fiction no server emission ever produced; the distinct
+ * `GET …/playback` route returns a `{playback_info:{…media_sources…}}`
+ * wrapper and is NOT this type.
  */
 export interface PlaybackInfo {
   item_id: string;
   intro_marker: TimeMarker | null;
   outro_marker: TimeMarker | null;
+  /** ALWAYS present; empty list when the item has no chapters. */
+  chapters: PlaybackInfoChapter[];
   skip_button_spec: SkipButtonSpec;
   /**
    * Pre-flight ABR ladder PREVIEW (D6): the quality rungs a play would produce,
    * built from persisted source metadata with NO live probing and NO job — so
-   * every entry's `url` is `null`. The whole field is `null` when the item has
-   * not been scanned/backfilled with source metadata yet. Additive: older
-   * servers omit the key entirely, so it is optional.
+   * every entry's `url` is `null`. The whole VALUE is `null` when the item has
+   * not been scanned/backfilled with source metadata yet. LW-069: the KEY is
+   * always present (the old `quality_ladder?` optionality was fiction — every
+   * emission carries it, nullable value).
    */
-  quality_ladder?: Rendition[] | null;
-  /** Chapter markers enriched with index (from ChapterTrack). */
-  chapters?: ChapterMarker[];
-  /** Trickplay sprite metadata for visual scrubbing. */
-  trickplay?: TrickplaySprite | null;
+  quality_ladder: Rendition[] | null;
+  /** ALWAYS present; empty list when the item has no audio stream rows. */
+  audio_tracks: AudioTrack[];
+  /** ALWAYS present; empty list when the item has no subtitle stream rows. */
+  subtitle_tracks: SubtitleTrack[];
+  crossfade: Crossfade;
+  /** Add-only: present iff `?forceTranscode`/`?excludeHevc` were supplied. */
+  playback_constraints?: PlaybackConstraints;
 }
+
+/**
+ * The nine ALWAYS-present base members of {@link PlaybackInfo} (everything
+ * except the add-only `playback_constraints` block).
+ */
+export type PlaybackInfoBase = Omit<PlaybackInfo, 'playback_constraints'>;
+
+/**
+ * The base envelope keys, IN THE ORDER `getPlaybackInfo()` builds them —
+ * pinned by `test/playbackShapeParity.test.ts` against the executed dump.
+ */
+export const PLAYBACK_INFO_KEYS = [
+  'item_id',
+  'intro_marker',
+  'outro_marker',
+  'chapters',
+  'skip_button_spec',
+  'quality_ladder',
+  'audio_tracks',
+  'subtitle_tracks',
+  'crossfade',
+] as const;
+
+/** Compile-time ties — see {@link TRACK_KEY_TIES} for the helper note. */
+export type PlaybackInfoChapterKeysTied = WireKeysExact<PlaybackInfoChapter, typeof PLAYBACK_INFO_CHAPTER_KEYS>;
+export type TimeMarkerKeysTied = WireKeysExact<TimeMarker, typeof TIME_MARKER_KEYS>;
+export type SkipButtonSpecKeysTied = WireKeysExact<SkipButtonSpec, typeof SKIP_BUTTON_SPEC_KEYS>;
+export type CrossfadeKeysTied = WireKeysExact<Crossfade, typeof CROSSFADE_KEYS>;
+export type RenditionKeysTied = WireKeysExact<Rendition, typeof RENDITION_KEYS>;
+export type PlaybackConstraintsKeysTied = WireKeysExact<PlaybackConstraints, typeof PLAYBACK_CONSTRAINTS_KEYS>;
+export type PlaybackInfoBaseKeysTied = WireKeysExact<PlaybackInfoBase, typeof PLAYBACK_INFO_KEYS>;
+const _playbackInfoChapterKeysTied: PlaybackInfoChapterKeysTied = true;
+const _timeMarkerKeysTied: TimeMarkerKeysTied = true;
+const _skipButtonSpecKeysTied: SkipButtonSpecKeysTied = true;
+const _crossfadeKeysTied: CrossfadeKeysTied = true;
+const _renditionKeysTied: RenditionKeysTied = true;
+const _playbackConstraintsKeysTied: PlaybackConstraintsKeysTied = true;
+const _playbackInfoBaseKeysTied: PlaybackInfoBaseKeysTied = true;
+export const PLAYBACK_INFO_KEY_TIES = {
+  chapter: _playbackInfoChapterKeysTied,
+  timeMarker: _timeMarkerKeysTied,
+  skipButtonSpec: _skipButtonSpecKeysTied,
+  crossfade: _crossfadeKeysTied,
+  rendition: _renditionKeysTied,
+  playbackConstraints: _playbackConstraintsKeysTied,
+  base: _playbackInfoBaseKeysTied,
+} as const;
 
 /**
  * The mobile client's richer PlaybackInfo bundle (media source + tracks +

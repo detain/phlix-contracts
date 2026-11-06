@@ -18,6 +18,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — LW-069 [Critical] + LW-065: `PlaybackInfo` and the stream-session DTOs rewritten to the EXECUTED server wire — 2026-11-06
+
+- **`src/playback.ts` `PlaybackInfo` (estate review contracts__srphp #1
+  [Critical]):** the declared envelope never existed on the wire. Truth (from
+  the new dump leg `scripts/dump-server-playback-info-vectors.php`, driving the
+  REAL `MediaItemController::getPlaybackInfo()` against a real MySQL scratch
+  database at server `a63dc0db`): nine keys are ALWAYS emitted — `item_id`,
+  `intro_marker`/`outro_marker` (`{start_seconds,end_seconds}|null`),
+  `chapters` (snake_case `{start_seconds,end_seconds,title}` rows, NO `index`,
+  empty-list-when-none), `skip_button_spec`, `quality_ladder` (key always
+  present; nullable VALUE — the optional-key fiction is dead), `audio_tracks`,
+  `subtitle_tracks`, `crossfade` (`GaplessPlaybackManager` profile, `enabled`
+  a real bool) — plus the ADD-ONLY `playback_constraints` block
+  (`?forceTranscode`/`?excludeHevc`, present members only, `'0'` →
+  present-but-false). The `trickplay` member and the camelCase indexed
+  `chapters?: ChapterMarker[]` (which reused the CLIENT-side type as wire
+  vocabulary) are removed; `PlaybackInfoChapter` is the real wire row type.
+  `test/playbackShapeParity.test.ts` ties every ordered key list
+  (`PLAYBACK_INFO_KEYS` et al.) to the executed vectors; the two bug-encoding
+  assertions in `renditions.test.ts`/`types.test.ts` were rotated to the new
+  law in the same commit (measured-red disclosure).
+- **`SubtitleTrack` gains `delivery: 'external'` (S507 AD-8):** the executed
+  playback-info rows carry it on EVERY subtitle row, so the S404 leg was
+  re-dumped at the same authority — the regeneration's only delta is that
+  additive member (proved: `stream-track-vectors.json` diff = `serverSha` +
+  7 `delivery` lines), and `trackShapeParity`'s authority pin rotated
+  `01340633 → a63dc0db`. The SyncPlay leg keeps its own proven — its dumper
+  refuses any other sha until a future re-ruling.
+- **`src/StreamSession.ts` (estate review contracts__srphp #8 [Info]):** the
+  mirror was never pinned; it claimed camelCase members, a NUMERIC
+  `profileId`, ISO-8601 `startedAt`, and omitted `last_heartbeat_at`
+  entirely. Rewritten to the executed snake_case DTOs
+  (`scripts/dump-server-stream-session-vectors.php` → `StreamSessionService::
+  getStreamLimit()->toArray()` + `getActiveStreamsForProfile()` at the same
+  authority): `profile_id` is a UUID string, datetimes are MySQL
+  `YYYY-MM-DD HH:MM:SS`, `id` is int, `stream_type` is the
+  `direct|transcode|relay` ENUM, and the no-limit-row fallback is
+  `{max_concurrent_streams: 1, max_total_bandwidth_kbps: null}`.
+  `test/streamSessionShapeParity.test.ts` is the gate.
+- **CONSUMER-VISIBLE BREAKS (disclosed per estate rule 1 — clients update,
+  the wire is authority):** `PlaybackInfo` now requires the seven base
+  members (old literals fail `tsc`), `chapters` rows are snake_case without
+  `index`, `trickplay` no longer exists on the envelope, and
+  `SubtitleTrack`/`ProfileStreamLimit`/`ActiveStream` gained/renamed
+  required members. The registry trio (error-codes / server-route-manifest /
+  mcp-scopes) is BYTE-HELD through this — no wire-code churn.
+- `tsc`/eslint 0, vitest 17 files/202 tests (baseline 15/179; +2 files/+23
+  tests, the two new parity gates), build ×2 deterministic,
+  `verify:cites` 435/0 @hub `3001237` / @srv working `4a30962`.
+
 ### Fixed — LW-040 completion: `SyncPlay.ts` joins the shared `WireKeysExact` (w03L3 review cure) — 2026-11-07
 
 - **Forward correction, claim first:** the entry below asserted the helper

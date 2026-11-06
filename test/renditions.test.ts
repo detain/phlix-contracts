@@ -223,7 +223,12 @@ describe('rendition wire-shape smoke', () => {
     expect(assertExact<Exact<HasKey<Rendition, 'url'>, true>>(true)).toBe(true);
   });
 
-  it('adds an optional quality_ladder preview to PlaybackInfo (additive)', () => {
+  it('carries the ALWAYS-present quality_ladder key with a nullable value (LW-069)', () => {
+    // Pre-LW-069 this test encoded the OPTIONAL-key fiction (`quality_ladder?`
+    // and a no-ladder literal). The executed dump proves every
+    // getPlaybackInfo() emission carries ALL nine base keys — the VALUE is
+    // what goes null (unscanned item), never the key. The whole-base literal
+    // below is the compile-level restatement of that law.
     const withLadder: PlaybackInfo = {
       item_id: 'a1',
       intro_marker: null,
@@ -236,18 +241,15 @@ describe('rendition wire-shape smoke', () => {
         skip_outro_end: null,
       },
       quality_ladder: [rung('1080p', 1080)],
+      audio_tracks: [],
+      subtitle_tracks: [],
+      crossfade: { enabled: false, duration: 0, fade_out: 0.3, fade_in: 0.3 },
     };
-    // Unscanned item → whole field null; older servers may omit it entirely.
+    // Unscanned item → whole value null; the key stays present (bare rail in
+    // test/fixtures/playback-info-vectors.json pins exactly this).
     const nullLadder: PlaybackInfo = { ...withLadder, quality_ladder: null };
-    const omitted: PlaybackInfo = {
-      item_id: 'a2',
-      intro_marker: null,
-      outro_marker: null,
-      chapters: [],
-      skip_button_spec: withLadder.skip_button_spec,
-    };
     expect(withLadder.quality_ladder?.[0].url).toBeNull();
     expect(nullLadder.quality_ladder).toBeNull();
-    expect(omitted.quality_ladder).toBeUndefined();
+    expect(Object.keys(nullLadder)).toContain('quality_ladder');
   });
 });

@@ -322,14 +322,17 @@ describe('type-level construction smoke', () => {
     expect(stream.protocol).toBe('http');
   });
 
-  it('constructs the marker PlaybackInfo with null markers', () => {
+  it('constructs the marker PlaybackInfo with null markers (LW-069 wire truth)', () => {
+    // Nine base keys ALWAYS present; chapters are snake_case rows WITHOUT the
+    // pre-cure client-side `index` (the dump `playback-info-vectors.json` is
+    // authority — test/playbackShapeParity.test.ts ties every key).
     const pb: PlaybackInfo = {
       item_id: 'a1',
       intro_marker: { start_seconds: 0, end_seconds: 30 },
       outro_marker: null,
       chapters: [
-        { index: 0, startSeconds: 0, endSeconds: 600, title: 'Cold open' },
-        { index: 1, startSeconds: 600, endSeconds: 1200, title: 'Main content' },
+        { start_seconds: 0, end_seconds: 600, title: 'Cold open' },
+        { start_seconds: 600, end_seconds: 1200, title: 'Main content' },
       ],
       skip_button_spec: {
         skip_intro_start: 0,
@@ -337,10 +340,14 @@ describe('type-level construction smoke', () => {
         skip_outro_start: null,
         skip_outro_end: null,
       },
+      quality_ladder: null,
+      audio_tracks: [],
+      subtitle_tracks: [],
+      crossfade: { enabled: false, duration: 0, fade_out: 0.3, fade_in: 0.3 },
     };
     expect(pb.outro_marker).toBeNull();
     expect(pb.skip_button_spec.skip_intro_end).toBe(30);
-    expect(pb.chapters?.[1]?.title).toBe('Main content');
+    expect(pb.chapters[1]?.title).toBe('Main content');
   });
 
   it('constructs camelCase hub DTOs', () => {
