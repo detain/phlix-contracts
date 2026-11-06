@@ -50,7 +50,7 @@ node scripts/generate-server-route-manifest.mjs /path/to/phlix-server
 Commit the regenerated TS **and** the `npm run build` output together —
 `dist/server-route-manifest.json` is emitted from it and CI's
 `git diff --exit-code -- dist/` freshness step reddens on any drift. The
-The tuple-count floor and provenance pins live in
+tuple-count floor and provenance pins live in
 `test/routeManifest.test.ts` (the `toBe(415)` total, the
 `SERVER_ROUTE_MANIFEST_PROVENANCE` cross-check, and the artifact-for-artifact
 comparison that downstream repos key their md5 currency on); rotate them the

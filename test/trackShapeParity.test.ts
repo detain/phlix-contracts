@@ -5,12 +5,23 @@
  * `scripts/dump-server-track-vectors.php` running phlix-server's REAL
  * `StreamTrackShaper` (provenance sha recorded inside the fixture). This suite
  * asserts every captured vector's key set equals the TS interface's exported
- * ordered key-list const — EXACTLY and IN ORDER — so a field rename on either
- * side (the S404 bug class: server `title`/`label` vs the old contracts
- * `display_title` fiction) reddens one shared gate.
+ * ordered key-list const — EXACTLY and IN ORDER — so the S404 bug class
+ * (server `title`/`label` vs the old contracts `display_title` fiction)
+ * reddens this shared gate at the next dump: a TS-side rename reddens the
+ * moment it lands, a server-side rename only when a human re-captures the
+ * vectors.
  *
  * The interface↔const tie is compile-time (`tsc`); the const↔fixture tie is
  * runtime here. Together no side may rename alone.
+ *
+ * WHAT THIS GATE IS — a photograph, not a live wire oracle (estate review
+ * LW-010, 2026-11-07): the fixture is frozen at the server SHA recorded in
+ * its provenance block and moves only when a human re-runs the dump script.
+ * A server-side key rename reddens NOTHING in this repo until the next dump;
+ * the live tripwire for that direction is the server's own guard tests. What
+ * this gate genuinely catches is the TS side of a rename (interface/const
+ * drift against the captured truth) and it freezes the shape as of its pinned
+ * SHA — read the provenance sha before treating it as today's wire.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT

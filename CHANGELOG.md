@@ -18,6 +18,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — LW-007/008/009/010/012 + w01L8-review carry prose (docs/comments/tests only; zero wire, zero registry change) — 2026-11-07
+
+- **README break-on-upgrade bullet made truthful (LW-007):** the bullet said
+  minting codes "lands as a minor bump" and quoted the escape-hatch pin type
+  as `Partial<…ErrorCode, …>` — an invalid two-type-argument `Partial`. Both
+  contradicted the source law (the `src/errors.ts` SEMVER & COMPATIBILITY
+  header): registry mints land as LAST-POSITION (patch-numbered) bumps per
+  this package's own precedent (`v0.5.1` carried +55 codes, `v0.5.3` carried
+  +2, both patch-numbered), the number understates the type-level break (the
+  repo's own "Numbered as a patch, but TYPE-breaking" release line), and a
+  consumer that must not break on upgrade pins `Partial<Record<…ErrorCode,
+  …>>` plus a default fallback. The bullet now states exactly that.
+- **CHANGELOG compare-link footer repaired (LW-008):** `[Unreleased]` compared
+  against v0.4.4 — twelve headings stale — now re-pointed to
+  `v0.5.6...HEAD`; the version sections `[0.4.5]` through `[0.5.6]` had no
+  footer link definitions at all (recent headings rendered as literal
+  brackets) — every missing pair is now defined against consecutive tags,
+  each URL's refs existence verified against origin's live tag list, not
+  memory; and `[0.3.11]` based its compare on tag v0.3.9, deleted in the
+  2026-10-02 orphan-tag cleanup (dead link) — re-based onto v0.3.8, its
+  nearest surviving ancestor (ancestry proven via git). Honest remainder:
+  the `[0.3.10]` era heading carries no compare link because that tag was
+  never published (nor was 0.3.9, whose number the CHANGELOG skips entirely)
+  — the content shipped inside v0.3.11 — so the heading stays plain text by
+  construction rather than links a fabricated range.
+- **Wrapped cites re-anchored into the grammar; malformed-cite leg added
+  (LW-009):** the `stream.limit_exceeded` and `oauth.invalid_redirect_uri`
+  docblocks split two cites across line breaks (`File.php:` at end of line,
+  digits on the next). Premise correction, measured: they were NOT silently
+  killed at HEAD — `normalizeComment` space-joins comment lines before
+  scanning, so both still parsed and verified (tamper probes: mutating either
+  span reddens with DRIFT, and the wrapped-era total was the same ok=435).
+  But parsing-by-join-accident is the undocumented fragility the review
+  targeted: one refactor of the join and both cites would vanish green. Both
+  docblocks are re-wrapped so every `File.php:NN` token sits on one line
+  (matching the documented grammar); `scripts/check-error-cites.mjs` gains a
+  MALFORMED-WRAP leg that fails the sweep on any errors.ts line ending in
+  `.php:` (teeth proven in a scratch clone: replanting the old wrap exits 1
+  with MALFORMED-WRAP); the script's grammar header now states the
+  single-line law explicitly. `npm run verify:cites` at hub `30012378` /
+  server `a63dc0db`: ok=435 problems=0, identical before and after —
+  registry bytes and the coordinate set untouched.
+- **Golden-vector headers made honest (LW-010):** the
+  `test/syncPlayShapeParity.test.ts` and `test/trackShapeParity.test.ts`
+  headers read like live tripwires; the fixtures are photographs frozen at
+  their provenance SHAs. Both headers now say so — server-side renames
+  redden only when a human re-runs the dump scripts (the live backstop for
+  that direction is the server's own guard tests), TS-side drift reddens the
+  moment it lands, and readers should check the pinned sha before treating a
+  fixture as today's wire.
+- **cs#47 ritual-token test given teeth (LW-012):** its surviving assertion
+  checked a locally-defined literal's length and charset — permanently green
+  under any state of any artifact. It now cross-checks the paired hub-side
+  const in `tests/Unit/Http/Controllers/S280ContractsRouteManifestParityTest.php`
+  whenever a hub checkout is co-located (same `PHLIX_CONTRACTS_HUB_REPO`
+  convention as the cites tripwire): either side drifting alone reddens
+  (mutation-proven both ways), and where the private sibling is absent —
+  public CI — the case reports SKIPPED rather than pretending coverage. The
+  token bytes themselves are unchanged.
+- **Forward-corrections from the w01L8 review carry:** the entry below
+  (LW-001..LW-006 currency, 2026-11-06) narrates one cured relay-rail cite as
+  "the srv RelayController `NOT_IMPLEMENTED_VIA_HTTP` arm" — the file is
+  HUB's (`src/Http/Controllers/RelayController.php`); the corrected cites in
+  `src/errors.ts` themselves carry the right `hub` prefix, only the prose
+  mislabeled the repo. History stays verbatim; this note is the correction.
+  Also cured: the doubled "The The" in `CONTRIBUTING.md`'s dist-freshness
+  paragraph.
+- **Trio held:** all three `dist/` registry md5s byte-identical to the 0.5.6
+  era — `error-codes.json` `5d1783a71a3c4e128b2021327cad3717`,
+  `server-route-manifest.json` `90b79e355055307d5ba2cc0ef98e2300`,
+  `mcp-scopes.json` `8c92c0703eae8a429c509ff16e0d185d`.
+  Docs/comments/tests-only by construction; moves-together-or-not-at-all held
+  at zero movement.
+
 ### Fixed — LW-001..LW-006 docs currency (comments/README only; zero wire, zero registry change) — 2026-11-06
 
 - **`not_found` reserved→LIVE truth (LW-001):** the registry entry's docblock
@@ -2703,7 +2777,17 @@ understates it; it is not retro-fixable without moving a published tag.
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
-[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.4.4...HEAD
+[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.5.6...HEAD
+[0.5.6]: https://github.com/detain/phlix-contracts/compare/v0.5.5...v0.5.6
+[0.5.5]: https://github.com/detain/phlix-contracts/compare/v0.5.4...v0.5.5
+[0.5.4]: https://github.com/detain/phlix-contracts/compare/v0.5.3...v0.5.4
+[0.5.3]: https://github.com/detain/phlix-contracts/compare/v0.5.2...v0.5.3
+[0.5.2]: https://github.com/detain/phlix-contracts/compare/v0.5.1...v0.5.2
+[0.5.1]: https://github.com/detain/phlix-contracts/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/detain/phlix-contracts/compare/v0.4.7...v0.5.0
+[0.4.7]: https://github.com/detain/phlix-contracts/compare/v0.4.6...v0.4.7
+[0.4.6]: https://github.com/detain/phlix-contracts/compare/v0.4.5...v0.4.6
+[0.4.5]: https://github.com/detain/phlix-contracts/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/detain/phlix-contracts/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/detain/phlix-contracts/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/detain/phlix-contracts/compare/v0.4.1...v0.4.2
@@ -2711,7 +2795,7 @@ understates it; it is not retro-fixable without moving a published tag.
 [0.3.13]: https://github.com/detain/phlix-contracts/compare/v0.4.0...v0.3.13
 [0.4.0]: https://github.com/detain/phlix-contracts/compare/v0.3.12...v0.4.0
 [0.3.12]: https://github.com/detain/phlix-contracts/compare/v0.3.11...v0.3.12
-[0.3.11]: https://github.com/detain/phlix-contracts/compare/v0.3.9...v0.3.11
+[0.3.11]: https://github.com/detain/phlix-contracts/compare/v0.3.8...v0.3.11
 [0.3.8]: https://github.com/detain/phlix-contracts/compare/v0.3.7...v0.3.8
 [0.3.7]: https://github.com/detain/phlix-contracts/compare/v0.3.6...v0.3.7
 [0.3.6]: https://github.com/detain/phlix-contracts/compare/v0.3.5...v0.3.6

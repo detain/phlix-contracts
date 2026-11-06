@@ -21,7 +21,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import {
@@ -225,10 +225,30 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // hub-side const and marks the wave in which consumers re-vendored together.
   // A contracts-only regen leaves the vendored downstream bytes untouched, so
   // the pair advances only in a coordinated re-vendor leg (cs#47 precedent).
+  // Teeth (estate review LW-012, 2026-11-07): the old shape-only asserts were
+  // tautological — a locally-defined literal can never disagree with itself,
+  // and the paired hub-side const was verified by nothing here. The pin now
+  // cross-checks the PAIR: it reads the hub parity test and requires the two
+  // consts to be the same 19-char token. Availability follows the same rule
+  // as scripts/check-error-cites.mjs (PHLIX_CONTRACTS_HUB_REPO, default
+  // ../phlix-hub): estate/dev trees check for real; public CI, which cannot
+  // see the private sibling, reports the case SKIPPED — never silently green.
   const CS47_RITUAL_TOKEN = 'CS47CURRENCYPINX9X2';
+  const CS47_HUB_PARTNER = resolve(
+    __dirname, '..',
+    process.env.PHLIX_CONTRACTS_HUB_REPO ?? '../phlix-hub',
+    'tests/Unit/Http/Controllers/S280ContractsRouteManifestParityTest.php',
+  );
 
-  it('carries the cs#47 regen survival token', () => {
-    expect(CS47_RITUAL_TOKEN).toHaveLength(19);
-    expect(CS47_RITUAL_TOKEN.split('').every((c) => /^[A-Z0-9]$/.test(c))).toBe(true);
-  });
+  it.skipIf(!existsSync(CS47_HUB_PARTNER))(
+    'pins the cs#47 token as the exact pair of the hub-side const (needs co-located hub)',
+    () => {
+      expect(CS47_RITUAL_TOKEN).toHaveLength(19);
+      expect(CS47_RITUAL_TOKEN).toMatch(/^[A-Z0-9]+$/);
+      const hub = readFileSync(CS47_HUB_PARTNER, 'utf8');
+      const m = hub.match(/CS47_RITUAL_TOKEN\s*=\s*'([A-Z0-9]+)'/);
+      expect(m, `no CS47_RITUAL_TOKEN const in ${CS47_HUB_PARTNER} — pair broken`).not.toBeNull();
+      expect(m?.[1]).toBe(CS47_RITUAL_TOKEN);
+    },
+  );
 });

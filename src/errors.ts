@@ -397,10 +397,11 @@ const CODES = {
     /** hub ServerProxyController.php:1153 */
     LIMIT: 'stream.limit',
     /**
-      * srv StreamLimitMiddleware.php:139-143 (429) · PreRouterFastPaths.php:
-      * 601-603 (429) — `'code' => 'stream.limit_exceeded'` alongside the
-     * parked `'error' => 'StreamLimitExceeded'` and `'denial_type' =>
-     * 'stream_limit_exceeded'` mirror (server W2 dual placement).
+     * srv StreamLimitMiddleware.php:139-143 (429) ·
+     * PreRouterFastPaths.php:601-603 (429) — `'code' =>
+     * 'stream.limit_exceeded'` alongside the parked `'error' =>
+     * 'StreamLimitExceeded'` and `'denial_type' => 'stream_limit_exceeded'`
+     * mirror (server W2 dual placement).
      */
     LIMIT_EXCEEDED: 'stream.limit_exceeded',
   },
@@ -1014,9 +1015,10 @@ const CODES = {
     /** srv OidcCallbackController.php:254 · GithubCallbackController.php:226 — text 'missing_redirect_uri'. */
     MISSING_REDIRECT_URI: 'oauth.missing_redirect_uri',
     /**
-     * srv OidcCallbackController.php:267,412 · GithubCallbackController.php:
-     * 236,355 · OidcAdminController.php:283 · GithubAdminController.php:181 —
-     * redirect URI not on the allowlist. Text 'invalid_redirect_uri'.
+     * srv OidcCallbackController.php:267,412 ·
+     * GithubCallbackController.php:236,355 · OidcAdminController.php:283 ·
+     * GithubAdminController.php:181 — redirect URI not on the allowlist.
+     * Text 'invalid_redirect_uri'.
      */
     INVALID_REDIRECT_URI: 'oauth.invalid_redirect_uri',
     /** srv OidcCallbackController.php:828 · GithubCallbackController.php:818 — server has no configured callback URL. Text 'callback_url_not_configured'. */

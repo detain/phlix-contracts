@@ -24,7 +24,10 @@
  * coincidentally reappear near a stale coord, so keep cites honest by re-reading
  * the emit site whenever the tripwire fires.
  *
- * Cite grammar recognized (keep errors.ts inside it):
+ * Cite grammar recognized (keep errors.ts inside it). ONE HARD FORMATTING
+ * RULE: every `File.php:NN…` token stays on a SINGLE source line — wrap the
+ * prose after the digits, never between the colon and them (the MALFORMED-WRAP
+ * leg below enforces it):
  *   (hub|srv) Path/File.php:NN[-MM][,NN …]   explicit — the hub/srv prefix is
  *                                            REQUIRED on a comment's first cite
  *   File.php:NN…                             continuation — inherits the last
@@ -325,6 +328,27 @@ for (const c of extractComments(SRC)) {
       const signed = best.ln < cite.from ? best.ln - cite.from : best.ln > cite.to ? best.ln - cite.to : 0;
       problems.push({ at, cite: label, status: 'DRIFT', note: `no token within ±${WINDOW}; nearest '${best.token}' at :${best.ln} (${signed > 0 ? '+' : ''}${signed} vs cited span) — read the code, then re-anchor` });
     }
+  }
+}
+
+// ─── malformed-wrap leg (estate review LW-009, 2026-11-07) ──────────────────
+// A cite whose digits wrap onto the NEXT comment line parses today only
+// because normalizeComment space-joins lines before scanning — behaviour the
+// grammar above never promised and that a future refactor of the join (or the
+// sweep) would silently revoke: the wrapped cite would simply stop being
+// counted, green forever over dead coordinates. That is the exact silent-rot
+// class this tool exists to kill, so the hazard is refused at the door: any
+// errors.ts line ending in `File.php:` (colon with no digits on its line) is
+// reported MALFORMED-WRAP. Keep every `File.php:NN[,NN-MM]` token on ONE line
+// and wrap the PROSE after it instead.
+for (const [i, line] of SRC.split('\n').entries()) {
+  if (/\.php:[ \t]*$/.test(line)) {
+    problems.push({
+      at: `errors.ts:${i + 1}`,
+      cite: '(malformed wrap)',
+      status: 'MALFORMED-WRAP',
+      note: 'cite ends its line at the colon — move the digits up so File.php:NN stays one token (cross-line digits parse only by join accident)',
+    });
   }
 }
 
