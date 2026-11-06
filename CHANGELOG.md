@@ -18,6 +18,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — LW-001..LW-006 docs currency (comments/README only; zero wire, zero registry change) — 2026-11-06
+
+- **`not_found` reserved→LIVE truth (LW-001):** the registry entry's docblock
+  still narrated the pre-`e5aa57e2` reserved-rail story while hub `e5aa57e2`
+  had promoted the code to LIVE emitters. The entry now cites its real emit
+  sites — the hub `/auth/{action}` default arm and the router's 404 envelope
+  builder — and the common-domain header sentence states the all-LIVE count.
+  `dist/error-codes.json` bytes unchanged (md5 stays
+  `5d1783a71a3c4e128b2021327cad3717`).
+- **Relay-rail cite drifts cured (adjacent, disclosed):** the two coordinates
+  the tripwire measured stale at hub `30012378` / server `a63dc0db` — the srv
+  RelayController `NOT_IMPLEMENTED_VIA_HTTP` arm and the
+  `relay.ws_http_endpoint` pair — were re-read at their current emit lines.
+  `npm run verify:cites` now reports **ok=435 / problems=0** (the WAVE-4 era's
+  433 plus the two new `not_found` coords); the header COORDINATE CURRENCY
+  paragraph is re-stamped to this era.
+- **Header openapi quote refreshed (LW-004):** the hub `openapi.yaml`
+  description quoted in the `src/errors.ts` header had drifted from the hub's
+  current wording; the quote is replaced with a drift-proof paraphrase. The
+  server quote is still verbatim-true and stays.
+- **`ticks.ts` docblock field-name drift (LW-003):** the misnamed `run_time`
+  reference now reads `runtime`, matching the `media.ts` SSOT field.
+- **README + CONTRIBUTING (LW-002/LW-005/LW-006):** install pin raised to
+  `github:detain/phlix-contracts#v0.5.6` with the tag-form law stated; new
+  "Consuming the registries" section (ESM import-attribute, CJS require, and
+  the PHP vendoring byte-pin idiom the server/hub `ErrorCodesContractTest`
+  gates practice); Modules table corrected — `media.ts` gains the exported
+  `MediaItemUserData`, `LibrariesResponse`, `LibraryResponse`, and
+  `PagedMediaItemsResponse`, `playback.ts` drops `ChapterMarker` (it ships
+  only from `Chapter.ts`); generated-registry provenance spelled out; the
+  Development block gains the fixture dumper commands (throwaway-MySQL law
+  included), the tripwire's `--window/--json/--hub/--srv` flags, and the CI
+  `git diff --exit-code -- dist/` freshness note; a new `CONTRIBUTING.md`
+  carries the mint checklist, route-tuple regeneration, and the release
+  ritual with consumer pin rotation.
+- **Trio held:** all three `dist/` registry md5s are byte-identical to the
+  0.5.6 era — docs-only by construction (they move together-or-not-at-all;
+  this commit moves none).
+
 ## [0.5.6] - 2026-11-04
 
 ### Fixed — WAVE-4 coordinate re-anchor of all drifted `src/errors.ts` cites (comment currency only; zero wire change) — 2026-11-04

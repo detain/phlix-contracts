@@ -14,7 +14,9 @@
  * values below. The two neighbours that are NOT ticks and must not be
  * conflated: SyncPlay group state speaks MILLISECONDS
  * (`playback_position`, `current_media_duration` in `SyncPlay.ts`) and
- * `run_time` is MINUTES (see {@link formatRuntime}). What the wave did NOT
+ * `runtime` is MINUTES (the `MediaItem` wire field per the `media.ts` SSOT —
+ * the server's probed-seconds neighbour is the separate `duration` field).
+ * What the wave did NOT
  * decide is a migration aid (a parallel `_ms` key on the REST rails) and
  * whether the server payload docblocks state the unit inline — both are
  * producer-side calls, tracked for v0.5.6; nothing here changes until one of

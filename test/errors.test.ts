@@ -379,10 +379,10 @@ describe('per-domain vocabulary restated from the emitting sources', () => {
       'missing_user_id',
       'missing_server_id',
       'not_server_owner',
-      // R-HUB-W2-C1 (v0.5.5): RESERVED shared 404 rail. The hub's two
-      // prose-only unmatched-route fallbacks (AuthController.php:67,
-      // Router.php:443) switch onto this word in the release pinning v0.5.5;
-      // no wire byte carries it before that.
+      // R-HUB-W2-C1 (v0.5.5): shared generic-404 rail. Minted RESERVED; the
+      // hub flipped its two prose-only unmatched-route fallbacks onto this
+      // word in hub `e5aa57e2` (at the 2026-11-06 currency check:
+      // AuthController.php:71, Router.php:457) — LIVE on the wire since.
       'not_found',
     ]);
   });

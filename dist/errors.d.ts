@@ -10,8 +10,10 @@
  * SHAPE ON THE WIRE:
  *  - REST (server + hub `Error` envelope): `{ error: <human text>, code: <machine
  *    code> }`. The server openapi declares `code` as a "Machine-readable dotted
- *    error code (e.g. auth.not_admin)"; the hub openapi as "Stable machine code,
- *    e.g. auth.required, user.not_found, rate_limited".
+ *    error code (e.g. auth.not_admin)"; the hub openapi declares it as a stable
+ *    machine code drawn from this closed vocabulary, pinned byte-for-byte to the
+ *    hub's vendored registry fixture (`ErrorCodesContractTest`) with its enum
+ *    pinned to the same fixture, listed in registry emission order.
  *  - SyncPlay WebSocket (`ErrorPayload`, defined in the `phlix-syncplay`
  *    package, not here): `{ error_code?: string, code?: string, message: string }`
  *    with the SPEC read order `error_code` first, then `code`. Servers keep
@@ -45,28 +47,28 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the FULL estate re-sweep (WAVE 4 — gate-4 of the
- * 2026-11-04 fix program, run at the campaign-final tips) re-anchored every
- * drifted coordinate AT SOURCE — 112 drifted coordinates plus 10 adjacent
- * stale coords verified in the same comments — across the srv SyncPlayManager
- * carrier wraps and legacy SCREAMING sites, the srv hub-token/account-link
- * rails (the SRV-M22 envelope rebuild relocated the HubTokenController trio),
- * the quick-connect consent and pairing legs, the LDAP + OIDC/GitHub provider
- * and identity rails, the srv rate-limit wrap, the hub proxy
- * tunnel/scope/quota/stream rows, and the hub federation/invite CRUD
- * families — against hub `ee481593` / server `009ae7fb` on 2026-11-04, each
- * coordinate re-read at its emit site in the working trees (no blanket-delta
- * shifts; two-site pairs like `offer_not_found` were re-anchored by handler
- * identity, not by the tripwire's nearest-token suggestion, which would have
- * collapsed each pair onto one emit). The dev-only tripwire reports ok=433
- * problems=0 at those tips. Preceding eras (2026-11-03 hub `bd47bc5a` /
- * server `de38620b`, 159 coords, tripwire 433/0 — the sweep that closed the
- * 2026-10-30 `5b9de574`/`0fa8f515` claim-cluster residuals; 2026-10-15 hub
- * `250486c` / server `99eda9c0`, tripwire 442/0) are narrated in the
- * CHANGELOG (its `[Unreleased]` and release entries), the single source for
- * the stamp history; this header deliberately carries only the current stamp.
- * Cites in files untouched since a stamp hold by that sweep's
- * spot-verification.
+ * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-06 at the estate
+ * tips hub `30012378` / server `a63dc0db` with the default nearest-line
+ * window — the dev-only tripwire reports ok=435 problems=0 at those tips.
+ * It cured the two drifts the tripwire measured on the relay rail (the
+ * NOT_IMPLEMENTED_VIA_HTTP arm and the relay.ws_http_endpoint pair each moved
+ * to their re-read emit line) and re-anchored the `not_found` entry onto its
+ * LIVE hub emit sites (the `/auth/{action}` default arm and the router's 404
+ * envelope builder) after hub `e5aa57e2` promoted the code out of reserved;
+ * the registry row itself is byte-unchanged. The same pass refreshed the
+ * openapi-quote near the top of this header, the all-LIVE common-domain
+ * count, and the `MediaItem.runtime` docblock — docs-only: no code, no wire,
+ * no dist bytes moved. Preceding eras are narrated in the CHANGELOG (its
+ * `[Unreleased]` and release entries), the single source for stamp history;
+ * this header deliberately carries only the current stamp. The WAVE 4 sweep
+ * (2026-11-04 campaign-final tips hub `ee481593` / server `009ae7fb`, trip-
+ * wire 433/0) re-anchored 112 drifted coordinates plus 10 adjacent stale
+ * coords AT SOURCE — every coordinate re-read at its emit site in the
+ * working trees, no blanket-delta shifts, two-site pairs re-anchored by
+ * handler identity rather than the tripwire's nearest-token suggestion,
+ * which would have collapsed each pair onto one emit; the 2026-11-03 and
+ * 2026-10-15 eras that preceded it hold the same discipline. Cites in files
+ * untouched since a stamp hold by that sweep's spot-verification.
  * Re-sweep with `npm run verify:cites` (scripts/check-error-cites.mjs) after
  * any hub/server error-file churn, then re-stamp the paragraph above.
  *
@@ -178,7 +180,7 @@
  *    ClientMountController.php:179) co-emits `relay.ws_http_endpoint` /
  *    `relay.client_ws_endpoint` on `code`; `NOT_IMPLEMENTED_VIA_HTTP` and
  *    `NOT_IMPLEMENTED` (hub ClientMountController.php:192,
- *    RelayController.php:134, SubdomainController.php:185) co-emit the
+ *    RelayController.php:147, SubdomainController.php:185) co-emit the
  *    registered `relay.*`/`tls.*` codes on `code` in the same payload —
  *    covered.
  *
@@ -419,7 +421,7 @@ declare const CODES: {
     readonly relay: {
         /** hub ClientMountController.php:180,193 — HTTP hit on the client WS mount */
         readonly CLIENT_WS_ENDPOINT: "relay.client_ws_endpoint";
-        /** hub RelayController.php:113,135 — HTTP hit on the server WS endpoint */
+        /** hub RelayController.php:113,148 — HTTP hit on the server WS endpoint */
         readonly WS_HTTP_ENDPOINT: "relay.ws_http_endpoint";
         /** hub RelayProxyManager.php:278 */
         readonly ENCODE_ERROR: "relay.encode_error";
@@ -694,8 +696,9 @@ declare const CODES: {
     /**
      * Cross-surface validation/envelope codes: bare snake words carrying no
      * resource name, emitted by more than one controller (or by both servers).
-     * One row is a RESERVED shared rail whose producers have not flipped their
-     * literal yet — the entry docblock says so.
+     * Every row here is LIVE on the wire — the last rail that was minted
+     * RESERVED (`not_found`, R-HUB-W2-C1) went live when the hub flipped its
+     * two unmatched-route fallbacks onto it.
      */
     readonly common: {
         /** srv Core/Application.php:2787 · hub Application.php:266 (+3) */
@@ -735,31 +738,28 @@ declare const CODES: {
         /** hub InviteLinkController.php:221 · LibraryController.php:62 · LibraryShareController.php:149 */
         readonly NOT_SERVER_OWNER: "not_server_owner";
         /**
-         * RESERVED — minted on request (R-HUB-W2-C1), no wire byte carries it yet.
-         * The hub's two unmatched-route fallbacks are the producers this row was
-         * registered for; their coordinates are prose (`line NN`), not emit cites —
-         * neither site speaks this word yet, so a `File.php:NN` cite here would be a
-         * claim the currency tripwire cannot check, and the next re-anchor wave
-         * converts them the moment the hub flips. Hub AuthController.php line 67
-         * (the `default =>` arm of the `/auth/{action}` dispatcher, status 404, body
-         * `['error' => 'Not Found']`) and hub Router.php line 443 (`notFound()`,
-         * status 404, body `['error' => 'Not Found', 'message' => …]`). Both emit
-         * with NO `code`, which the hub's own vendored registry law forbids them
-         * from adding until the word exists here — this entry is that permission.
-         * The unification ruling the hub leg implements: one human sentence in BOTH
-         * `error` and `message` (the pinned `extractError` read order is
-         * error-then-message, so co-mirroring is what the ui contract wants), the
-         * machine word in `code`, and the sentence is Router's existing
-         * `The requested resource was not found` rather than the HTTP phrase
-         * `Not Found` — the latter is on the member-facing HTTP-phrase ban list the
-         * hub's envelope test already enforces, and Router already ships the
-         * former verbatim. The hub flips the two literals and rotates its vendored
-         * fixture + law pins in the release that pins this tag; until then the
-         * server's per-resource dotted rows (`server.not_found`, `user.not_found`,
-         * `claim.code_not_found`, `syncplay.group_not_found`, …) stay the only
-         * `not_found`-shaped codes on the wire. Deliberately NOT dotted: the
-         * fallback knows no resource, which is exactly why the generic word was
-         * never registered before — the two prose-only 404s are the missing use.
+         * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
+         * (R-HUB-W2-C1) as the shared generic-404 rail; the hub flipped both
+         * producers onto this word in `e5aa57e2`. The emit sites:
+         * hub AuthController.php:71 · Router.php:457.
+         * AuthController's arm is the `default =>` of the `/auth/{action}`
+         * dispatcher; Router's is `notFound()`, the unmatched-route fallback.
+         * Both now speak the unified member-facing envelope the mint's ruling
+         * defined: the machine word in `code`, one human sentence co-mirrored
+         * in `error` and `message` (the pinned `extractError` read order is
+         * error-then-message, so co-mirroring is what the ui contract wants),
+         * the sentence being Router's existing `The requested resource was not
+         * found`. The HTTP phrase `Not Found` is gone from both — it sat on
+         * the member-facing HTTP-phrase ban list the hub's envelope tests
+         * enforce, while the sentence shipped from the start was already the
+         * estate standard.
+         * Deliberately NOT dotted: the fallback knows no resource, which is
+         * exactly why the generic word was never registered before — the two
+         * prose-only 404s were the missing use, and they are now its users.
+         * The server's per-resource dotted rows (`server.not_found`,
+         * `user.not_found`, `claim.code_not_found`, `syncplay.group_not_found`,
+         * …) stay the resource-named siblings: a bare `not_found` on the wire
+         * is always one of these two hub fallbacks.
          */
         readonly NOT_FOUND: "not_found";
     };
@@ -1346,7 +1346,7 @@ export declare const ERROR_CODE: {
     readonly relay: {
         /** hub ClientMountController.php:180,193 — HTTP hit on the client WS mount */
         readonly CLIENT_WS_ENDPOINT: "relay.client_ws_endpoint";
-        /** hub RelayController.php:113,135 — HTTP hit on the server WS endpoint */
+        /** hub RelayController.php:113,148 — HTTP hit on the server WS endpoint */
         readonly WS_HTTP_ENDPOINT: "relay.ws_http_endpoint";
         /** hub RelayProxyManager.php:278 */
         readonly ENCODE_ERROR: "relay.encode_error";
@@ -1621,8 +1621,9 @@ export declare const ERROR_CODE: {
     /**
      * Cross-surface validation/envelope codes: bare snake words carrying no
      * resource name, emitted by more than one controller (or by both servers).
-     * One row is a RESERVED shared rail whose producers have not flipped their
-     * literal yet — the entry docblock says so.
+     * Every row here is LIVE on the wire — the last rail that was minted
+     * RESERVED (`not_found`, R-HUB-W2-C1) went live when the hub flipped its
+     * two unmatched-route fallbacks onto it.
      */
     readonly common: {
         /** srv Core/Application.php:2787 · hub Application.php:266 (+3) */
@@ -1662,31 +1663,28 @@ export declare const ERROR_CODE: {
         /** hub InviteLinkController.php:221 · LibraryController.php:62 · LibraryShareController.php:149 */
         readonly NOT_SERVER_OWNER: "not_server_owner";
         /**
-         * RESERVED — minted on request (R-HUB-W2-C1), no wire byte carries it yet.
-         * The hub's two unmatched-route fallbacks are the producers this row was
-         * registered for; their coordinates are prose (`line NN`), not emit cites —
-         * neither site speaks this word yet, so a `File.php:NN` cite here would be a
-         * claim the currency tripwire cannot check, and the next re-anchor wave
-         * converts them the moment the hub flips. Hub AuthController.php line 67
-         * (the `default =>` arm of the `/auth/{action}` dispatcher, status 404, body
-         * `['error' => 'Not Found']`) and hub Router.php line 443 (`notFound()`,
-         * status 404, body `['error' => 'Not Found', 'message' => …]`). Both emit
-         * with NO `code`, which the hub's own vendored registry law forbids them
-         * from adding until the word exists here — this entry is that permission.
-         * The unification ruling the hub leg implements: one human sentence in BOTH
-         * `error` and `message` (the pinned `extractError` read order is
-         * error-then-message, so co-mirroring is what the ui contract wants), the
-         * machine word in `code`, and the sentence is Router's existing
-         * `The requested resource was not found` rather than the HTTP phrase
-         * `Not Found` — the latter is on the member-facing HTTP-phrase ban list the
-         * hub's envelope test already enforces, and Router already ships the
-         * former verbatim. The hub flips the two literals and rotates its vendored
-         * fixture + law pins in the release that pins this tag; until then the
-         * server's per-resource dotted rows (`server.not_found`, `user.not_found`,
-         * `claim.code_not_found`, `syncplay.group_not_found`, …) stay the only
-         * `not_found`-shaped codes on the wire. Deliberately NOT dotted: the
-         * fallback knows no resource, which is exactly why the generic word was
-         * never registered before — the two prose-only 404s are the missing use.
+         * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
+         * (R-HUB-W2-C1) as the shared generic-404 rail; the hub flipped both
+         * producers onto this word in `e5aa57e2`. The emit sites:
+         * hub AuthController.php:71 · Router.php:457.
+         * AuthController's arm is the `default =>` of the `/auth/{action}`
+         * dispatcher; Router's is `notFound()`, the unmatched-route fallback.
+         * Both now speak the unified member-facing envelope the mint's ruling
+         * defined: the machine word in `code`, one human sentence co-mirrored
+         * in `error` and `message` (the pinned `extractError` read order is
+         * error-then-message, so co-mirroring is what the ui contract wants),
+         * the sentence being Router's existing `The requested resource was not
+         * found`. The HTTP phrase `Not Found` is gone from both — it sat on
+         * the member-facing HTTP-phrase ban list the hub's envelope tests
+         * enforce, while the sentence shipped from the start was already the
+         * estate standard.
+         * Deliberately NOT dotted: the fallback knows no resource, which is
+         * exactly why the generic word was never registered before — the two
+         * prose-only 404s were the missing use, and they are now its users.
+         * The server's per-resource dotted rows (`server.not_found`,
+         * `user.not_found`, `claim.code_not_found`, `syncplay.group_not_found`,
+         * …) stay the resource-named siblings: a bare `not_found` on the wire
+         * is always one of these two hub fallbacks.
          */
         readonly NOT_FOUND: "not_found";
     };

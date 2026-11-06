@@ -21,13 +21,13 @@ Phlix client and both servers, so they stop redeclaring divergent local types.
 ## Install
 
 `@phlix/contracts` is distributed as a **git-tagged dependency** (not published to
-npm). Pin an exact tag:
+npm). Pin an exact tag — the current release:
 
 ```jsonc
 // package.json
 {
   "dependencies": {
-    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.3"
+    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.6"
   }
 }
 ```
@@ -35,6 +35,37 @@ npm). Pin an exact tag:
 ```sh
 npm install
 ```
+
+Consumers pin the tag, never a branch or a bare commit sha — the hub S181
+pin-skew gate rejects non-tag forms estate-wide. When a new tag is cut, the
+rotation checklist (bump every consumer pin and carry its lockwalk/pin tests)
+lives in `CONTRIBUTING.md`.
+
+### Consuming the registries
+
+The three machine-readable registries ship inside the tagged tarball as
+prebuilt `dist/` artifacts — **reading them costs no build toolchain** (only
+building this package does; see Development). The exported subpaths are
+`./dist/error-codes.json`, `./dist/mcp-scopes.json`, and
+`./dist/server-route-manifest.json`:
+
+```ts
+// ESM — JSON module import attribute (Node >=20.10, modern bundlers)
+import errorCodes from '@phlix/contracts/dist/error-codes.json' with { type: 'json' };
+```
+
+```js
+// CommonJS — plain require works straight from the tarball
+const errorCodes = require('@phlix/contracts/dist/error-codes.json');
+```
+
+- **TypeScript consumers** usually skip the JSON subpaths entirely: the same
+  data is typed at the root export (`ERROR_CODES`, per-domain unions, and
+  `SERVER_ROUTE_MANIFEST` from `routeManifest.generated.ts`).
+- **PHP-side vendoring idiom** (as phlix-server and phlix-hub do): copy the
+  registry JSON into the repo's contract-test fixture path and keep that
+  repo's `ErrorCodesContractTest` byte-pin green — the pin test is the
+  rotation authority, never a silent overwrite of the vendored copy.
 
 ## Usage
 
@@ -81,8 +112,8 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 
 | Module        | Exports |
 |---------------|---------|
-| `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `UserData`, `Library`, `MediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
-| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `ChapterMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
+| `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `MediaItemUserData`, `UserData`, `Library`, `LibrariesResponse`, `LibraryResponse`, `MediaItemsResponse`, `PagedMediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
+| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
 | `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ type aliases) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
@@ -105,6 +136,19 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 | `Music.ts`    | `MusicArtist`, `MusicAlbum`, `MusicTrack`, `AudioPreferences` |
 | `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup` (`SyncPlayRoom` is a deprecated alias), `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` |
 | `routeManifest.generated.ts` | `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` (generated — see `scripts/generate-server-route-manifest.mjs`) |
+
+Registry provenance, deliberately:
+
+- `dist/mcp-scopes.json` is emitted from `src/mcp.ts`, `dist/error-codes.json`
+  from `src/errors.ts`, and `dist/server-route-manifest.json` from
+  `src/routeManifest.generated.ts` — all three regenerate inside `npm run build`
+  and are byte-exact-gated in CI; nothing under `dist/` is ever hand-edited.
+- `auth.ts`, `media.ts`, and `library.ts` mirror the SERVER wire;
+  `library.ts`'s `ServerSettings` carries the server's dotted
+  `server_settings` keys (`hwaccel.*`, `tmdb.api_key`, `auth.signup_mode`, …),
+  not the hub's settings schema — that lives in `detain/phlix-shared`.
+- `hub.ts` is the HUB portal's own DTO shape only; the server-relay proxy
+  envelope is deliberately not part of this package.
 
 ## Conventions
 
@@ -158,17 +202,32 @@ npm run build       # typecheck + vite lib (ES+CJS) + d.ts + dist/mcp-scopes.jso
 npm run test:run    # vitest run
 npm run test:run -- --coverage   # + v8 coverage; writes ./coverage/lcov.info (CI uploads it to Codacy)
 npm run verify:cites  # dev-side cite tripwire over src/errors.ts file:line
-                      # cites (needs sibling phlix-hub/phlix-server checkouts,
-                      # or PHLIX_CONTRACTS_HUB_REPO / PHLIX_CONTRACTS_SRV_REPO;
-                      # deliberately NOT in CI — private siblings + heuristics)
+                      # cites (needs sibling phlix-hub/phlix-server checkouts;
+                      # --hub/--srv set their paths, or env
+                      # PHLIX_CONTRACTS_HUB_REPO / PHLIX_CONTRACTS_SRV_REPO
+                      # override the ../ defaults; --window N / --json tweak
+                      # the sweep; deliberately NOT in CI — private siblings +
+                      # heuristics)
+
+# regenerate the server-verified wire fixtures — server checkout is REQUIRED
+# as argv 1 (never defaulted), regenerate ONLY against the provenance
+# serverSha each fixture records, then re-run the parity suites:
+php scripts/dump-server-track-vectors.php /path/to/phlix-server \
+  > test/fixtures/stream-track-vectors.json          # pure array IO: no DB
+php scripts/dump-server-syncplay-vectors.php /path/to/phlix-server \
+  > test/fixtures/syncplay-envelope-vectors.json     # needs a THROWAWAY MySQL:
+  # PHLIX_VEC_MYSQL_HOST / PHLIX_VEC_MYSQL_PORT / PHLIX_VEC_MYSQL_USER /
+  # PHLIX_VEC_MYSQL_PASSWORD env — never point it at estate data
 
 # regenerate src/routeManifest.generated.ts from a phlix-server checkout
 node scripts/generate-server-route-manifest.mjs <phlix-server-checkout>
 ```
 
 Building this package (not consuming it) needs the CI toolchain: Node 24, per
-`.github/workflows/ci.yml`. The `engines.node >=18` field describes the
-CONSUMABLE `dist/`, not the vite-8 build itself.
+`.github/workflows/ci.yml` — which also holds `dist/` byte-fresh: CI re-runs
+`npm run build` and fails on any `git diff` under `dist/`, so the regenerated
+`dist/` commits in the same change as its source. The `engines.node >=18`
+field describes the CONSUMABLE `dist/`, not the vite-8 build itself.
 
 ### Reading conventions
 

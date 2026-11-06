@@ -35,9 +35,9 @@
  *                                            write the file name
  *   arm NN-MM                                prose arm range — same attaching
  *
- * Run:  npm run verify:cites  [ -- --window 3 | --json ]
- * Env:  PHLIX_CONTRACTS_HUB_REPO / PHLIX_CONTRACTS_SRV_REPO override the
- *       sibling-checkout defaults (../phlix-hub, ../phlix-server).
+ * Run:  npm run verify:cites  [ -- --window N | --json | --hub PATH | --srv PATH ]
+ * Env:  PHLIX_CONTRACTS_HUB_REPO / PHLIX_CONTRACTS_SRV_REPO supply the
+ *       --hub/--srv defaults (../phlix-hub, ../phlix-server).
  * Exit: 0 every cite holds · 1 drift/miss/malformation found · 2 the tool
  *       cannot run (missing checkout, bad args) — or fewer cites were parsed
  *       than the anti-vacuity floor below, which means the sweep verified
