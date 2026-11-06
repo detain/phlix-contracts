@@ -409,4 +409,23 @@ describe('type-level construction smoke', () => {
     expect(claims.scope).toContain('library:read');
     expect(auth.user.name).toBe('Alice');
   });
+
+  it('rejects explicit undefined on optional wire properties (LW-071 exactOptionalPropertyTypes)', () => {
+    // The wire has three states — absent, null, value — and this package's
+    // docblocks make that distinction the product (the id-conflation
+    // postmortem in src/Music.ts records what one wrong conflation did to a
+    // live field). tsconfig therefore sets exactOptionalPropertyTypes: an
+    // explicit `undefined` is a fourth, meaningless state and must not
+    // compile. These @ts-expect-error lines ARE the regression guard: if the
+    // flag is ever dropped the directives become "unused" and the typecheck
+    // gate (tsc -p tsconfig.json, which includes test/) fails loud.
+    const absent: LibraryQuery = {}; // absent stays legal — the wire's common case
+    // @ts-expect-error — explicit undefined is NOT absent under exactOptionalPropertyTypes
+    const undefSearch: LibraryQuery = { search: undefined };
+    // @ts-expect-error — the same law covers quoted (dotted) settings keys
+    const undefFlag: ServerSettings = { 'hwaccel.enabled': undefined };
+    expect(Object.keys(absent)).toHaveLength(0);
+    expect(undefSearch.search).toBeUndefined();
+    expect(undefFlag['hwaccel.enabled']).toBeUndefined();
+  });
 });

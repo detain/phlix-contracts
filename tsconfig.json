@@ -17,6 +17,17 @@
         "isolatedModules": true,
         "noEmit": true,
         "strict": true,
+        // LW-071 (estate review contracts__srphp #3 [Minor]): this is a
+        // wire-contract package — the absent-vs-null-vs-value distinction IS
+        // the product (the id-conflation postmortem in src/Music.ts records
+        // what one wrong conflation silently did for the life of a server
+        // bug). Under the default, optional properties silently accept an
+        // explicit `undefined`, letting a fixture express a fourth wire state
+        // with clean types. Enabling this made the flag reject that; the
+        // typecheck fallout across src and test was measured at exactly zero
+        // (2026-11-06). test/types.test.ts carries the @ts-expect-error pins
+        // that turn "someone removes this line" into a red typecheck gate.
+        "exactOptionalPropertyTypes": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,

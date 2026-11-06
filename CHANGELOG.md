@@ -18,6 +18,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — LW-071: `exactOptionalPropertyTypes` enabled — the absent-vs-null doctrine gets compiler teeth — 2026-11-06
+
+- **`tsconfig.json` (estate review contracts__srphp #3 [Minor]):** the package
+  has always preached that the wire has three states — absent, null, value —
+  and that the distinction is the product (`still_url?: string | null` in
+  `src/media.ts`; the id-conflation postmortem in `src/Music.ts` records what
+  one wrong conflation silently did for the life of a server bug), yet an
+  optional property silently accepted an explicit `undefined` — a fourth,
+  meaningless state carrying clean types. `exactOptionalPropertyTypes: true`
+  is now set beside `strict` (and flows to `tsconfig.build.json` via
+  `extends`, so declaration emit checks under the same law). Typecheck
+  fallout across `src` and `test` measured EXACTLY ZERO at enablement —
+  nowhere in the tree did any code assign an explicit `undefined`.
+- **`test/types.test.ts` regression guard:** two `@ts-expect-error` pins
+  (`LibraryQuery = { search: undefined }`,
+  `ServerSettings = { 'hwaccel.enabled': undefined }`) give the flag teeth:
+  if the line is ever removed, the directives become "unused" (TS2578) and
+  the red typecheck gate (`tsc -p tsconfig.json`, which includes `test/`)
+  fails loud. Measured from the parent: flag off → RC=2 with exactly the two
+  TS2578s; flag on → RC=0.
+- **Zero wire change:** the trio is byte-identical (error-codes
+  `5d1783a7…`, server-route-manifest `90b79e35…`, mcp-scopes `8c92c070…`) and
+  a full rebuild leaves `git diff --exit-code -- dist/` green — the flag
+  governs checking, not emission. Suite 17 files / 203 tests (+1 exact).
+  The flag guards this package's own compilation; consumers inherit the law
+  in their own tsconfigs by the same one-line opt-in.
+
 ### Fixed — LW-069 [Critical] + LW-065: `PlaybackInfo` and the stream-session DTOs rewritten to the EXECUTED server wire — 2026-11-06
 
 - **`src/playback.ts` `PlaybackInfo` (estate review contracts__srphp #1
