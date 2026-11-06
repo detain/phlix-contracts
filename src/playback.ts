@@ -25,6 +25,7 @@
 
 import type { MediaItem } from './media';
 import type { ChapterMarker, TrickplaySprite } from './Chapter';
+import type { WireKeysExact } from './internal/wireKeys';
 
 /** Stream transport protocol. */
 export type StreamProtocol = 'hls' | 'http';
@@ -321,13 +322,11 @@ export interface AudioTrack {
 }
 
 /**
- * Compile-time tie between the interfaces and their ordered key-list consts:
- * every interface key is in the const and vice versa, so a field rename on ONE
- * side is a `tsc` error even where the runtime parity test (which compares the
- * consts against the golden server vectors) cannot see the type.
+ * Compile-time tie between the interfaces and their ordered key-list consts.
+ * The `WireKeysExact` helper itself lives in `src/internal/wireKeys.ts` —
+ * one definition shared with `SyncPlay.ts` (LW-040); see there for the
+ * membership-versus-order scope note.
  */
-type WireKeysExact<T, K extends readonly string[]> =
-  [Exclude<keyof T & string, K[number]>, Exclude<K[number], keyof T & string>] extends [never, never] ? true : false;
 export type SubtitleTrackKeysTied = WireKeysExact<SubtitleTrack, typeof SUBTITLE_TRACK_KEYS>;
 export type AudioTrackKeysTied = WireKeysExact<AudioTrack, typeof AUDIO_TRACK_KEYS>;
 const _subtitleTrackKeysTied: SubtitleTrackKeysTied = true;

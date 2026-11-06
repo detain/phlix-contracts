@@ -52,6 +52,7 @@
  * churn, then re-stamp the currency line in the errors.ts module header.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
+ * @license MIT
  */
 
 import { readFileSync, existsSync, readdirSync, lstatSync } from 'node:fs';

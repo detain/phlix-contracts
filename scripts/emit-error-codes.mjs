@@ -20,6 +20,7 @@
  * declaration order in `src/errors.ts` and is part of the contract.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
+ * @license MIT
  */
 
 import { writeFileSync } from 'node:fs';

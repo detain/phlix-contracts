@@ -4,7 +4,14 @@
  * Pinned here once, consumed everywhere: the TS artifact is derived from
  * phlix-server (see `scripts/generate-server-route-manifest.mjs`), and every
  * client gate asserts its request-issuing code against the JSON projection
- * (`dist/server-route-manifest.json`) vended from this repo.
+ * (`dist/server-route-manifest.json`) vended from this repo. The client-side
+ * MATCHING law (anchored regex, `{param}` spans exactly one segment — never
+ * substring, never prefix) is no longer restated here: it ships as
+ * `isServedRoute` from `src/routeManifest.ts`, exported through the bundle and
+ * the `./routeManifest` subpath (LW-070), so every consumer shares ONE
+ * definition instead of re-deriving it. This file is that definition's first
+ * consumer, and the exports-hygiene describe proves clients can resolve the
+ * predicate by package name.
  *
  * These tests restate facts INDEPENDENTLY of the generated file — the count,
  * the provenance sha, structural invariants, known-served and
@@ -23,11 +30,13 @@
 import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import {
   SERVER_ROUTE_MANIFEST,
   SERVER_ROUTE_MANIFEST_PROVENANCE,
-} from '../src/routeManifest.generated';
+  isServedRoute,
+} from '../src/routeManifest';
 
 const VERBS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']);
 
@@ -37,23 +46,6 @@ function key(method: string, pathTemplate: string): string {
 }
 
 const KEYS = new Set(SERVER_ROUTE_MANIFEST.map(([m, p]) => key(m, p)));
-
-/**
- * The client-side matching rule, pinned as a helper so consumers (and the
- * known-route tests below) share ONE definition: anchored, `{param}` spans
- * exactly one path segment, never a substring, never a prefix. This is what
- * makes `/media/{id}` unable to absorb `/media/{id}/markers`
- * (sibling-wildcard absorption).
- */
-function isServed(method: string, concretePath: string): boolean {
-  return SERVER_ROUTE_MANIFEST.some(([m, template]) => {
-    if (m !== method) return false;
-    const anchored = new RegExp(
-      `^${template.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\{[^}]*\\\}/g, '[^/]+')}$`,
-    );
-    return anchored.test(concretePath);
-  });
-}
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
   it('is derived from phlix-server master 58530ec2 (regen #36 CONTENT regen — a86e0999 adds the WebPortal history-alias pair (48→50) and 8bb435cf adds the Application GET /api/v1/servers/{id} (375→376): total 412→415; other manifest-file commits in the span change annotations only)', () => {
@@ -156,18 +148,68 @@ describe('SERVER_ROUTE_MANIFEST — known tuples (independent restatement)', () 
   });
 });
 
-describe('isServed — tuple-exact, never substring, never sibling-wildcard', () => {
+describe('isServedRoute — tuple-exact, never substring, never sibling-wildcard', () => {
   it('rejects the sibling-absorbing path a prefix matcher would accept', () => {
-    expect(isServed('GET', '/api/v1/media/item-1')).toBe(true);
-    expect(isServed('GET', '/api/v1/media/item-1/markers')).toBe(true);
-    expect(isServed('DELETE', '/api/v1/media/item-1/markers/m-1')).toBe(true);
+    expect(isServedRoute('GET', '/api/v1/media/item-1')).toBe(true);
+    expect(isServedRoute('GET', '/api/v1/media/item-1/markers')).toBe(true);
+    expect(isServedRoute('DELETE', '/api/v1/media/item-1/markers/m-1')).toBe(true);
     // `/media/{id}` (and every other registered template) MUST NOT absorb
     // unregistered DEEPER paths: `{param}` spans exactly ONE segment, so a
     // two-segment tail can only match a template that actually registers it.
-    expect(isServed('GET', '/api/v1/media/item-1/not-a-route')).toBe(false);
-    expect(isServed('GET', '/api/v1/media/item-1/markers/m-1/extra')).toBe(false);
+    expect(isServedRoute('GET', '/api/v1/media/item-1/not-a-route')).toBe(false);
+    expect(isServedRoute('GET', '/api/v1/media/item-1/markers/m-1/extra')).toBe(false);
     // right path, wrong method is not served
-    expect(isServed('PATCH', '/api/v1/media/item-1/markers/m-1')).toBe(false);
+    expect(isServedRoute('PATCH', '/api/v1/media/item-1/markers/m-1')).toBe(false);
+  });
+});
+
+describe('isServedRoute — packaged surface (exports hygiene, LW-070)', () => {
+  // The whole point of hoisting the predicate is that clients IMPORT it:
+  // roku/mobile/console/windows used to re-implement the matching regex per
+  // repo, and drift was invisible here. These two tests are the contract the
+  // clients lean on — the subpath must be declared, its files committed, and
+  // Node's own loader (not vitest's src aliasing) must resolve the predicate
+  // by package name and reproduce the law.
+  const pkgPath = resolve(__dirname, '..', 'package.json');
+
+  it('publishes a ./routeManifest subpath whose entry files are committed', () => {
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as {
+      exports: Record<string, { types?: string; import?: string; require?: string }>;
+    };
+    const entry = pkg.exports['./routeManifest'];
+    expect(entry, 'package.json exports is missing the ./routeManifest subpath').toBeDefined();
+    expect(entry.types).toBe('./dist/routeManifest.d.ts');
+    expect(entry.import).toBe('./dist/phlix-contracts.js');
+    expect(entry.require).toBe('./dist/phlix-contracts.umd.cjs');
+    for (const rel of [entry.types, entry.import, entry.require]) {
+      expect(rel && existsSync(resolve(__dirname, '..', rel)), `${rel} is not committed`).toBe(true);
+    }
+    const decl = readFileSync(resolve(__dirname, '..', String(entry.types)), 'utf8');
+    expect(decl).toContain('isServedRoute');
+  });
+
+  it('resolves the predicate by package name through the real Node loader (ESM and CJS)', () => {
+    // Law cases ride along with the resolution probe: existence without
+    // semantics would let a stub ship green.
+    const cases =
+      '[typeof m.isServedRoute, ' +
+      'm.isServedRoute("GET", "/api/v1/media/item-1"), ' +
+      'm.isServedRoute("GET", "/api/v1/media/item-1/markers"), ' +
+      'm.isServedRoute("GET", "/api/v1/media/item-1/not-a-route"), ' +
+      'm.isServedRoute("PATCH", "/api/v1/media/item-1/markers/m-1")].join(",")';
+    const opts = { cwd: resolve(__dirname, '..'), encoding: 'utf8' } as const;
+    const esm = execFileSync(
+      process.execPath,
+      ['--input-type=module', '-e', `const m = await import("@phlix/contracts/routeManifest"); console.log(${cases});`],
+      opts,
+    ).trim();
+    expect(esm).toBe('function,true,true,false,false');
+    const cjs = execFileSync(
+      process.execPath,
+      ['-e', `const m = require("@phlix/contracts/routeManifest"); console.log(${cases});`],
+      opts,
+    ).trim();
+    expect(cjs).toBe('function,true,true,false,false');
   });
 });
 

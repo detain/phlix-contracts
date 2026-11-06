@@ -16,6 +16,7 @@
  * pattern as `emit-error-codes.mjs`.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
+ * @license MIT
  */
 
 import { writeFileSync } from 'node:fs';

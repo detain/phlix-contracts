@@ -18,6 +18,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — LW-011/040/070 docblock sweep, WireKeysExact hoist, importable match law — 2026-11-07
+
+- **Docblock style sweep (LW-011):** `src/errors.ts` standardizes on the
+  README W-notation for emit-wave labels (every `Wave 1`/`Wave-1b`/
+  `WAVE 1b`/`Wave 1b` spelling is now `W1`/`W1b`; doctrine-era references
+  read `W2-era`), backticks for every code token where blocks used mixed
+  quote styles, the two misaligned continuation-star docblocks (auth domain,
+  `profile.not_found`) re-flanged to the file's own 2-space domain / 4-space
+  entry rhythm, the 33 single-line docblocks over 100 columns wrapped to the
+  file's near-80 rhythm with every `File.php:NN` cite kept one-line and
+  colon-joined (the `scripts/check-error-cites.mjs` MALFORMED-WRAP leg stays
+  green: `ok=435 problems=0` before and after — zero cite semantics moved),
+  the garden-path currency sentence recast ("cites in files untouched since
+  a stamp remain verified by that sweep's spot-checks") and the accidental
+  `trip-\nwire` hyphen-break healed. `scripts/emit-error-codes.mjs`,
+  `scripts/emit-mcp-scopes.mjs` and `scripts/check-error-cites.mjs` gain the
+  `@license MIT` tag so every script header carries the same kit as
+  `scripts/emit-server-route-manifest.mjs` (and `src/index.ts`). Docs-only:
+  no code, no wire, no registry bytes.
+- **`WireKeysExact` hoisted to one definition (LW-040):** the helper that was
+  copy-pasted module-privately in `src/playback.ts` and `src/SyncPlay.ts`
+  (justified by a self-containment rationale the single-bundle build
+  disproves) now lives once in `src/internal/wireKeys.ts`, deliberately NOT
+  re-exported from `src/index.ts` — the exports map governs the public
+  surface. The shared docblock states the order law plainly instead of adding
+  a second type: `WireKeysExact` ties SET membership; key ORDER is carried by
+  the golden fixtures, whose ordered `Object.keys` comparisons already redden
+  a reorder (`test/trackShapeParity.test.ts`,
+  `test/syncPlayShapeParity.test.ts`). Mutation proof: renaming one interface
+  key is now a `tsc` error through the single helper (2 errors at the tie and
+  its consumer).
+- **The manifest match law becomes importable (LW-070):** the client-side
+  matching semantics (anchored regex, `{param}` spans exactly one path
+  segment, never substring, never prefix — the rule that prevents
+  sibling-wildcard absorption) existed only as a helper inside
+  `test/routeManifest.test.ts`, unimportable by the estate clients, which is
+  how roku/mobile/console/windows each ended up re-deriving it — the drift
+  class this package exists to kill. New `src/routeManifest.ts` re-exports
+  the generated tuples and provenance unchanged and exports
+  `isServedRoute` through the bundle (root import and a new
+  `@phlix/contracts/routeManifest` subpath declared in `package.json`
+  `exports`); the test file now consumes the shipped definition instead of
+  restating it. Two new exports-hygiene tests pin the subpath's files as
+  committed and resolve the predicate BY PACKAGE NAME through the real Node
+  loader (ESM and CJS), reproducing the law's cases through the shipped
+  bundle. Additive API only: no error-code union, registry token, or wire
+  literal moved — all three registry md5s are byte-identical across this
+  commit (`error-codes.json 5d1783a7…`, `server-route-manifest.json
+  90b79e35…`, `mcp-scopes.json 8c92c070…`). Suite 171 to 173 tests
+  (the two hygiene pins); `dist/` rebuilt deterministically (×2 byte-equal),
+  `.d.ts` maps re-VLQ per the docblock churn.
+
 ### Fixed — LW-007/008/009/010/012 + w01L8-review carry prose (docs/comments/tests only; zero wire, zero registry change) — 2026-11-07
 
 - **README break-on-upgrade bullet made truthful (LW-007):** the bullet said

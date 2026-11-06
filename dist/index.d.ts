@@ -10,6 +10,7 @@
  *   import type { MediaItem, PlaybackInfo } from '@phlix/contracts';
  *   import { buildPhlixHeaders, ticksToSeconds, formatRuntime, EVENT } from '@phlix/contracts';
  * @copyright 2026 Joe Huss <detain@interserver.net>
+ * @license MIT
  */
 export * from './media';
 export * from './playback';
@@ -35,4 +36,4 @@ export * from './ProfileTag';
 export * from './SyncPlay';
 export * from './StreamSession';
 export * from './Music';
-export * from './routeManifest.generated';
+export * from './routeManifest';

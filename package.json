@@ -15,6 +15,11 @@
     "./dist/error-codes.json": "./dist/error-codes.json",
     "./dist/mcp-scopes.json": "./dist/mcp-scopes.json",
     "./dist/server-route-manifest.json": "./dist/server-route-manifest.json",
+    "./routeManifest": {
+      "types": "./dist/routeManifest.d.ts",
+      "import": "./dist/phlix-contracts.js",
+      "require": "./dist/phlix-contracts.umd.cjs"
+    },
     "./package.json": "./package.json"
   },
   "files": [

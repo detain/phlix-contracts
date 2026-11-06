@@ -1,5 +1,5 @@
 /**
- * errors.ts — the estate error-code registry (Wave 1 of the error-code doctrine).
+ * errors.ts — the estate error-code registry (lane W1 of the error-code doctrine).
  *
  * DOCTRINE (owner-approved): the stable machine error code carried on the wire
  * is the single source of truth for *what went wrong*. Clients localize by code;
@@ -22,7 +22,7 @@
  *
  * NAMING (forward doctrine): new codes are `domain.snake_case` dotted. Legacy
  * wire values are listed VERBATIM — they are live traffic and renaming one is a
- * breaking wire change (that is a Wave-2 tagged cascade, not a Wave-1 edit).
+ * breaking wire change (that is a W2-era tagged cascade, not a W1 edit).
  *
  * SEMVER & COMPATIBILITY (union-growth law): registry mints land as
  * last-position bumps per the repo's own precedent (`v0.5.1` carried +55
@@ -61,20 +61,20 @@
  * no dist bytes moved. Preceding eras are narrated in the CHANGELOG (its
  * `[Unreleased]` and release entries), the single source for stamp history;
  * this header deliberately carries only the current stamp. The WAVE 4 sweep
- * (2026-11-04 campaign-final tips hub `ee481593` / server `009ae7fb`, trip-
- * wire 433/0) re-anchored 112 drifted coordinates plus 10 adjacent stale
+ * (2026-11-04 campaign-final tips hub `ee481593` / server `009ae7fb`, tripwire
+ * 433/0) re-anchored 112 drifted coordinates plus 10 adjacent stale
  * coords AT SOURCE — every coordinate re-read at its emit site in the
  * working trees, no blanket-delta shifts, two-site pairs re-anchored by
  * handler identity rather than the tripwire's nearest-token suggestion,
  * which would have collapsed each pair onto one emit; the 2026-11-03 and
- * 2026-10-15 eras that preceded it hold the same discipline. Cites in files
- * untouched since a stamp hold by that sweep's spot-verification.
+ * 2026-10-15 eras that preceded it hold the same discipline: cites in files
+ * untouched since a stamp remain verified by that sweep's spot-checks.
  * Re-sweep with `npm run verify:cites` (scripts/check-error-cites.mjs) after
  * any hub/server error-file churn, then re-stamp the paragraph above.
  *
  * CONTENTS:
  *  1. Every dotted and bare-snake code actually emitted on the wire today by
- *     phlix-server or phlix-hub, PLUS the Wave-1b dotted twins of every
+ *     phlix-server or phlix-hub, PLUS the W1b dotted twins of every
  *     code-shaped value the server/hub emit-waves will place on the wire
  *     (verified at source; file:line in per-entry refs). FIELD PLACEMENT: the
  *     registry describes vocabulary, not channel. Most entries ride the machine
@@ -89,7 +89,7 @@
  *     The server text-only families (`identity.*`, `provider.*`, `oauth.*`,
  *     `ldap.*`, `auth.missing_credentials` / `auth.invalid_credentials` and
  *     the four profile text traps) are the remaining `error`-TEXT minority;
- *     their per-domain "promote in Wave 2" caveats stay until they land.
+ *     their per-domain "promote in W2" caveats stay until they land.
  *  2. `legacy` — the 12 SCREAMING_SNAKE codes of the SyncPlay WebSocket wire
  *     history (the exact `sendError`/`Messages::error` literal set in
  *     `phlix-server/src/Session/SyncPlay/SyncPlayManager.php` and
@@ -124,7 +124,7 @@
  *     migration table — now complete for this family; the SCREAMING trio
  *     stays registered for older-server traffic (see `legacy`).
  *
- * REGISTERED IN WAVE 1b (previously Wave-2 triage; every emit site re-verified
+ * REGISTERED IN W1b (previously W2-era triage; every emit site re-verified
  * at phlix-server 838da686 / phlix-hub c023a341):
  *  - Hub server-lifecycle text-field traps → dotted twins:
  *    `HUB_PROTOCOL_UNSUPPORTED` → `hub.protocol_unsupported`, `HUB_INTERNAL_ERROR` →
@@ -203,7 +203,7 @@
 declare const CODES: {
     /**
      * Authentication/authorization gate failures, spoken by BOTH servers.
-     * CAVEAT (Wave 1b, updated post-hub-W3): the hub emit-wave promoted
+     * CAVEAT (W1b, updated post-hub-W3): the hub emit-wave promoted
      * `auth.unauthenticated`, `auth.enrollment_expired` and
      * `auth.server_mismatch` to the dotted forward form on the `code` channel —
      * the legacy SCREAMING values (`UNAUTHENTICATED`,
@@ -222,9 +222,15 @@ declare const CODES: {
         readonly INVALID_TOKEN: "auth.invalid_token";
         /** hub AuthMiddleware.php:128 — token subject has no user row */
         readonly USER_NOT_FOUND: "auth.user_not_found";
-        /** srv SignupDisabledException.php:28 → srv AuthController.php:195 (`SignupDisabledException::ERROR_CODE` passthrough) */
+        /**
+         * srv SignupDisabledException.php:28 → srv AuthController.php:195
+         * (`SignupDisabledException::ERROR_CODE` passthrough)
+         */
         readonly SIGNUPS_DISABLED: "auth.signups_disabled";
-        /** srv AccountInactiveException.php:31 → srv AuthController.php:265 (`errorCode` passthrough) */
+        /**
+         * srv AccountInactiveException.php:31 → srv AuthController.php:265
+         * (`errorCode` passthrough)
+         */
         readonly ACCOUNT_PENDING: "auth.account_pending";
         /** srv AccountInactiveException.php:32 */
         readonly ACCOUNT_DISABLED: "auth.account_disabled";
@@ -265,14 +271,14 @@ declare const CODES: {
         readonly SERVER_MISMATCH: "auth.server_mismatch";
         /**
          * srv AccountLinkController.php:295 — 400 when the link-identity POST
-         * carries no credentials; the TEXT today is 'missing_credentials'. Rides
+         * carries no credentials; the TEXT today is `missing_credentials`. Rides
          * the `error` TEXT field only; the server emit-wave will promote it to the
          * `code` channel; clients match in `error` text until then.
          */
         readonly MISSING_CREDENTIALS: "auth.missing_credentials";
         /**
          * srv AccountLinkController.php:332 — 401 when submitted credentials fail
-         * to verify; the TEXT today is 'invalid_credentials'. Rides the `error`
+         * to verify; the TEXT today is `invalid_credentials`. Rides the `error`
          * TEXT field only; the server emit-wave will promote it to the `code` channel;
          * clients match in `error` text until then.
          */
@@ -281,7 +287,7 @@ declare const CODES: {
     /**
      * Server↔hub conversation failures: the server-side account-linking family
      * (phlix-server, all three on the `code` channel) plus the hub-side
-     * protocol-envelope failures (phlix-hub). CAVEAT (Wave 1b, updated
+     * protocol-envelope failures (phlix-hub). CAVEAT (W1b, updated
      * post-hub-W3): the last two entries were SCREAMING pseudo-codes
      * (`HUB_PROTOCOL_UNSUPPORTED`, `HUB_INTERNAL_ERROR`) on
      * ServerClaimController/ServerController refusals and mapError defaults;
@@ -313,7 +319,7 @@ declare const CODES: {
     };
     /**
      * Hub claim-code exchange failures (phlix-hub `ClaimRequestHandler` →
-     * `ServerClaimController::mapError`). CAVEAT (Wave 1b, updated post-hub-W3):
+     * `ServerClaimController::mapError`). CAVEAT (W1b, updated post-hub-W3):
      * the three arms rode the `error` TEXT field as SCREAMING pseudo-codes; hub
      * W3 promoted them — every arm now carries the dotted form on the `code`
      * channel with the SCREAMING original parked byte-identical in the same
@@ -350,7 +356,12 @@ declare const CODES: {
          * clients may match either channel).
          */
         readonly NOT_FOUND: "server.not_found";
-        /** hub ServerManageController.php:73,117 · ServerDetailController.php:92 · ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy path's ownership leg answers the byte-identical 404 `server.not_found` law (M-HUB-27) at hub ServerProxyController.php:1034 */
+        /**
+         * hub ServerManageController.php:73,117 · ServerDetailController.php:92 ·
+         * ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy
+         * path's ownership leg answers the byte-identical 404 `server.not_found`
+         * law (M-HUB-27) at hub ServerProxyController.php:1034
+         */
         readonly NOT_OWNED: "server.not_owned";
         /** hub ServerProxyController.php:1052 — relay tunnel not connected */
         readonly RELAY_UNAVAILABLE: "server.relay_unavailable";
@@ -379,7 +390,7 @@ declare const CODES: {
     };
     /**
      * Concurrent-stream throttle gates (hub proxy + server middleware).
-     * CAVEAT (Wave 1b, updated post-server-W2): `stream.limit` rides the hub
+     * CAVEAT (W1b, updated post-server-W2): `stream.limit` rides the hub
      * `code` channel. The server twin below was promoted by the server W2
      * emit-wave: `stream.limit_exceeded` now rides the `code` channel
      * positionally, the CamelCase pseudo-code `StreamLimitExceeded` is parked in
@@ -399,7 +410,7 @@ declare const CODES: {
         readonly LIMIT_EXCEEDED: "stream.limit_exceeded";
     };
     /**
-     * Server scheduled-access window gate (phlix-server). CAVEAT (Wave 1b,
+     * Server scheduled-access window gate (phlix-server). CAVEAT (W1b,
      * updated post-server-W2): promoted by the server W2 emit-wave —
      * `access.scheduled` rides the `code` channel positionally, the CamelCase
      * pseudo-code `AccessScheduled` is parked in the `error` TEXT field
@@ -448,7 +459,7 @@ declare const CODES: {
         readonly NOT_FOUND: "mcp_token.not_found";
     };
     /**
-     * Hub Alexa adapter failures on the machine channel. CAVEAT (Wave 1b,
+     * Hub Alexa adapter failures on the machine channel. CAVEAT (W1b,
      * updated post-hub-W3): the fourteen signature-verification entries below
      * used to ride the `code` channel in SCREAMING form — every
      * `AlexaSignatureMiddleware` reject() payload carried `'code' => 'ALEXA_*'`.
@@ -467,82 +478,82 @@ declare const CODES: {
         /**
          * hub AlexaSignatureMiddleware.php:288 — fail-closed catch around
          * verification itself. W3 dual placement: dotted on `code`, legacy
-         * 'ALEXA_VERIFICATION_ERROR' parked in `error` TEXT (map row :209).
+         * `ALEXA_VERIFICATION_ERROR` parked in `error` TEXT (map row :209).
          */
         readonly VERIFICATION_ERROR: "alexa.verification_error";
         /**
          * hub AlexaSignatureMiddleware.php:301 — no cert-chain-Url header.
-         * 'ALEXA_MISSING_CERT_CHAIN_URL' parked in TEXT (map row :210).
+         * `ALEXA_MISSING_CERT_CHAIN_URL` parked in TEXT (map row :210).
          */
         readonly MISSING_CERT_CHAIN_URL: "alexa.missing_cert_chain_url";
         /**
          * hub AlexaSignatureMiddleware.php:306 — no Signature header.
-         * 'ALEXA_MISSING_SIGNATURE_HEADER' parked in TEXT (map row :211).
+         * `ALEXA_MISSING_SIGNATURE_HEADER` parked in TEXT (map row :211).
          */
         readonly MISSING_SIGNATURE_HEADER: "alexa.missing_signature_header";
         /**
          * hub AlexaSignatureMiddleware.php:311 — empty request body.
-         * 'ALEXA_EMPTY_BODY' parked in TEXT (map row :212).
+         * `ALEXA_EMPTY_BODY` parked in TEXT (map row :212).
          */
         readonly EMPTY_BODY: "alexa.empty_body";
         /**
          * hub AlexaSignatureMiddleware.php:317 — cert URL outside the Amazon
-         * allowlist. 'ALEXA_CERT_URL_REJECTED' parked in TEXT (map row :213).
+         * allowlist. `ALEXA_CERT_URL_REJECTED` parked in TEXT (map row :213).
          */
         readonly CERT_URL_REJECTED: "alexa.cert_url_rejected";
         /**
          * hub AlexaSignatureMiddleware.php:473 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — Amazon cert fetch
-         * failed. 'ALEXA_CERT_FETCH_FAILED' parked in TEXT (map row :214).
+         * failed. `ALEXA_CERT_FETCH_FAILED` parked in TEXT (map row :214).
          */
         readonly CERT_FETCH_FAILED: "alexa.cert_fetch_failed";
         /**
          * hub AlexaSignatureMiddleware.php:334 + `errorCode()`-forwarded arms
-         * :516,522,529,556,562 (via :323) — 'ALEXA_CERT_CHAIN_MALFORMED'
+         * :516,522,529,556,562 (via :323) — `ALEXA_CERT_CHAIN_MALFORMED`
          * parked in TEXT (map row :215), plus the hub ChainVerification.php:97
          * fallback.
          */
         readonly CERT_CHAIN_MALFORMED: "alexa.cert_chain_malformed";
         /**
          * hub AlexaSignatureMiddleware.php:329,338 — signature check failed.
-         * 'ALEXA_SIGNATURE_INVALID' parked in TEXT (map row :216).
+         * `ALEXA_SIGNATURE_INVALID` parked in TEXT (map row :216).
          */
         readonly SIGNATURE_INVALID: "alexa.signature_invalid";
         /**
          * hub AlexaSignatureMiddleware.php:535 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — cert validity
-         * window. 'ALEXA_CERT_EXPIRED' parked in TEXT (map row :217).
+         * window. `ALEXA_CERT_EXPIRED` parked in TEXT (map row :217).
          */
         readonly CERT_EXPIRED: "alexa.cert_expired";
         /**
          * hub AlexaSignatureMiddleware.php:542 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — cert SAN is not an
-         * Alexa domain. 'ALEXA_CERT_SAN_MISMATCH' parked in TEXT
+         * Alexa domain. `ALEXA_CERT_SAN_MISMATCH` parked in TEXT
          * (map row :218).
          */
         readonly CERT_SAN_MISMATCH: "alexa.cert_san_mismatch";
         /**
          * hub AlexaSignatureMiddleware.php:549 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — chain does not anchor
-         * on the Amazon root. 'ALEXA_CERT_CHAIN_UNTRUSTED' parked
+         * on the Amazon root. `ALEXA_CERT_CHAIN_UNTRUSTED` parked
          * in TEXT (map row :219).
          */
         readonly CERT_CHAIN_UNTRUSTED: "alexa.cert_chain_untrusted";
         /**
-         * hub AlexaSignatureMiddleware.php:689,704,710 ('rejectTimestamp') —
-         * Timestamp header unparseable. 'ALEXA_TIMESTAMP_MALFORMED' parked in
+         * hub AlexaSignatureMiddleware.php:689,704,710 (`rejectTimestamp`) —
+         * Timestamp header unparseable. `ALEXA_TIMESTAMP_MALFORMED` parked in
          * TEXT (map row :220).
          */
         readonly TIMESTAMP_MALFORMED: "alexa.timestamp_malformed";
         /**
-         * hub AlexaSignatureMiddleware.php:694,699 ('rejectTimestamp') — no
-         * Timestamp header. 'ALEXA_TIMESTAMP_MISSING' parked in TEXT (map row
+         * hub AlexaSignatureMiddleware.php:694,699 (`rejectTimestamp`) — no
+         * Timestamp header. `ALEXA_TIMESTAMP_MISSING` parked in TEXT (map row
          * :221).
          */
         readonly TIMESTAMP_MISSING: "alexa.timestamp_missing";
         /**
-         * hub AlexaSignatureMiddleware.php:716 ('rejectTimestamp') — timestamp
-         * older than the skew window. 'ALEXA_TIMESTAMP_STALE' parked in TEXT
+         * hub AlexaSignatureMiddleware.php:716 (`rejectTimestamp`) — timestamp
+         * older than the skew window. `ALEXA_TIMESTAMP_STALE` parked in TEXT
          * (map row :222).
          */
         readonly TIMESTAMP_STALE: "alexa.timestamp_stale";
@@ -559,7 +570,10 @@ declare const CODES: {
     };
     /** The actor resolved from the token itself (hub /me). */
     readonly user: {
-        /** hub MeController.php:58 — dotted; distinct from the admin-domain BARE wire value `user_not_found` */
+        /**
+         * hub MeController.php:58 — dotted; distinct from the admin-domain BARE
+         * wire value `user_not_found`
+         */
         readonly NOT_FOUND: "user.not_found";
     };
     /** Server plugin admin/catalog surface. */
@@ -628,12 +642,12 @@ declare const CODES: {
      * Server profile PIN/switch/denial gates. Dotted wire values that CURRENTLY
      * RIDE A NON-`code` FIELD, not the `code` channel: the first four emit the
      * string with NO `code` key — srv ProfilesController.php:215
-     * 'profile.use_switch', srv ProfilesController.php:274 'profile.last_profile',
-     * srv ProfilesController.php:403 'profile.no_pin', srv
-     * ProfilesController.php:407 'profile.pin_mismatch'. `profile.not_found` was
+     * `profile.use_switch`, srv ProfilesController.php:274 `profile.last_profile`,
+     * srv ProfilesController.php:403 `profile.no_pin`, srv
+     * ProfilesController.php:407 `profile.pin_mismatch`. `profile.not_found` was
      * promoted by the server W2 emit-wave and now rides the `code` channel with
-     * the `denial_type` machine mirror kept (see its ref). The Wave-1b text-field
-     * families named in the module header carry the same promote-in-Wave-2
+     * the `denial_type` machine mirror kept (see its ref). The W1b text-field
+     * families named in the module header carry the same promote-in-W2
      * caveat per domain. Until then, clients match the first four strings in
      * `error` text, not in `code`.
      */
@@ -647,8 +661,8 @@ declare const CODES: {
         /** srv ProfilesController.php:407 */
         readonly PIN_MISMATCH: "profile.pin_mismatch";
         /**
-          * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
-          * srv PreRouterFastPaths.php:629-631 (403) — the request carries a profile
+         * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
+         * srv PreRouterFastPaths.php:629-631 (403) — the request carries a profile
          * that doesn't exist. Server W2 promoted it: `'code' =>
          * 'profile.not_found'` rides the `code` channel alongside the parked
          * `'error' => 'StreamLimitExceeded'` and the machine `'denial_type' =>
@@ -708,7 +722,10 @@ declare const CODES: {
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
         /** srv QuickConnectController.php:260,303 · hub InviteLinkController.php:224 */
         readonly INVALID_REQUEST: "invalid_request";
-        /** hub FederationController.php:185 · InviteLinkController.php:167 · LibraryShareController.php:85,231 */
+        /**
+         * hub FederationController.php:185 · InviteLinkController.php:167 ·
+         * LibraryShareController.php:85,231
+         */
         readonly INVALID_BODY: "invalid_body";
         /** srv QuickConnectController.php:396-422 · hub AdminUpdatesController.php:109 */
         readonly INVALID_PAYLOAD: "invalid_payload";
@@ -716,7 +733,10 @@ declare const CODES: {
         readonly UNKNOWN_ERROR: "unknown_error";
         /** hub AdminUserController.php:469 */
         readonly VALIDATION_FAILED: "validation_failed";
-        /** hub RequestController.php:426 · UserQuotaController.php:332 · AdminUpdatesController.php:165 */
+        /**
+         * hub RequestController.php:426 · UserQuotaController.php:332 ·
+         * AdminUpdatesController.php:165
+         */
         readonly ADMIN_REQUIRED: "admin_required";
         /** hub FederationController.php:1005,1056 */
         readonly MASTER_ONLY: "master_only";
@@ -734,9 +754,15 @@ declare const CODES: {
         readonly MISSING_PUBLIC_KEY: "missing_public_key";
         /** hub FederationController.php:1076 · UserQuotaController.php:350 */
         readonly MISSING_USER_ID: "missing_user_id";
-        /** hub InviteLinkController.php:182 · LibraryController.php:54 · LibraryShareController.php:108 */
+        /**
+         * hub InviteLinkController.php:182 · LibraryController.php:54 ·
+         * LibraryShareController.php:108
+         */
         readonly MISSING_SERVER_ID: "missing_server_id";
-        /** hub InviteLinkController.php:221 · LibraryController.php:62 · LibraryShareController.php:149 */
+        /**
+         * hub InviteLinkController.php:221 · LibraryController.php:62 ·
+         * LibraryShareController.php:149
+         */
         readonly NOT_SERVER_OWNER: "not_server_owner";
         /**
          * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
@@ -856,7 +882,10 @@ declare const CODES: {
     };
     /** Hub admin user/quota management (bare snake on `code`). */
     readonly admin: {
-        /** hub AdminUserController.php:446 — bare; distinct from auth.user_not_found / user.not_found */
+        /**
+         * hub AdminUserController.php:446 — bare; distinct from auth.user_not_found
+         * / user.not_found
+         */
         readonly USER_NOT_FOUND: "user_not_found";
         /** hub AdminUserController.php:243 */
         readonly CANNOT_DELETE_SELF: "cannot_delete_self";
@@ -876,12 +905,15 @@ declare const CODES: {
      * operation-specific failures belong here.
      */
     readonly updates: {
-        /** srv AdminUpdatesController.php:214 — 503 when `checkNow()` throws synchronously on POST /admin/updates/check */
+        /**
+         * srv AdminUpdatesController.php:214 — 503 when `checkNow()` throws
+         * synchronously on POST /admin/updates/check
+         */
         readonly CHECK_DISPATCH_FAILED: "update_check_dispatch_failed";
     };
     /**
      * Server linked-identity failures (account linking + OIDC/GitHub callback
-     * completion). CAVEAT (Wave 1b): all seven ride the `error` TEXT field today
+     * completion). CAVEAT (W1b): all seven ride the `error` TEXT field today
      * as bare snake pseudo-codes with no `code` key; the emit-wave will promote them
      * to the `code` channel — clients match in `error` text until then. Where a
      * twin name collapses two coexisting text spellings (e.g.
@@ -889,43 +921,43 @@ declare const CODES: {
      * forward value for both sites.
      */
     readonly identity: {
-        /** srv AccountLinkController.php:211 (400) — today text 'missing_identity_id' */
+        /** srv AccountLinkController.php:211 (400) — today text `missing_identity_id` */
         readonly MISSING_ID: "identity.missing_id";
-        /** srv AccountLinkController.php:230 (404) — today text 'identity_not_found' */
+        /** srv AccountLinkController.php:230 (404) — today text `identity_not_found` */
         readonly NOT_FOUND: "identity.not_found";
         /**
          * srv AccountLinkController.php:244 (409) — unlink refused: last sign-in
-         * method. Today text 'last_sign_in_method'.
+         * method. Today text `last_sign_in_method`.
          */
         readonly LAST_SIGN_IN_METHOD: "identity.last_sign_in_method";
         /**
          * srv AccountLinkController.php:574 · OidcCallbackController.php:756 ·
          * GithubCallbackController.php:750 (409) — provider account already bound
-         * to another identity. Today text 'identity_already_linked'.
+         * to another identity. Today text `identity_already_linked`.
          */
         readonly ALREADY_LINKED: "identity.already_linked";
         /**
          * srv OidcCallbackController.php:645 · GithubCallbackController.php:656
          * (400) — provider returned no usable identity. Today text
-         * 'invalid_identity'.
+         * `invalid_identity`.
          */
         readonly INVALID: "identity.invalid";
         /**
          * srv OidcCallbackController.php:636 · GithubCallbackController.php:648
          * (503) — identity repository absent, linking disabled. Today text
-         * 'link_unavailable'.
+         * `link_unavailable`.
          */
         readonly LINK_UNAVAILABLE: "identity.link_unavailable";
         /**
          * srv OidcCallbackController.php:628 · GithubCallbackController.php:640
          * (400) — link flow state lost its initiating user. Today text
-         * 'invalid_link_state'.
+         * `invalid_link_state`.
          */
         readonly INVALID_LINK_STATE: "identity.invalid_link_state";
     };
     /**
      * Server authentication-provider config/lookup failures (account-link
-     * rail + OIDC/GitHub admin forms). CAVEAT (Wave 1b): all seven ride the
+     * rail + OIDC/GitHub admin forms). CAVEAT (W1b): all seven ride the
      * `error` TEXT field today as bare snake pseudo-codes with no `code` key;
      * the emit-wave will promote them to the `code` channel — clients match in
      * `error` text until then. `provider.not_configured` unifies today's two
@@ -934,9 +966,9 @@ declare const CODES: {
      */
     readonly provider: {
         /**
-         * srv AuthProviderController.php:154 (409, text 'not_configured') ·
+         * srv AuthProviderController.php:154 (409, text `not_configured`) ·
          * OidcCallbackController.php:282,489 · GithubCallbackController.php:250,
-         * 422 (text 'provider_not_configured') · hub
+         * 422 (text `provider_not_configured`) · hub
          * FederationController.php:140 (signature of `guardFederationDisabled`),
          * :146 (its 409 emit line) — the eleven FederationController mutators
          * all funnel through this one helper, which is why the helper is cited
@@ -944,22 +976,34 @@ declare const CODES: {
          * at zero registry churn.
          */
         readonly NOT_CONFIGURED: "provider.not_configured";
-        /** srv AuthProviderController.php:264 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
+        /**
+         * srv AuthProviderController.php:264 (404) — toggle for an unlisted
+         * provider. Today text `unknown_provider`.
+         */
         readonly UNKNOWN: "provider.unknown";
-        /** srv AuthProviderController.php:284 (404) — provider row missing. Today text 'provider_not_found'. */
+        /**
+         * srv AuthProviderController.php:284 (404) — provider row missing. Today
+         * text `provider_not_found`.
+         */
         readonly NOT_FOUND: "provider.not_found";
-        /** srv OidcCallbackController.php:289 — registered provider isn't OIDC. Today text 'invalid_provider_type'. */
+        /**
+         * srv OidcCallbackController.php:289 — registered provider isn't OIDC.
+         * Today text `invalid_provider_type`.
+         */
         readonly INVALID_TYPE: "provider.invalid_type";
-        /** srv OidcAdminController.php:243 · GithubAdminController.php:151 — admin form word 'missing_client_id'. */
+        /**
+         * srv OidcAdminController.php:243 · GithubAdminController.php:151 — admin
+         * form word `missing_client_id`.
+         */
         readonly MISSING_CLIENT_ID: "provider.missing_client_id";
-        /** srv OidcAdminController.php:236 — admin form word 'missing_provider_url'. */
+        /** srv OidcAdminController.php:236 — admin form word `missing_provider_url`. */
         readonly MISSING_URL: "provider.missing_url";
-        /** srv OidcAdminController.php:250 — admin form word 'invalid_provider_url'. */
+        /** srv OidcAdminController.php:250 — admin form word `invalid_provider_url`. */
         readonly INVALID_URL: "provider.invalid_url";
     };
     /**
      * Server OAuth browser-callback flow failures (OIDC + GitHub callback and
-     * admin redirect validation). CAVEAT (Wave 1b): all six ride the `error`
+     * admin redirect validation). CAVEAT (W1b): all six ride the `error`
      * TEXT field today as bare snake pseudo-codes with no `code` key; the
      * emit-wave will promote them to the `code` channel — clients match in `error`
      * text until then. NOT to be confused with the hub's RFC-6749/6750-mandated
@@ -967,32 +1011,45 @@ declare const CODES: {
      * header — these six are estate-chosen words, not RFC vocabulary.
      */
     readonly oauth: {
-        /** srv OidcCallbackController.php:381 · GithubCallbackController.php:326 — text 'missing_code'. */
+        /**
+         * srv OidcCallbackController.php:381 · GithubCallbackController.php:326 —
+         * text `missing_code`.
+         */
         readonly MISSING_CODE: "oauth.missing_code";
-        /** srv OidcCallbackController.php:388 · GithubCallbackController.php:333 — text 'missing_state'. */
+        /**
+         * srv OidcCallbackController.php:388 · GithubCallbackController.php:333 —
+         * text `missing_state`.
+         */
         readonly MISSING_STATE: "oauth.missing_state";
         /**
          * srv OidcCallbackController.php:396,419,436,463 ·
          * GithubCallbackController.php:341,362,378,397 — state cookie missing/
          * mismatched/expired (463: state not bound to this browser, 403). Text
-         * 'invalid_state'.
+         * `invalid_state`.
          */
         readonly INVALID_STATE: "oauth.invalid_state";
-        /** srv OidcCallbackController.php:254 · GithubCallbackController.php:226 — text 'missing_redirect_uri'. */
+        /**
+         * srv OidcCallbackController.php:254 · GithubCallbackController.php:226 —
+         * text `missing_redirect_uri`.
+         */
         readonly MISSING_REDIRECT_URI: "oauth.missing_redirect_uri";
         /**
          * srv OidcCallbackController.php:267,412 ·
          * GithubCallbackController.php:236,355 · OidcAdminController.php:283 ·
          * GithubAdminController.php:181 — redirect URI not on the allowlist.
-         * Text 'invalid_redirect_uri'.
+         * Text `invalid_redirect_uri`.
          */
         readonly INVALID_REDIRECT_URI: "oauth.invalid_redirect_uri";
-        /** srv OidcCallbackController.php:828 · GithubCallbackController.php:818 — server has no configured callback URL. Text 'callback_url_not_configured'. */
+        /**
+         * srv OidcCallbackController.php:828 · GithubCallbackController.php:818 —
+         * server has no configured callback URL. Text
+         * `callback_url_not_configured`.
+         */
         readonly CALLBACK_URL_NOT_CONFIGURED: "oauth.callback_url_not_configured";
     };
     /**
      * Server LDAP provider admin surface (connection form + test). CAVEAT
-     * (Wave 1b): all seven ride the `error` TEXT field today — as form-gate
+     * (W1b): all seven ride the `error` TEXT field today — as form-gate
      * snake pseudo-codes (no `code` key) and, for the last four, as the
      * `'error'` value of the `testConnection` arrays that srv
      * LdapAdminController.php:367-369 passes THROUGH to the client as JSON
@@ -1001,19 +1058,33 @@ declare const CODES: {
      * `error` text until then.
      */
     readonly ldap: {
-        /** srv LdapAdminController.php:132,342 — form word 'missing_host'. */
+        /** srv LdapAdminController.php:132,342 — form word `missing_host`. */
         readonly MISSING_HOST: "ldap.missing_host";
-        /** srv LdapAdminController.php:139,349 — form word 'missing_base_dn'. */
+        /** srv LdapAdminController.php:139,349 — form word `missing_base_dn`. */
         readonly MISSING_BASE_DN: "ldap.missing_base_dn";
-        /** srv LdapAdminController.php:146 — form word 'invalid_port'. */
+        /** srv LdapAdminController.php:146 — form word `invalid_port`. */
         readonly INVALID_PORT: "ldap.invalid_port";
-        /** srv LdapAdminController.php:373 (catch arm) — today text 'connection_failed', also returned at srv LdapConnection.php:259 (surfaced via the srv LdapAdminController.php:367-369 `testConnection` passthrough). */
+        /**
+         * srv LdapAdminController.php:373 (catch arm) — today text
+         * `connection_failed`, also returned at srv LdapConnection.php:259
+         * (surfaced via the srv LdapAdminController.php:367-369 `testConnection`
+         * passthrough).
+         */
         readonly CONNECTION_FAILED: "ldap.connection_failed";
-        /** srv LdapConnection.php:268 (`testConnection` array, surfaced via the srv LdapAdminController.php:367-369 passthrough) — 'bind_failed'. */
+        /**
+         * srv LdapConnection.php:268 (`testConnection` array, surfaced via the srv
+         * LdapAdminController.php:367-369 passthrough) — `bind_failed`.
+         */
         readonly BIND_FAILED: "ldap.bind_failed";
-        /** srv LdapConnection.php:281 (`testConnection` array, via srv LdapAdminController.php:367-369) — 'ldap_error'. */
+        /**
+         * srv LdapConnection.php:281 (`testConnection` array, via srv
+         * LdapAdminController.php:367-369) — `ldap_error`.
+         */
         readonly ERROR: "ldap.error";
-        /** srv LdapConnection.php:287 (`testConnection` array, via srv LdapAdminController.php:367-369) — 'runtime_error'. */
+        /**
+         * srv LdapConnection.php:287 (`testConnection` array, via srv
+         * LdapAdminController.php:367-369) — `runtime_error`.
+         */
         readonly RUNTIME_ERROR: "ldap.runtime_error";
     };
     /**
@@ -1050,19 +1121,46 @@ declare const CODES: {
      * — the documented split.
      */
     readonly syncplay: {
-        /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1860 — dotted twin of legacy `CREATE_FAILED` */
+        /**
+         * LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at
+         * srv SyncPlayManager.php:1860 — dotted twin of legacy `CREATE_FAILED`
+         */
         readonly CREATE_FAILED: "syncplay.create_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1919 — dotted twin of legacy `JOIN_FAILED` */
+        /**
+         * LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv
+         * SyncPlayManager.php:1919 — dotted twin of legacy `JOIN_FAILED`
+         */
         readonly JOIN_FAILED: "syncplay.join_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1968 — dotted twin of legacy `LEAVE_FAILED` */
+        /**
+         * LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at
+         * srv SyncPlayManager.php:1968 — dotted twin of legacy `LEAVE_FAILED`
+         */
         readonly LEAVE_FAILED: "syncplay.leave_failed";
-        /** LIVE on the wire (srv SyncPlayManager.php:707): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1860; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1278 (server 7baa398a) — this row now covers the group-count cap only */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:707): inner createGroup code,
+         * forwarded through the `syncplay.create_failed` fallback wrap at srv
+         * SyncPlayManager.php:1860; the playback-queue cap split away to
+         * `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1278 (server
+         * 7baa398a) — this row now covers the group-count cap only
+         */
         readonly GROUP_LIMIT_REACHED: "syncplay.group_limit_reached";
-        /** LIVE on the wire (srv SyncPlayManager.php:799): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:799): inner joinGroup code,
+         * forwarded through the `syncplay.join_failed` fallback wrap at srv
+         * SyncPlayManager.php:1919
+         */
         readonly GROUP_NOT_FOUND: "syncplay.group_not_found";
-        /** LIVE on the wire (srv SyncPlayManager.php:847): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:847): inner joinGroup code,
+         * forwarded through the `syncplay.join_failed` fallback wrap at srv
+         * SyncPlayManager.php:1919
+         */
         readonly INVALID_PASSWORD: "syncplay.invalid_password";
-        /** LIVE on the wire (srv SyncPlayManager.php:852): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:852): inner joinGroup code,
+         * forwarded through the `syncplay.join_failed` fallback wrap at srv
+         * SyncPlayManager.php:1919
+         */
         readonly GROUP_FULL: "syncplay.group_full";
         /**
          * srv SyncPlayManager.php:1278 — LIVE on the wire since server 7baa398a
@@ -1103,11 +1201,26 @@ declare const CODES: {
         readonly MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND";
         /** srv SyncPlayManager.php:1453 */
         readonly SAME_HOST: "SAME_HOST";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1860; still resolved client-side for old-server compatibility */
+        /**
+         * Retired from current server emit at srv #798 (9b2394ee) — the
+         * create-carrier fallback flipped to the dotted twin at srv
+         * SyncPlayManager.php:1860; still resolved client-side for old-server
+         * compatibility
+         */
         readonly CREATE_FAILED: "CREATE_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin `syncplay.join_failed` at srv SyncPlayManager.php:1919; still resolved client-side for old-server compatibility */
+        /**
+         * Retired from current server emit at srv #798 (9b2394ee) — the
+         * join-carrier fallback flipped to the dotted twin `syncplay.join_failed`
+         * at srv SyncPlayManager.php:1919; still resolved client-side for
+         * old-server compatibility
+         */
         readonly JOIN_FAILED: "JOIN_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1968; still resolved client-side for old-server compatibility */
+        /**
+         * Retired from current server emit at srv #798 (9b2394ee) — the leave
+         * carrier now emits the dotted twin directly at srv
+         * SyncPlayManager.php:1968; still resolved client-side for old-server
+         * compatibility
+         */
         readonly LEAVE_FAILED: "LEAVE_FAILED";
         /**
          * srv MessageHandler.php:188-191. Wave ruling (R-SP-W2-01, protocol-version
@@ -1130,7 +1243,7 @@ declare const CODES: {
 export declare const ERROR_CODE: {
     /**
      * Authentication/authorization gate failures, spoken by BOTH servers.
-     * CAVEAT (Wave 1b, updated post-hub-W3): the hub emit-wave promoted
+     * CAVEAT (W1b, updated post-hub-W3): the hub emit-wave promoted
      * `auth.unauthenticated`, `auth.enrollment_expired` and
      * `auth.server_mismatch` to the dotted forward form on the `code` channel —
      * the legacy SCREAMING values (`UNAUTHENTICATED`,
@@ -1149,9 +1262,15 @@ export declare const ERROR_CODE: {
         readonly INVALID_TOKEN: "auth.invalid_token";
         /** hub AuthMiddleware.php:128 — token subject has no user row */
         readonly USER_NOT_FOUND: "auth.user_not_found";
-        /** srv SignupDisabledException.php:28 → srv AuthController.php:195 (`SignupDisabledException::ERROR_CODE` passthrough) */
+        /**
+         * srv SignupDisabledException.php:28 → srv AuthController.php:195
+         * (`SignupDisabledException::ERROR_CODE` passthrough)
+         */
         readonly SIGNUPS_DISABLED: "auth.signups_disabled";
-        /** srv AccountInactiveException.php:31 → srv AuthController.php:265 (`errorCode` passthrough) */
+        /**
+         * srv AccountInactiveException.php:31 → srv AuthController.php:265
+         * (`errorCode` passthrough)
+         */
         readonly ACCOUNT_PENDING: "auth.account_pending";
         /** srv AccountInactiveException.php:32 */
         readonly ACCOUNT_DISABLED: "auth.account_disabled";
@@ -1192,14 +1311,14 @@ export declare const ERROR_CODE: {
         readonly SERVER_MISMATCH: "auth.server_mismatch";
         /**
          * srv AccountLinkController.php:295 — 400 when the link-identity POST
-         * carries no credentials; the TEXT today is 'missing_credentials'. Rides
+         * carries no credentials; the TEXT today is `missing_credentials`. Rides
          * the `error` TEXT field only; the server emit-wave will promote it to the
          * `code` channel; clients match in `error` text until then.
          */
         readonly MISSING_CREDENTIALS: "auth.missing_credentials";
         /**
          * srv AccountLinkController.php:332 — 401 when submitted credentials fail
-         * to verify; the TEXT today is 'invalid_credentials'. Rides the `error`
+         * to verify; the TEXT today is `invalid_credentials`. Rides the `error`
          * TEXT field only; the server emit-wave will promote it to the `code` channel;
          * clients match in `error` text until then.
          */
@@ -1208,7 +1327,7 @@ export declare const ERROR_CODE: {
     /**
      * Server↔hub conversation failures: the server-side account-linking family
      * (phlix-server, all three on the `code` channel) plus the hub-side
-     * protocol-envelope failures (phlix-hub). CAVEAT (Wave 1b, updated
+     * protocol-envelope failures (phlix-hub). CAVEAT (W1b, updated
      * post-hub-W3): the last two entries were SCREAMING pseudo-codes
      * (`HUB_PROTOCOL_UNSUPPORTED`, `HUB_INTERNAL_ERROR`) on
      * ServerClaimController/ServerController refusals and mapError defaults;
@@ -1240,7 +1359,7 @@ export declare const ERROR_CODE: {
     };
     /**
      * Hub claim-code exchange failures (phlix-hub `ClaimRequestHandler` →
-     * `ServerClaimController::mapError`). CAVEAT (Wave 1b, updated post-hub-W3):
+     * `ServerClaimController::mapError`). CAVEAT (W1b, updated post-hub-W3):
      * the three arms rode the `error` TEXT field as SCREAMING pseudo-codes; hub
      * W3 promoted them — every arm now carries the dotted form on the `code`
      * channel with the SCREAMING original parked byte-identical in the same
@@ -1277,7 +1396,12 @@ export declare const ERROR_CODE: {
          * clients may match either channel).
          */
         readonly NOT_FOUND: "server.not_found";
-        /** hub ServerManageController.php:73,117 · ServerDetailController.php:92 · ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy path's ownership leg answers the byte-identical 404 `server.not_found` law (M-HUB-27) at hub ServerProxyController.php:1034 */
+        /**
+         * hub ServerManageController.php:73,117 · ServerDetailController.php:92 ·
+         * ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy
+         * path's ownership leg answers the byte-identical 404 `server.not_found`
+         * law (M-HUB-27) at hub ServerProxyController.php:1034
+         */
         readonly NOT_OWNED: "server.not_owned";
         /** hub ServerProxyController.php:1052 — relay tunnel not connected */
         readonly RELAY_UNAVAILABLE: "server.relay_unavailable";
@@ -1306,7 +1430,7 @@ export declare const ERROR_CODE: {
     };
     /**
      * Concurrent-stream throttle gates (hub proxy + server middleware).
-     * CAVEAT (Wave 1b, updated post-server-W2): `stream.limit` rides the hub
+     * CAVEAT (W1b, updated post-server-W2): `stream.limit` rides the hub
      * `code` channel. The server twin below was promoted by the server W2
      * emit-wave: `stream.limit_exceeded` now rides the `code` channel
      * positionally, the CamelCase pseudo-code `StreamLimitExceeded` is parked in
@@ -1326,7 +1450,7 @@ export declare const ERROR_CODE: {
         readonly LIMIT_EXCEEDED: "stream.limit_exceeded";
     };
     /**
-     * Server scheduled-access window gate (phlix-server). CAVEAT (Wave 1b,
+     * Server scheduled-access window gate (phlix-server). CAVEAT (W1b,
      * updated post-server-W2): promoted by the server W2 emit-wave —
      * `access.scheduled` rides the `code` channel positionally, the CamelCase
      * pseudo-code `AccessScheduled` is parked in the `error` TEXT field
@@ -1375,7 +1499,7 @@ export declare const ERROR_CODE: {
         readonly NOT_FOUND: "mcp_token.not_found";
     };
     /**
-     * Hub Alexa adapter failures on the machine channel. CAVEAT (Wave 1b,
+     * Hub Alexa adapter failures on the machine channel. CAVEAT (W1b,
      * updated post-hub-W3): the fourteen signature-verification entries below
      * used to ride the `code` channel in SCREAMING form — every
      * `AlexaSignatureMiddleware` reject() payload carried `'code' => 'ALEXA_*'`.
@@ -1394,82 +1518,82 @@ export declare const ERROR_CODE: {
         /**
          * hub AlexaSignatureMiddleware.php:288 — fail-closed catch around
          * verification itself. W3 dual placement: dotted on `code`, legacy
-         * 'ALEXA_VERIFICATION_ERROR' parked in `error` TEXT (map row :209).
+         * `ALEXA_VERIFICATION_ERROR` parked in `error` TEXT (map row :209).
          */
         readonly VERIFICATION_ERROR: "alexa.verification_error";
         /**
          * hub AlexaSignatureMiddleware.php:301 — no cert-chain-Url header.
-         * 'ALEXA_MISSING_CERT_CHAIN_URL' parked in TEXT (map row :210).
+         * `ALEXA_MISSING_CERT_CHAIN_URL` parked in TEXT (map row :210).
          */
         readonly MISSING_CERT_CHAIN_URL: "alexa.missing_cert_chain_url";
         /**
          * hub AlexaSignatureMiddleware.php:306 — no Signature header.
-         * 'ALEXA_MISSING_SIGNATURE_HEADER' parked in TEXT (map row :211).
+         * `ALEXA_MISSING_SIGNATURE_HEADER` parked in TEXT (map row :211).
          */
         readonly MISSING_SIGNATURE_HEADER: "alexa.missing_signature_header";
         /**
          * hub AlexaSignatureMiddleware.php:311 — empty request body.
-         * 'ALEXA_EMPTY_BODY' parked in TEXT (map row :212).
+         * `ALEXA_EMPTY_BODY` parked in TEXT (map row :212).
          */
         readonly EMPTY_BODY: "alexa.empty_body";
         /**
          * hub AlexaSignatureMiddleware.php:317 — cert URL outside the Amazon
-         * allowlist. 'ALEXA_CERT_URL_REJECTED' parked in TEXT (map row :213).
+         * allowlist. `ALEXA_CERT_URL_REJECTED` parked in TEXT (map row :213).
          */
         readonly CERT_URL_REJECTED: "alexa.cert_url_rejected";
         /**
          * hub AlexaSignatureMiddleware.php:473 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — Amazon cert fetch
-         * failed. 'ALEXA_CERT_FETCH_FAILED' parked in TEXT (map row :214).
+         * failed. `ALEXA_CERT_FETCH_FAILED` parked in TEXT (map row :214).
          */
         readonly CERT_FETCH_FAILED: "alexa.cert_fetch_failed";
         /**
          * hub AlexaSignatureMiddleware.php:334 + `errorCode()`-forwarded arms
-         * :516,522,529,556,562 (via :323) — 'ALEXA_CERT_CHAIN_MALFORMED'
+         * :516,522,529,556,562 (via :323) — `ALEXA_CERT_CHAIN_MALFORMED`
          * parked in TEXT (map row :215), plus the hub ChainVerification.php:97
          * fallback.
          */
         readonly CERT_CHAIN_MALFORMED: "alexa.cert_chain_malformed";
         /**
          * hub AlexaSignatureMiddleware.php:329,338 — signature check failed.
-         * 'ALEXA_SIGNATURE_INVALID' parked in TEXT (map row :216).
+         * `ALEXA_SIGNATURE_INVALID` parked in TEXT (map row :216).
          */
         readonly SIGNATURE_INVALID: "alexa.signature_invalid";
         /**
          * hub AlexaSignatureMiddleware.php:535 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — cert validity
-         * window. 'ALEXA_CERT_EXPIRED' parked in TEXT (map row :217).
+         * window. `ALEXA_CERT_EXPIRED` parked in TEXT (map row :217).
          */
         readonly CERT_EXPIRED: "alexa.cert_expired";
         /**
          * hub AlexaSignatureMiddleware.php:542 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — cert SAN is not an
-         * Alexa domain. 'ALEXA_CERT_SAN_MISMATCH' parked in TEXT
+         * Alexa domain. `ALEXA_CERT_SAN_MISMATCH` parked in TEXT
          * (map row :218).
          */
         readonly CERT_SAN_MISMATCH: "alexa.cert_san_mismatch";
         /**
          * hub AlexaSignatureMiddleware.php:549 (`ChainVerification::rejected`
          * arm, forwarded at the `errorCode()` site :323) — chain does not anchor
-         * on the Amazon root. 'ALEXA_CERT_CHAIN_UNTRUSTED' parked
+         * on the Amazon root. `ALEXA_CERT_CHAIN_UNTRUSTED` parked
          * in TEXT (map row :219).
          */
         readonly CERT_CHAIN_UNTRUSTED: "alexa.cert_chain_untrusted";
         /**
-         * hub AlexaSignatureMiddleware.php:689,704,710 ('rejectTimestamp') —
-         * Timestamp header unparseable. 'ALEXA_TIMESTAMP_MALFORMED' parked in
+         * hub AlexaSignatureMiddleware.php:689,704,710 (`rejectTimestamp`) —
+         * Timestamp header unparseable. `ALEXA_TIMESTAMP_MALFORMED` parked in
          * TEXT (map row :220).
          */
         readonly TIMESTAMP_MALFORMED: "alexa.timestamp_malformed";
         /**
-         * hub AlexaSignatureMiddleware.php:694,699 ('rejectTimestamp') — no
-         * Timestamp header. 'ALEXA_TIMESTAMP_MISSING' parked in TEXT (map row
+         * hub AlexaSignatureMiddleware.php:694,699 (`rejectTimestamp`) — no
+         * Timestamp header. `ALEXA_TIMESTAMP_MISSING` parked in TEXT (map row
          * :221).
          */
         readonly TIMESTAMP_MISSING: "alexa.timestamp_missing";
         /**
-         * hub AlexaSignatureMiddleware.php:716 ('rejectTimestamp') — timestamp
-         * older than the skew window. 'ALEXA_TIMESTAMP_STALE' parked in TEXT
+         * hub AlexaSignatureMiddleware.php:716 (`rejectTimestamp`) — timestamp
+         * older than the skew window. `ALEXA_TIMESTAMP_STALE` parked in TEXT
          * (map row :222).
          */
         readonly TIMESTAMP_STALE: "alexa.timestamp_stale";
@@ -1486,7 +1610,10 @@ export declare const ERROR_CODE: {
     };
     /** The actor resolved from the token itself (hub /me). */
     readonly user: {
-        /** hub MeController.php:58 — dotted; distinct from the admin-domain BARE wire value `user_not_found` */
+        /**
+         * hub MeController.php:58 — dotted; distinct from the admin-domain BARE
+         * wire value `user_not_found`
+         */
         readonly NOT_FOUND: "user.not_found";
     };
     /** Server plugin admin/catalog surface. */
@@ -1555,12 +1682,12 @@ export declare const ERROR_CODE: {
      * Server profile PIN/switch/denial gates. Dotted wire values that CURRENTLY
      * RIDE A NON-`code` FIELD, not the `code` channel: the first four emit the
      * string with NO `code` key — srv ProfilesController.php:215
-     * 'profile.use_switch', srv ProfilesController.php:274 'profile.last_profile',
-     * srv ProfilesController.php:403 'profile.no_pin', srv
-     * ProfilesController.php:407 'profile.pin_mismatch'. `profile.not_found` was
+     * `profile.use_switch`, srv ProfilesController.php:274 `profile.last_profile`,
+     * srv ProfilesController.php:403 `profile.no_pin`, srv
+     * ProfilesController.php:407 `profile.pin_mismatch`. `profile.not_found` was
      * promoted by the server W2 emit-wave and now rides the `code` channel with
-     * the `denial_type` machine mirror kept (see its ref). The Wave-1b text-field
-     * families named in the module header carry the same promote-in-Wave-2
+     * the `denial_type` machine mirror kept (see its ref). The W1b text-field
+     * families named in the module header carry the same promote-in-W2
      * caveat per domain. Until then, clients match the first four strings in
      * `error` text, not in `code`.
      */
@@ -1574,8 +1701,8 @@ export declare const ERROR_CODE: {
         /** srv ProfilesController.php:407 */
         readonly PIN_MISMATCH: "profile.pin_mismatch";
         /**
-          * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
-          * srv PreRouterFastPaths.php:629-631 (403) — the request carries a profile
+         * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
+         * srv PreRouterFastPaths.php:629-631 (403) — the request carries a profile
          * that doesn't exist. Server W2 promoted it: `'code' =>
          * 'profile.not_found'` rides the `code` channel alongside the parked
          * `'error' => 'StreamLimitExceeded'` and the machine `'denial_type' =>
@@ -1635,7 +1762,10 @@ export declare const ERROR_CODE: {
         readonly PROVIDER_UNAVAILABLE: "provider_unavailable";
         /** srv QuickConnectController.php:260,303 · hub InviteLinkController.php:224 */
         readonly INVALID_REQUEST: "invalid_request";
-        /** hub FederationController.php:185 · InviteLinkController.php:167 · LibraryShareController.php:85,231 */
+        /**
+         * hub FederationController.php:185 · InviteLinkController.php:167 ·
+         * LibraryShareController.php:85,231
+         */
         readonly INVALID_BODY: "invalid_body";
         /** srv QuickConnectController.php:396-422 · hub AdminUpdatesController.php:109 */
         readonly INVALID_PAYLOAD: "invalid_payload";
@@ -1643,7 +1773,10 @@ export declare const ERROR_CODE: {
         readonly UNKNOWN_ERROR: "unknown_error";
         /** hub AdminUserController.php:469 */
         readonly VALIDATION_FAILED: "validation_failed";
-        /** hub RequestController.php:426 · UserQuotaController.php:332 · AdminUpdatesController.php:165 */
+        /**
+         * hub RequestController.php:426 · UserQuotaController.php:332 ·
+         * AdminUpdatesController.php:165
+         */
         readonly ADMIN_REQUIRED: "admin_required";
         /** hub FederationController.php:1005,1056 */
         readonly MASTER_ONLY: "master_only";
@@ -1661,9 +1794,15 @@ export declare const ERROR_CODE: {
         readonly MISSING_PUBLIC_KEY: "missing_public_key";
         /** hub FederationController.php:1076 · UserQuotaController.php:350 */
         readonly MISSING_USER_ID: "missing_user_id";
-        /** hub InviteLinkController.php:182 · LibraryController.php:54 · LibraryShareController.php:108 */
+        /**
+         * hub InviteLinkController.php:182 · LibraryController.php:54 ·
+         * LibraryShareController.php:108
+         */
         readonly MISSING_SERVER_ID: "missing_server_id";
-        /** hub InviteLinkController.php:221 · LibraryController.php:62 · LibraryShareController.php:149 */
+        /**
+         * hub InviteLinkController.php:221 · LibraryController.php:62 ·
+         * LibraryShareController.php:149
+         */
         readonly NOT_SERVER_OWNER: "not_server_owner";
         /**
          * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
@@ -1783,7 +1922,10 @@ export declare const ERROR_CODE: {
     };
     /** Hub admin user/quota management (bare snake on `code`). */
     readonly admin: {
-        /** hub AdminUserController.php:446 — bare; distinct from auth.user_not_found / user.not_found */
+        /**
+         * hub AdminUserController.php:446 — bare; distinct from auth.user_not_found
+         * / user.not_found
+         */
         readonly USER_NOT_FOUND: "user_not_found";
         /** hub AdminUserController.php:243 */
         readonly CANNOT_DELETE_SELF: "cannot_delete_self";
@@ -1803,12 +1945,15 @@ export declare const ERROR_CODE: {
      * operation-specific failures belong here.
      */
     readonly updates: {
-        /** srv AdminUpdatesController.php:214 — 503 when `checkNow()` throws synchronously on POST /admin/updates/check */
+        /**
+         * srv AdminUpdatesController.php:214 — 503 when `checkNow()` throws
+         * synchronously on POST /admin/updates/check
+         */
         readonly CHECK_DISPATCH_FAILED: "update_check_dispatch_failed";
     };
     /**
      * Server linked-identity failures (account linking + OIDC/GitHub callback
-     * completion). CAVEAT (Wave 1b): all seven ride the `error` TEXT field today
+     * completion). CAVEAT (W1b): all seven ride the `error` TEXT field today
      * as bare snake pseudo-codes with no `code` key; the emit-wave will promote them
      * to the `code` channel — clients match in `error` text until then. Where a
      * twin name collapses two coexisting text spellings (e.g.
@@ -1816,43 +1961,43 @@ export declare const ERROR_CODE: {
      * forward value for both sites.
      */
     readonly identity: {
-        /** srv AccountLinkController.php:211 (400) — today text 'missing_identity_id' */
+        /** srv AccountLinkController.php:211 (400) — today text `missing_identity_id` */
         readonly MISSING_ID: "identity.missing_id";
-        /** srv AccountLinkController.php:230 (404) — today text 'identity_not_found' */
+        /** srv AccountLinkController.php:230 (404) — today text `identity_not_found` */
         readonly NOT_FOUND: "identity.not_found";
         /**
          * srv AccountLinkController.php:244 (409) — unlink refused: last sign-in
-         * method. Today text 'last_sign_in_method'.
+         * method. Today text `last_sign_in_method`.
          */
         readonly LAST_SIGN_IN_METHOD: "identity.last_sign_in_method";
         /**
          * srv AccountLinkController.php:574 · OidcCallbackController.php:756 ·
          * GithubCallbackController.php:750 (409) — provider account already bound
-         * to another identity. Today text 'identity_already_linked'.
+         * to another identity. Today text `identity_already_linked`.
          */
         readonly ALREADY_LINKED: "identity.already_linked";
         /**
          * srv OidcCallbackController.php:645 · GithubCallbackController.php:656
          * (400) — provider returned no usable identity. Today text
-         * 'invalid_identity'.
+         * `invalid_identity`.
          */
         readonly INVALID: "identity.invalid";
         /**
          * srv OidcCallbackController.php:636 · GithubCallbackController.php:648
          * (503) — identity repository absent, linking disabled. Today text
-         * 'link_unavailable'.
+         * `link_unavailable`.
          */
         readonly LINK_UNAVAILABLE: "identity.link_unavailable";
         /**
          * srv OidcCallbackController.php:628 · GithubCallbackController.php:640
          * (400) — link flow state lost its initiating user. Today text
-         * 'invalid_link_state'.
+         * `invalid_link_state`.
          */
         readonly INVALID_LINK_STATE: "identity.invalid_link_state";
     };
     /**
      * Server authentication-provider config/lookup failures (account-link
-     * rail + OIDC/GitHub admin forms). CAVEAT (Wave 1b): all seven ride the
+     * rail + OIDC/GitHub admin forms). CAVEAT (W1b): all seven ride the
      * `error` TEXT field today as bare snake pseudo-codes with no `code` key;
      * the emit-wave will promote them to the `code` channel — clients match in
      * `error` text until then. `provider.not_configured` unifies today's two
@@ -1861,9 +2006,9 @@ export declare const ERROR_CODE: {
      */
     readonly provider: {
         /**
-         * srv AuthProviderController.php:154 (409, text 'not_configured') ·
+         * srv AuthProviderController.php:154 (409, text `not_configured`) ·
          * OidcCallbackController.php:282,489 · GithubCallbackController.php:250,
-         * 422 (text 'provider_not_configured') · hub
+         * 422 (text `provider_not_configured`) · hub
          * FederationController.php:140 (signature of `guardFederationDisabled`),
          * :146 (its 409 emit line) — the eleven FederationController mutators
          * all funnel through this one helper, which is why the helper is cited
@@ -1871,22 +2016,34 @@ export declare const ERROR_CODE: {
          * at zero registry churn.
          */
         readonly NOT_CONFIGURED: "provider.not_configured";
-        /** srv AuthProviderController.php:264 (404) — toggle for an unlisted provider. Today text 'unknown_provider'. */
+        /**
+         * srv AuthProviderController.php:264 (404) — toggle for an unlisted
+         * provider. Today text `unknown_provider`.
+         */
         readonly UNKNOWN: "provider.unknown";
-        /** srv AuthProviderController.php:284 (404) — provider row missing. Today text 'provider_not_found'. */
+        /**
+         * srv AuthProviderController.php:284 (404) — provider row missing. Today
+         * text `provider_not_found`.
+         */
         readonly NOT_FOUND: "provider.not_found";
-        /** srv OidcCallbackController.php:289 — registered provider isn't OIDC. Today text 'invalid_provider_type'. */
+        /**
+         * srv OidcCallbackController.php:289 — registered provider isn't OIDC.
+         * Today text `invalid_provider_type`.
+         */
         readonly INVALID_TYPE: "provider.invalid_type";
-        /** srv OidcAdminController.php:243 · GithubAdminController.php:151 — admin form word 'missing_client_id'. */
+        /**
+         * srv OidcAdminController.php:243 · GithubAdminController.php:151 — admin
+         * form word `missing_client_id`.
+         */
         readonly MISSING_CLIENT_ID: "provider.missing_client_id";
-        /** srv OidcAdminController.php:236 — admin form word 'missing_provider_url'. */
+        /** srv OidcAdminController.php:236 — admin form word `missing_provider_url`. */
         readonly MISSING_URL: "provider.missing_url";
-        /** srv OidcAdminController.php:250 — admin form word 'invalid_provider_url'. */
+        /** srv OidcAdminController.php:250 — admin form word `invalid_provider_url`. */
         readonly INVALID_URL: "provider.invalid_url";
     };
     /**
      * Server OAuth browser-callback flow failures (OIDC + GitHub callback and
-     * admin redirect validation). CAVEAT (Wave 1b): all six ride the `error`
+     * admin redirect validation). CAVEAT (W1b): all six ride the `error`
      * TEXT field today as bare snake pseudo-codes with no `code` key; the
      * emit-wave will promote them to the `code` channel — clients match in `error`
      * text until then. NOT to be confused with the hub's RFC-6749/6750-mandated
@@ -1894,32 +2051,45 @@ export declare const ERROR_CODE: {
      * header — these six are estate-chosen words, not RFC vocabulary.
      */
     readonly oauth: {
-        /** srv OidcCallbackController.php:381 · GithubCallbackController.php:326 — text 'missing_code'. */
+        /**
+         * srv OidcCallbackController.php:381 · GithubCallbackController.php:326 —
+         * text `missing_code`.
+         */
         readonly MISSING_CODE: "oauth.missing_code";
-        /** srv OidcCallbackController.php:388 · GithubCallbackController.php:333 — text 'missing_state'. */
+        /**
+         * srv OidcCallbackController.php:388 · GithubCallbackController.php:333 —
+         * text `missing_state`.
+         */
         readonly MISSING_STATE: "oauth.missing_state";
         /**
          * srv OidcCallbackController.php:396,419,436,463 ·
          * GithubCallbackController.php:341,362,378,397 — state cookie missing/
          * mismatched/expired (463: state not bound to this browser, 403). Text
-         * 'invalid_state'.
+         * `invalid_state`.
          */
         readonly INVALID_STATE: "oauth.invalid_state";
-        /** srv OidcCallbackController.php:254 · GithubCallbackController.php:226 — text 'missing_redirect_uri'. */
+        /**
+         * srv OidcCallbackController.php:254 · GithubCallbackController.php:226 —
+         * text `missing_redirect_uri`.
+         */
         readonly MISSING_REDIRECT_URI: "oauth.missing_redirect_uri";
         /**
          * srv OidcCallbackController.php:267,412 ·
          * GithubCallbackController.php:236,355 · OidcAdminController.php:283 ·
          * GithubAdminController.php:181 — redirect URI not on the allowlist.
-         * Text 'invalid_redirect_uri'.
+         * Text `invalid_redirect_uri`.
          */
         readonly INVALID_REDIRECT_URI: "oauth.invalid_redirect_uri";
-        /** srv OidcCallbackController.php:828 · GithubCallbackController.php:818 — server has no configured callback URL. Text 'callback_url_not_configured'. */
+        /**
+         * srv OidcCallbackController.php:828 · GithubCallbackController.php:818 —
+         * server has no configured callback URL. Text
+         * `callback_url_not_configured`.
+         */
         readonly CALLBACK_URL_NOT_CONFIGURED: "oauth.callback_url_not_configured";
     };
     /**
      * Server LDAP provider admin surface (connection form + test). CAVEAT
-     * (Wave 1b): all seven ride the `error` TEXT field today — as form-gate
+     * (W1b): all seven ride the `error` TEXT field today — as form-gate
      * snake pseudo-codes (no `code` key) and, for the last four, as the
      * `'error'` value of the `testConnection` arrays that srv
      * LdapAdminController.php:367-369 passes THROUGH to the client as JSON
@@ -1928,19 +2098,33 @@ export declare const ERROR_CODE: {
      * `error` text until then.
      */
     readonly ldap: {
-        /** srv LdapAdminController.php:132,342 — form word 'missing_host'. */
+        /** srv LdapAdminController.php:132,342 — form word `missing_host`. */
         readonly MISSING_HOST: "ldap.missing_host";
-        /** srv LdapAdminController.php:139,349 — form word 'missing_base_dn'. */
+        /** srv LdapAdminController.php:139,349 — form word `missing_base_dn`. */
         readonly MISSING_BASE_DN: "ldap.missing_base_dn";
-        /** srv LdapAdminController.php:146 — form word 'invalid_port'. */
+        /** srv LdapAdminController.php:146 — form word `invalid_port`. */
         readonly INVALID_PORT: "ldap.invalid_port";
-        /** srv LdapAdminController.php:373 (catch arm) — today text 'connection_failed', also returned at srv LdapConnection.php:259 (surfaced via the srv LdapAdminController.php:367-369 `testConnection` passthrough). */
+        /**
+         * srv LdapAdminController.php:373 (catch arm) — today text
+         * `connection_failed`, also returned at srv LdapConnection.php:259
+         * (surfaced via the srv LdapAdminController.php:367-369 `testConnection`
+         * passthrough).
+         */
         readonly CONNECTION_FAILED: "ldap.connection_failed";
-        /** srv LdapConnection.php:268 (`testConnection` array, surfaced via the srv LdapAdminController.php:367-369 passthrough) — 'bind_failed'. */
+        /**
+         * srv LdapConnection.php:268 (`testConnection` array, surfaced via the srv
+         * LdapAdminController.php:367-369 passthrough) — `bind_failed`.
+         */
         readonly BIND_FAILED: "ldap.bind_failed";
-        /** srv LdapConnection.php:281 (`testConnection` array, via srv LdapAdminController.php:367-369) — 'ldap_error'. */
+        /**
+         * srv LdapConnection.php:281 (`testConnection` array, via srv
+         * LdapAdminController.php:367-369) — `ldap_error`.
+         */
         readonly ERROR: "ldap.error";
-        /** srv LdapConnection.php:287 (`testConnection` array, via srv LdapAdminController.php:367-369) — 'runtime_error'. */
+        /**
+         * srv LdapConnection.php:287 (`testConnection` array, via srv
+         * LdapAdminController.php:367-369) — `runtime_error`.
+         */
         readonly RUNTIME_ERROR: "ldap.runtime_error";
     };
     /**
@@ -1977,19 +2161,46 @@ export declare const ERROR_CODE: {
      * — the documented split.
      */
     readonly syncplay: {
-        /** LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at srv SyncPlayManager.php:1860 — dotted twin of legacy `CREATE_FAILED` */
+        /**
+         * LIVE on the wire since srv #798 (9b2394ee): create-carrier fallback at
+         * srv SyncPlayManager.php:1860 — dotted twin of legacy `CREATE_FAILED`
+         */
         readonly CREATE_FAILED: "syncplay.create_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv SyncPlayManager.php:1919 — dotted twin of legacy `JOIN_FAILED` */
+        /**
+         * LIVE on the wire since srv #798 (9b2394ee): join-carrier fallback at srv
+         * SyncPlayManager.php:1919 — dotted twin of legacy `JOIN_FAILED`
+         */
         readonly JOIN_FAILED: "syncplay.join_failed";
-        /** LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at srv SyncPlayManager.php:1968 — dotted twin of legacy `LEAVE_FAILED` */
+        /**
+         * LIVE on the wire since srv #798 (9b2394ee): leave-carrier direct emit at
+         * srv SyncPlayManager.php:1968 — dotted twin of legacy `LEAVE_FAILED`
+         */
         readonly LEAVE_FAILED: "syncplay.leave_failed";
-        /** LIVE on the wire (srv SyncPlayManager.php:707): inner createGroup code, forwarded through the `syncplay.create_failed` fallback wrap at srv SyncPlayManager.php:1860; the playback-queue cap split away to `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1278 (server 7baa398a) — this row now covers the group-count cap only */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:707): inner createGroup code,
+         * forwarded through the `syncplay.create_failed` fallback wrap at srv
+         * SyncPlayManager.php:1860; the playback-queue cap split away to
+         * `syncplay.queue_limit_exceeded` at srv SyncPlayManager.php:1278 (server
+         * 7baa398a) — this row now covers the group-count cap only
+         */
         readonly GROUP_LIMIT_REACHED: "syncplay.group_limit_reached";
-        /** LIVE on the wire (srv SyncPlayManager.php:799): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:799): inner joinGroup code,
+         * forwarded through the `syncplay.join_failed` fallback wrap at srv
+         * SyncPlayManager.php:1919
+         */
         readonly GROUP_NOT_FOUND: "syncplay.group_not_found";
-        /** LIVE on the wire (srv SyncPlayManager.php:847): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:847): inner joinGroup code,
+         * forwarded through the `syncplay.join_failed` fallback wrap at srv
+         * SyncPlayManager.php:1919
+         */
         readonly INVALID_PASSWORD: "syncplay.invalid_password";
-        /** LIVE on the wire (srv SyncPlayManager.php:852): inner joinGroup code, forwarded through the `syncplay.join_failed` fallback wrap at srv SyncPlayManager.php:1919 */
+        /**
+         * LIVE on the wire (srv SyncPlayManager.php:852): inner joinGroup code,
+         * forwarded through the `syncplay.join_failed` fallback wrap at srv
+         * SyncPlayManager.php:1919
+         */
         readonly GROUP_FULL: "syncplay.group_full";
         /**
          * srv SyncPlayManager.php:1278 — LIVE on the wire since server 7baa398a
@@ -2030,11 +2241,26 @@ export declare const ERROR_CODE: {
         readonly MEMBER_NOT_FOUND: "MEMBER_NOT_FOUND";
         /** srv SyncPlayManager.php:1453 */
         readonly SAME_HOST: "SAME_HOST";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the create-carrier fallback flipped to the dotted twin at srv SyncPlayManager.php:1860; still resolved client-side for old-server compatibility */
+        /**
+         * Retired from current server emit at srv #798 (9b2394ee) — the
+         * create-carrier fallback flipped to the dotted twin at srv
+         * SyncPlayManager.php:1860; still resolved client-side for old-server
+         * compatibility
+         */
         readonly CREATE_FAILED: "CREATE_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the join-carrier fallback flipped to the dotted twin `syncplay.join_failed` at srv SyncPlayManager.php:1919; still resolved client-side for old-server compatibility */
+        /**
+         * Retired from current server emit at srv #798 (9b2394ee) — the
+         * join-carrier fallback flipped to the dotted twin `syncplay.join_failed`
+         * at srv SyncPlayManager.php:1919; still resolved client-side for
+         * old-server compatibility
+         */
         readonly JOIN_FAILED: "JOIN_FAILED";
-        /** Retired from current server emit at srv #798 (9b2394ee) — the leave carrier now emits the dotted twin directly at srv SyncPlayManager.php:1968; still resolved client-side for old-server compatibility */
+        /**
+         * Retired from current server emit at srv #798 (9b2394ee) — the leave
+         * carrier now emits the dotted twin directly at srv
+         * SyncPlayManager.php:1968; still resolved client-side for old-server
+         * compatibility
+         */
         readonly LEAVE_FAILED: "LEAVE_FAILED";
         /**
          * srv MessageHandler.php:188-191. Wave ruling (R-SP-W2-01, protocol-version
@@ -2141,7 +2367,11 @@ export type OAuthErrorCode = ErrorCodeIn<'oauth'>;
 export type LdapErrorCode = ErrorCodeIn<'ldap'>;
 export type SyncPlayTwinErrorCode = ErrorCodeIn<'syncplay'>;
 export type LegacySyncPlayErrorCode = ErrorCodeIn<'legacy'>;
-/** The full SyncPlay vocabulary: legacy SCREAMING wire history ∪ dotted twins (ALL LIVE on the current server: the seven #798 twins plus `syncplay.queue_limit_exceeded`, LIVE since srv 7baa398a). */
+/**
+ * The full SyncPlay vocabulary: legacy SCREAMING wire history ∪ dotted twins
+ * (ALL LIVE on the current server: the seven #798 twins plus
+ * `syncplay.queue_limit_exceeded`, LIVE since srv 7baa398a).
+ */
 export type SyncPlayErrorCode = LegacySyncPlayErrorCode | SyncPlayTwinErrorCode;
 /**
  * The syncplay rows that are SCREAMING-legacy twins — the exact key domain of
@@ -2152,10 +2382,10 @@ export type SyncPlayErrorCode = LegacySyncPlayErrorCode | SyncPlayTwinErrorCode;
  * forces it) or get its own documented exclusion here.
  */
 export type SyncPlayLegacyTwinErrorCode = Exclude<SyncPlayTwinErrorCode, 'syncplay.queue_limit_exceeded'>;
-/** Legacy + twins, legacy first (what a Wave-2 SyncPlay client must understand). */
+/** Legacy + twins, legacy first (what a W2-era SyncPlay client must understand). */
 export declare const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[];
 /**
- * Wave-2 migration map: each dotted twin → the coarse/legacy code it replaces
+ * The W2 migration map: each dotted twin → the coarse/legacy code it replaces
  * (or un-wraps from a prose carrier). Status at srv 9b2394ee: ALL SEVEN rows
  * are LIVE. The four inner-path rows ride the `?? ` wrap sites — the carriers
  * forward any inner code at srv SyncPlayManager.php:1860 and srv
