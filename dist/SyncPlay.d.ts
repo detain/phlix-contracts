@@ -26,18 +26,9 @@
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
+import type { WireKeysExact } from './internal/wireKeys';
 export type SyncPlayRole = 'none' | 'contributor' | 'editor' | 'owner';
 export type SyncPlayPermission = 'play' | 'pause' | 'seek' | 'chat' | 'control';
-/**
- * Compile-time tie: K holds exactly the keys of T in some order — a rename on
- * the interface that does not follow the const (or vice versa) is a type
- * error. (Same idiom as playback.ts; kept local so SyncPlay.ts stays
- * self-contained.)
- */
-type WireKeysExact<T, K extends readonly string[]> = [
-    Exclude<keyof T & string, K[number]>,
-    Exclude<K[number], keyof T & string>
-] extends [never, never] ? true : false;
 /**
  * A member inside a SyncPlay group state — one VALUE of the `members`
  * dictionary emitted by `GroupState::getState()`. The dictionary KEY is the
@@ -197,4 +188,3 @@ export declare const SYNC_PLAY_KEY_TIES: {
     readonly leaveGroupResponse: true;
     readonly errorResponse: true;
 };
-export {};

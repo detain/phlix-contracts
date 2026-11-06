@@ -18,6 +18,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — LW-040 completion: `SyncPlay.ts` joins the shared `WireKeysExact` (w03L3 review cure) — 2026-11-07
+
+- **Forward correction, claim first:** the entry below asserted the helper
+  "now lives once" with BOTH consumers migrated; the landing migrated only
+  `src/playback.ts` and `src/SyncPlay.ts` kept its private copy, so the claim
+  was false at `26ef523` (w03L3 review Major; historical entry kept verbatim
+  per the append-only law). This cure completes it: the local declaration and
+  its retired self-containment docblock are deleted from `src/SyncPlay.ts`,
+  the file gains `import type { WireKeysExact } from './internal/wireKeys';`,
+  and the tie-site comment mirrors `playback.ts`'s pointer to the shared
+  membership-versus-order scope note (the card's alternative — an order-aware
+  variant — stays declined exactly as the landing declined it: the fixtures
+  carry the order). `dist/SyncPlay.d.ts` rotates to the import form like
+  playback's did and the two bundle maps re-VLQ (their `mappings` shift with
+  the seven deleted source lines; `sourcesContent` carries the new
+  `SyncPlay.ts` text); the emitted `phlix-contracts.js`/`.umd.cjs` JS bytes
+  are UNCHANGED — the erasure is provably type-only. New
+  `test/wireKeys.test.ts` (6 tests) pins the consolidation against
+  half-migration re-landing: exactly one declaring file in `src/` and in
+  `dist/`, both consumers importing rather than re-declaring, the retired
+  rationale surviving only as the internal header's quotation of history,
+  `wireKeys` never reaching `src/index.ts`/`dist/index.d.ts`, and every
+  SyncPlay tie still true through the shared helper. Red-first: overlaid on
+  `26ef523` the suite fails 4 of 6 — the structural legs convict a second
+  local copy (this cure is type-only, so the teeth are structural-grep, by
+  design). Suite 173 to 179 tests; the three registry md5s are byte-identical
+  again across this commit (`5d1783a7…`, `90b79e35…`, `8c92c070…`) and
+  `verify:cites` holds `ok=435 problems=0`.
+
 ### Fixed — LW-011/040/070 docblock sweep, WireKeysExact hoist, importable match law — 2026-11-07
 
 - **Docblock style sweep (LW-011):** `src/errors.ts` standardizes on the

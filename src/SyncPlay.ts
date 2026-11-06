@@ -27,18 +27,11 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
+import type { WireKeysExact } from './internal/wireKeys';
+
 export type SyncPlayRole = 'none' | 'contributor' | 'editor' | 'owner';
 
 export type SyncPlayPermission = 'play' | 'pause' | 'seek' | 'chat' | 'control';
-
-/**
- * Compile-time tie: K holds exactly the keys of T in some order — a rename on
- * the interface that does not follow the const (or vice versa) is a type
- * error. (Same idiom as playback.ts; kept local so SyncPlay.ts stays
- * self-contained.)
- */
-type WireKeysExact<T, K extends readonly string[]> =
-  [Exclude<keyof T & string, K[number]>, Exclude<K[number], keyof T & string>] extends [never, never] ? true : false;
 
 /**
  * A member inside a SyncPlay group state — one VALUE of the `members`
@@ -231,6 +224,9 @@ export interface SyncPlayErrorResponse {
 
 // Compile-time ties: each interface and its ordered key const must contain
 // exactly the same names, in both directions. `tsc --noEmit` reddens on drift.
+// The `WireKeysExact` helper itself lives in `src/internal/wireKeys.ts` — one
+// definition shared with `playback.ts` (LW-040); see there for the
+// membership-versus-order scope note.
 export type SyncPlayMemberKeysTied = WireKeysExact<SyncPlayMember, typeof SYNC_PLAY_MEMBER_KEYS>;
 export type SyncPlayQueueItemKeysTied = WireKeysExact<SyncPlayQueueItem, typeof SYNC_PLAY_QUEUE_ITEM_KEYS>;
 export type SyncPlayGroupKeysTied = WireKeysExact<SyncPlayGroup, typeof SYNC_PLAY_GROUP_KEYS>;
