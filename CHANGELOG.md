@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-11-06
+
 ### Changed — LW-071: `exactOptionalPropertyTypes` enabled — the absent-vs-null doctrine gets compiler teeth — 2026-11-06
 
 - **`tsconfig.json` (estate review contracts__srphp #3 [Minor]):** the package
