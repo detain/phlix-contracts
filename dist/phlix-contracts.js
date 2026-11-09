@@ -77,16 +77,19 @@ var r = [
 	playbackConstraints: !0,
 	base: !0
 }, ce = {
+	COOKIE: "cookie",
+	BEARER: "bearer"
+}, le = {
 	PHLIX: "phlix",
 	PHLIX_HUB: "phlix-hub"
-}, le = {
+}, ue = {
 	SERVER: "server",
 	HUB: "hub",
 	CLIENT: "client"
-}, ue = {
+}, de = {
 	ACCESS: "access",
 	REFRESH: "refresh"
-}, de = {
+}, fe = {
 	ONLINE: "online",
 	OFFLINE: "offline",
 	CLAIMING: "claiming",
@@ -113,7 +116,7 @@ var r = [
 	RECORDING_STOPPED: "recording.stopped",
 	MEDIA_ADDED: "media.added",
 	ALERT: "alert"
-}, s = { TEST: "webhook.test" }, fe = {
+}, s = { TEST: "webhook.test" }, pe = {
 	plugin: a,
 	webhook: o,
 	webhookReserved: s
@@ -122,12 +125,12 @@ var r = [
 	LIBRARY_READ: "mcp:library:read",
 	PLAYBACK_READ: "mcp:playback:read",
 	PLAYBACK_CONTROL: "mcp:playback:control"
-}, pe = [
+}, me = [
 	c.SERVERS_READ,
 	c.LIBRARY_READ,
 	c.PLAYBACK_READ,
 	c.PLAYBACK_CONTROL
-], me = "phlix-mcp-", l = {
+], he = "phlix-mcp-", l = {
 	auth: {
 		REQUIRED: "auth.required",
 		NOT_ADMIN: "auth.not_admin",
@@ -385,7 +388,7 @@ var r = [
 		LEAVE_FAILED: "LEAVE_FAILED",
 		PROTOCOL_VERSION_MISMATCH: "PROTOCOL_VERSION_MISMATCH"
 	}
-}, he = l, u = /* @__PURE__ */ "auth.hub.claim.server.proxy.quota.stream.access.gateway.relay.mcp.mcp_token.alexa.tls.csrf.user.plugin.library.metadata.poster.profile.dlna.casting.quickconnect.common.federation.share.invite.request.admin.updates.identity.provider.oauth.ldap.syncplay.legacy".split("."), d = Object.values(l.auth), f = Object.values(l.hub), p = Object.values(l.claim), m = Object.values(l.server), h = Object.values(l.proxy), g = Object.values(l.quota), _ = Object.values(l.stream), v = Object.values(l.access), y = Object.values(l.gateway), b = Object.values(l.relay), x = Object.values(l.mcp), S = Object.values(l.mcp_token), C = Object.values(l.alexa), w = Object.values(l.tls), T = Object.values(l.csrf), ge = Object.values(l.user), E = Object.values(l.plugin), D = Object.values(l.library), O = Object.values(l.metadata), k = Object.values(l.poster), A = Object.values(l.profile), j = Object.values(l.dlna), M = Object.values(l.casting), N = Object.values(l.quickconnect), P = Object.values(l.common), F = Object.values(l.federation), I = Object.values(l.share), L = Object.values(l.invite), R = Object.values(l.request), z = Object.values(l.admin), B = Object.values(l.updates), V = Object.values(l.identity), H = Object.values(l.provider), U = Object.values(l.oauth), W = Object.values(l.ldap), G = Object.values(l.syncplay), K = Object.values(l.legacy), _e = {
+}, ge = l, u = /* @__PURE__ */ "auth.hub.claim.server.proxy.quota.stream.access.gateway.relay.mcp.mcp_token.alexa.tls.csrf.user.plugin.library.metadata.poster.profile.dlna.casting.quickconnect.common.federation.share.invite.request.admin.updates.identity.provider.oauth.ldap.syncplay.legacy".split("."), d = Object.values(l.auth), f = Object.values(l.hub), p = Object.values(l.claim), m = Object.values(l.server), h = Object.values(l.proxy), g = Object.values(l.quota), _ = Object.values(l.stream), v = Object.values(l.access), y = Object.values(l.gateway), b = Object.values(l.relay), x = Object.values(l.mcp), S = Object.values(l.mcp_token), C = Object.values(l.alexa), w = Object.values(l.tls), T = Object.values(l.csrf), _e = Object.values(l.user), E = Object.values(l.plugin), D = Object.values(l.library), O = Object.values(l.metadata), k = Object.values(l.poster), A = Object.values(l.profile), j = Object.values(l.dlna), M = Object.values(l.casting), N = Object.values(l.quickconnect), P = Object.values(l.common), F = Object.values(l.federation), I = Object.values(l.share), L = Object.values(l.invite), R = Object.values(l.request), z = Object.values(l.admin), B = Object.values(l.updates), V = Object.values(l.identity), H = Object.values(l.provider), U = Object.values(l.oauth), W = Object.values(l.ldap), G = Object.values(l.syncplay), K = Object.values(l.legacy), ve = {
 	auth: d,
 	hub: f,
 	claim: p,
@@ -401,7 +404,7 @@ var r = [
 	alexa: C,
 	tls: w,
 	csrf: T,
-	user: ge,
+	user: _e,
 	plugin: E,
 	library: D,
 	metadata: O,
@@ -423,7 +426,7 @@ var r = [
 	ldap: W,
 	syncplay: G,
 	legacy: K
-}, ve = u.flatMap((e) => _e[e]), ye = [...K, ...G], be = {
+}, ye = u.flatMap((e) => ve[e]), be = [...K, ...G], xe = {
 	"syncplay.create_failed": "CREATE_FAILED",
 	"syncplay.group_limit_reached": "CREATE_FAILED",
 	"syncplay.join_failed": "JOIN_FAILED",
@@ -431,48 +434,48 @@ var r = [
 	"syncplay.invalid_password": "JOIN_FAILED",
 	"syncplay.group_full": "JOIN_FAILED",
 	"syncplay.leave_failed": "LEAVE_FAILED"
-}, q = "X-Phlix-Device-ID", J = "X-Phlix-Device-Name", Y = "X-Phlix-Device-Type", xe = "X-Phlix-Session-ID";
-function Se(e) {
+}, q = "X-Phlix-Device-ID", J = "X-Phlix-Device-Name", Y = "X-Phlix-Device-Type", Se = "X-Phlix-Session-ID";
+function Ce(e) {
 	let t = {
 		[q]: e.deviceId,
 		[J]: e.deviceName,
 		[Y]: e.deviceType
 	};
-	return e.sessionId !== void 0 && e.sessionId !== "" && (t[xe] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
+	return e.sessionId !== void 0 && e.sessionId !== "" && (t[Se] = e.sessionId), e.token !== void 0 && e.token !== "" && (t.Authorization = `Bearer ${e.token}`), t;
 }
 // src/ticks.ts
 var X = 1e7, Z = 6e8, Q = 36e9;
-function Ce(e) {
+function we(e) {
 	return e / X;
 }
-function we(e) {
+function Te(e) {
 	return Math.floor(e * X);
 }
-function Te(e) {
+function Ee(e) {
 	return Math.floor(e / Z);
 }
-function Ee(e) {
-	let t = Math.floor(Ce(Number.isFinite(e) && e > 0 ? e : 0)), n = Math.floor(t / 3600), r = Math.floor(t % 3600 / 60), i = Math.floor(t % 60);
+function De(e) {
+	let t = Math.floor(we(Number.isFinite(e) && e > 0 ? e : 0)), n = Math.floor(t / 3600), r = Math.floor(t % 3600 / 60), i = Math.floor(t % 60);
 	return n > 0 ? `${n}:${r.toString().padStart(2, "0")}:${i.toString().padStart(2, "0")}` : `${r}:${i.toString().padStart(2, "0")}`;
 }
-function De(e) {
-	let t = Te(Number.isFinite(e) && e > 0 ? e : 0);
+function Oe(e) {
+	let t = Ee(Number.isFinite(e) && e > 0 ? e : 0);
 	return t < 60 ? `${t} min` : `${Math.floor(t / 60)}h ${t % 60}m`;
 }
-function Oe(e) {
+function ke(e) {
 	if (!e || !Number.isFinite(e) || e < 0) return "";
 	let t = Math.floor(e / Q), n = Math.floor(e % Q / Z);
 	return t > 0 ? `${t}h ${n}m` : `${n}m`;
 }
 // src/Rating.ts
-function ke(e) {
+function Ae(e) {
 	var t;
 	if (e.rating_score !== void 0 && e.rating_score !== null) return e.rating_score;
 	let n = (t = e.metadata_json) == null ? void 0 : t.rating;
 	return typeof n == "number" ? n : null;
 }
 // src/Audio.ts
-function Ae(e, t) {
+function je(e, t) {
 	if (!e.length || !t.length) return 0;
 	for (let n of t) {
 		let t = n.toLowerCase().split("-")[0], r = e.findIndex((e) => {
@@ -484,17 +487,17 @@ function Ae(e, t) {
 	return 0;
 }
 // src/SyncPlay.ts
-var je = [
+var Me = [
 	"id",
 	"name",
 	"is_host",
 	"joined_at"
-], Me = [
+], Ne = [
 	"media_id",
 	"media_info",
 	"added_at",
 	"added_by"
-], Ne = [
+], Pe = [
 	"group_id",
 	"group_name",
 	"member_count",
@@ -507,14 +510,14 @@ var je = [
 	"queue",
 	"created_at",
 	"last_activity_at"
-], Pe = [
+], Fe = [
 	"id",
 	"name",
 	"member_count",
 	"has_password",
 	"current_media",
 	"is_playing"
-], Fe = ["groups"], Ie = ["success", "group"], Le = ["group"], Re = ["success", "group"], ze = ["success", "message"], Be = ["error"], Ve = {
+], Ie = ["groups"], Le = ["success", "group"], Re = ["group"], ze = ["success", "group"], Be = ["success", "message"], Ve = ["error"], He = {
 	member: !0,
 	queueItem: !0,
 	group: !0,
@@ -525,11 +528,11 @@ var je = [
 	joinGroupResponse: !0,
 	leaveGroupResponse: !0,
 	errorResponse: !0
-}, He = [
+}, Ue = [
 	"profile_id",
 	"max_concurrent_streams",
 	"max_total_bandwidth_kbps"
-], Ue = [
+], We = [
 	"id",
 	"profile_id",
 	"device_id",
@@ -537,10 +540,10 @@ var je = [
 	"started_at",
 	"last_heartbeat_at",
 	"stream_type"
-], We = {
+], Ge = {
 	profileStreamLimit: !0,
 	activeStream: !0
-}, Ge = [
+}, Ke = [
 	["DELETE", "/api/v1/admin/backup/{id}"],
 	["DELETE", "/api/v1/admin/livetv/recordings/{id}"],
 	["DELETE", "/api/v1/admin/livetv/series-rules/{id}"],
@@ -956,7 +959,7 @@ var je = [
 	["PUT", "/api/v1/profiles/{profileId}/schedules/{scheduleId}"],
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
-], Ke = {
+], qe = {
 	serverSha: "58530ec207b0d40c3386ed10215d5bda3eaf54af",
 	generatedAt: "2026-11-04T07:29:19Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
@@ -970,13 +973,13 @@ var je = [
 	shared: 11,
 	total: 415
 }, $ = /* @__PURE__ */ new Map();
-function qe(e) {
+function Je(e) {
 	let t = $.get(e);
 	return t === void 0 && (t = RegExp(`^${e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\\\{[^}]*\\\}/g, "[^/]+")}$`), $.set(e, t)), t;
 }
-function Je(e, t) {
-	return Ge.some(([n, r]) => n === e && qe(r).test(t));
+function Ye(e, t) {
+	return Ke.some(([n, r]) => n === e && Je(r).test(t));
 }
-export { v as ACCESS_ERROR_CODES, Ue as ACTIVE_STREAM_KEYS, z as ADMIN_ERROR_CODES, C as ALEXA_ERROR_CODES, i as AUDIO_TRACK_KEYS, d as AUTH_ERROR_CODES, e as AUTO_QUALITY, M as CASTING_ERROR_CODES, p as CLAIM_ERROR_CODES, P as COMMON_ERROR_CODES, ie as CROSSFADE_KEYS, T as CSRF_ERROR_CODES, j as DLNA_ERROR_CODES, he as ERROR_CODE, ve as ERROR_CODES, u as ERROR_DOMAINS, fe as EVENT, F as FEDERATION_ERROR_CODES, y as GATEWAY_ERROR_CODES, f as HUB_ERROR_CODES, V as IDENTITY_ERROR_CODES, L as INVITE_ERROR_CODES, le as JWT_AUD, ce as JWT_ISS, ue as JWT_TYPE, W as LDAP_ERROR_CODES, K as LEGACY_SYNCPLAY_ERROR_CODES, D as LIBRARY_ERROR_CODES, x as MCP_ERROR_CODES, c as MCP_SCOPE, pe as MCP_SCOPES, S as MCP_TOKEN_ERROR_CODES, me as MCP_TOKEN_PREFIX, O as METADATA_ERROR_CODES, U as OAUTH_ERROR_CODES, ae as PLAYBACK_CONSTRAINTS_KEYS, re as PLAYBACK_INFO_CHAPTER_KEYS, oe as PLAYBACK_INFO_KEYS, se as PLAYBACK_INFO_KEY_TIES, E as PLUGIN_ERROR_CODES, a as PLUGIN_EVENT, k as POSTER_ERROR_CODES, A as PROFILE_ERROR_CODES, He as PROFILE_STREAM_LIMIT_KEYS, H as PROVIDER_ERROR_CODES, h as PROXY_ERROR_CODES, N as QUICKCONNECT_ERROR_CODES, g as QUOTA_ERROR_CODES, b as RELAY_ERROR_CODES, t as RENDITION_KEYS, R as REQUEST_ERROR_CODES, m as SERVER_ERROR_CODES, Ge as SERVER_ROUTE_MANIFEST, Ke as SERVER_ROUTE_MANIFEST_PROVENANCE, de as SERVER_STATUS, I as SHARE_ERROR_CODES, te as SKIP_BUTTON_SPEC_KEYS, _ as STREAM_ERROR_CODES, We as STREAM_SESSION_KEY_TIES, r as SUBTITLE_TRACK_KEYS, ye as SYNCPLAY_ERROR_CODES, be as SYNCPLAY_ERROR_CODE_TWINS, G as SYNCPLAY_TWIN_ERROR_CODES, Ie as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, Be as SYNC_PLAY_ERROR_RESPONSE_KEYS, Le as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, Ne as SYNC_PLAY_GROUP_KEYS, Pe as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, Re as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, Ve as SYNC_PLAY_KEY_TIES, ze as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, Fe as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, je as SYNC_PLAY_MEMBER_KEYS, Me as SYNC_PLAY_QUEUE_ITEM_KEYS, Q as TICKS_PER_HOUR, Z as TICKS_PER_MINUTE, X as TICKS_PER_SECOND, ne as TIME_MARKER_KEYS, w as TLS_ERROR_CODES, ee as TRACK_KEY_TIES, B as UPDATES_ERROR_CODES, ge as USER_ERROR_CODES, o as WEBHOOK_EVENT, s as WEBHOOK_EVENT_RESERVED, q as X_PHLIX_DEVICE_ID, J as X_PHLIX_DEVICE_NAME, Y as X_PHLIX_DEVICE_TYPE, xe as X_PHLIX_SESSION_ID, Se as buildPhlixHeaders, Oe as formatDuration, De as formatRuntime, Je as isServedRoute, Ae as pickDefaultAudio, n as pickDefaultRendition, ke as pickDisplayRating, we as secondsToTicks, Ee as ticksToHms, Te as ticksToMinutes, Ce as ticksToSeconds };
+export { v as ACCESS_ERROR_CODES, We as ACTIVE_STREAM_KEYS, z as ADMIN_ERROR_CODES, C as ALEXA_ERROR_CODES, i as AUDIO_TRACK_KEYS, d as AUTH_ERROR_CODES, e as AUTO_QUALITY, M as CASTING_ERROR_CODES, p as CLAIM_ERROR_CODES, P as COMMON_ERROR_CODES, ce as COOKIE_MODE, ie as CROSSFADE_KEYS, T as CSRF_ERROR_CODES, j as DLNA_ERROR_CODES, ge as ERROR_CODE, ye as ERROR_CODES, u as ERROR_DOMAINS, pe as EVENT, F as FEDERATION_ERROR_CODES, y as GATEWAY_ERROR_CODES, f as HUB_ERROR_CODES, V as IDENTITY_ERROR_CODES, L as INVITE_ERROR_CODES, ue as JWT_AUD, le as JWT_ISS, de as JWT_TYPE, W as LDAP_ERROR_CODES, K as LEGACY_SYNCPLAY_ERROR_CODES, D as LIBRARY_ERROR_CODES, x as MCP_ERROR_CODES, c as MCP_SCOPE, me as MCP_SCOPES, S as MCP_TOKEN_ERROR_CODES, he as MCP_TOKEN_PREFIX, O as METADATA_ERROR_CODES, U as OAUTH_ERROR_CODES, ae as PLAYBACK_CONSTRAINTS_KEYS, re as PLAYBACK_INFO_CHAPTER_KEYS, oe as PLAYBACK_INFO_KEYS, se as PLAYBACK_INFO_KEY_TIES, E as PLUGIN_ERROR_CODES, a as PLUGIN_EVENT, k as POSTER_ERROR_CODES, A as PROFILE_ERROR_CODES, Ue as PROFILE_STREAM_LIMIT_KEYS, H as PROVIDER_ERROR_CODES, h as PROXY_ERROR_CODES, N as QUICKCONNECT_ERROR_CODES, g as QUOTA_ERROR_CODES, b as RELAY_ERROR_CODES, t as RENDITION_KEYS, R as REQUEST_ERROR_CODES, m as SERVER_ERROR_CODES, Ke as SERVER_ROUTE_MANIFEST, qe as SERVER_ROUTE_MANIFEST_PROVENANCE, fe as SERVER_STATUS, I as SHARE_ERROR_CODES, te as SKIP_BUTTON_SPEC_KEYS, _ as STREAM_ERROR_CODES, Ge as STREAM_SESSION_KEY_TIES, r as SUBTITLE_TRACK_KEYS, be as SYNCPLAY_ERROR_CODES, xe as SYNCPLAY_ERROR_CODE_TWINS, G as SYNCPLAY_TWIN_ERROR_CODES, Le as SYNC_PLAY_CREATE_GROUP_RESPONSE_KEYS, Ve as SYNC_PLAY_ERROR_RESPONSE_KEYS, Re as SYNC_PLAY_GET_GROUP_RESPONSE_KEYS, Pe as SYNC_PLAY_GROUP_KEYS, Fe as SYNC_PLAY_GROUP_LIST_ITEM_KEYS, ze as SYNC_PLAY_JOIN_GROUP_RESPONSE_KEYS, He as SYNC_PLAY_KEY_TIES, Be as SYNC_PLAY_LEAVE_GROUP_RESPONSE_KEYS, Ie as SYNC_PLAY_LIST_GROUPS_RESPONSE_KEYS, Me as SYNC_PLAY_MEMBER_KEYS, Ne as SYNC_PLAY_QUEUE_ITEM_KEYS, Q as TICKS_PER_HOUR, Z as TICKS_PER_MINUTE, X as TICKS_PER_SECOND, ne as TIME_MARKER_KEYS, w as TLS_ERROR_CODES, ee as TRACK_KEY_TIES, B as UPDATES_ERROR_CODES, _e as USER_ERROR_CODES, o as WEBHOOK_EVENT, s as WEBHOOK_EVENT_RESERVED, q as X_PHLIX_DEVICE_ID, J as X_PHLIX_DEVICE_NAME, Y as X_PHLIX_DEVICE_TYPE, Se as X_PHLIX_SESSION_ID, Ce as buildPhlixHeaders, ke as formatDuration, Oe as formatRuntime, Ye as isServedRoute, je as pickDefaultAudio, n as pickDefaultRendition, Ae as pickDisplayRating, Te as secondsToTicks, De as ticksToHms, Ee as ticksToMinutes, we as ticksToSeconds };
 
 //# sourceMappingURL=phlix-contracts.js.map

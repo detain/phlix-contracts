@@ -18,6 +18,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — CP-001: CookieMode custody marker + cookie-program docblock truth (types + docs only; zero wire change) — 2026-11-09
+
+- `src/auth.ts` gains the designed token-custody bifurcation record
+  (COOKIE-DESIGN.md §2.1/§3, owner rulings CD-1a..CD-8a): exported
+  `COOKIE_MODE` const family (`COOKIE: 'cookie'`, `BEARER: 'bearer'`) with
+  the derived `CookieMode` union, following the existing `JWT_*` marker
+  pattern. CLASS BROWSER (same-origin `/app` SPA) rides the server-issued
+  httpOnly + SameSite=Lax `phlix_session`/`phlix_refresh` pair and holds no
+  JavaScript-readable secret; CLASS DEVICE (windows, mobile, tizen, roku,
+  console, plugins, CLI) keeps bearer custody exactly as before. The marker
+  is a type/doc surface only — no wire field is keyed by it and ZERO new
+  error codes are registered.
+- `AuthResult` docblock now states the dual-emit envelope law (CD-2a):
+  during the compat window browser-class login/refresh/logout bodies stay
+  byte-identical to the device shapes (same keys, same order) while the
+  session also rides the cookie pair; the header docblock records the
+  scheme gate (cookie iff https|localhost, CD-3a) and the
+  `csrf.invalid_origin` posture (§2.5 — already-registered code, unchanged).
+- `src/headers.ts` is a DOC-ONLY pass (behavior UNCHANGED by design, §3):
+  the module, `X_PHLIX_DEVICE_TYPE` and `DeviceType` docblocks record that
+  the device-type header IS the server's cookie opt-out discriminator, and
+  why the union deliberately has no browser member (and no console member —
+  console is bearer class but identifies through its REST body).
+- New `test/cookieMode.test.ts` (7 tests) pins the marker law, the envelope
+  key set/casing via `@ts-expect-error` drift pins, and the opt-out
+  discriminator. Serial vitest baseline rotates 17 files/203 tests →
+  18 files/210 tests inside this commit (red-first measured on the parent).
+- README module table gains the `COOKIE_MODE` export and the custody-law
+  prose on both rows.
+- `dist/` regenerated: exactly six files change (`auth.d.ts`,
+  `headers.d.ts`, both bundles, both maps). The wire trio is UNMOVED
+  (`error-codes.json` 5d1783a7…, `server-route-manifest.json` 90b79e35…,
+  `mcp-scopes.json` 8c92c070…) and `index.d.ts` is byte-identical; the
+  ESM/UMD JS gains only the `COOKIE_MODE` object + export clause (plus the
+  one-letter minified-identifier shift after the insertion) — no existing
+  function body changed. Build is deterministic across two clean runs.
+
 ### Fixed — LW-091: verify-cites re-anchor at the estate final tips (comment currency only; zero wire change) — 2026-11-09
 
 - **Thirteen drifted hub coordinates re-anchored at source** in

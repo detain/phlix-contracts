@@ -114,13 +114,13 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 |---------------|---------|
 | `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `MediaItemUserData`, `UserData`, `Library`, `LibrariesResponse`, `LibraryResponse`, `MediaItemsResponse`, `PagedMediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
 | `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
-| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ type aliases) |
+| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE`, `COOKIE_MODE` (+ type aliases) — token custody modes (COOKIE-DESIGN.md §2.1: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
 | `events.ts`   | event payload interfaces + `PLUGIN_EVENT`, `WEBHOOK_EVENT`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
 | `mcp.ts`      | `MCP_SCOPE`, `McpScope`, `MCP_SCOPES`, `MCP_TOKEN_PREFIX` (mirrored to `dist/mcp-scopes.json`) |
 | `errors.ts`   | `ERROR_CODE`, `ERROR_CODES`, `ERROR_DOMAINS`, `ErrorCode`, per-domain code lists + unions, `SyncPlayErrorCode`, `LEGACY_SYNCPLAY_ERROR_CODES`, `SYNCPLAY_ERROR_CODE_TWINS` (mirrored to `dist/error-codes.json`) |
-| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `buildPhlixHeaders` |
+| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1) |
 | `ticks.ts`    | `TICKS_PER_SECOND`/`_MINUTE`/`_HOUR`, `ticksToSeconds`, `secondsToTicks`, `ticksToMinutes`, `ticksToHms`, `formatRuntime`, `formatDuration` |
 | `Rating.ts`   | `Rating`, `MediaRatings`, `RatingValue`, `RatingSortKey`, `MinRatingFilter`, `MaxRatingFilter`, `SmartRuleField`, `MediaItemRatingSource`, `pickDisplayRating`, `ManualMatchOverride` |
 | `Chapter.ts`  | `ChapterMarker`, `ChapterTrack`, `ChapterInfo`, `TrickplaySprite`, `TrickplayInfo`, `SkipConfig`, `MarkerTimeline` |
