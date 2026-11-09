@@ -243,8 +243,12 @@ Notation the README, source docblocks, and CHANGELOG use throughout:
   programme; S249 = the MCP-scope census this package also vendors).
 - **`W1`/`W1b`/`W2`/`W3`/`W5`** — the numbered server/hub emit-wave lanes that promoted
   wire literals onto the dotted `code` channel (each tag names the lane its codes landed in).
+  The `W`-prefix is shared vocabulary: the settings-programme lanes number their own
+  sequence the same way, so a lone `W4` in this repo's CHANGELOG-era prose names the
+  server settings wave 4 (a header-file lane), never an emit wave.
 - **`tripwire`** — `npm run verify:cites` (`scripts/check-error-cites.mjs`), which
-  token-verifies every SRV-HTTP/HUB cite against the sibling working trees.
+  token-verifies every `hub`/`srv`-prefixed `File.php:NN` cite in `src/errors.ts`
+  against the sibling working trees.
 - **`mint`** — to coin a new `ErrorCode` registry entry; the registry is frozen outside
   deliberate mint commits.
 - **`carrier`** — an endpoint that relays another service's error verbatim instead of

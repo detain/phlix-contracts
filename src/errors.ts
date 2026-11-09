@@ -47,30 +47,25 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-06 at the estate
- * tips hub `30012378` / server `a63dc0db` with the default nearest-line
+ * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-09 at the estate
+ * tips hub `81be1692` / server `94619b49` with the default nearest-line
  * window — the dev-only tripwire reports ok=435 problems=0 at those tips.
- * It cured the two drifts the tripwire measured on the relay rail (the
- * NOT_IMPLEMENTED_VIA_HTTP arm and the relay.ws_http_endpoint pair each moved
- * to their re-read emit line) and re-anchored the `not_found` entry onto its
- * LIVE hub emit sites (the `/auth/{action}` default arm and the router's 404
- * envelope builder) after hub `e5aa57e2` promoted the code out of reserved;
- * the registry row itself is byte-unchanged. The same pass refreshed the
- * openapi-quote near the top of this header, the all-LIVE common-domain
- * count, and the `MediaItem.runtime` docblock — docs-only: no code, no wire,
- * no dist bytes moved. Preceding eras are narrated in the CHANGELOG (its
- * `[Unreleased]` and release entries), the single source for stamp history;
- * this header deliberately carries only the current stamp. The WAVE 4 sweep
- * (2026-11-04 campaign-final tips hub `ee481593` / server `009ae7fb`, tripwire
- * 433/0) re-anchored 112 drifted coordinates plus 10 adjacent stale
- * coords AT SOURCE — every coordinate re-read at its emit site in the
- * working trees, no blanket-delta shifts, two-site pairs re-anchored by
- * handler identity rather than the tripwire's nearest-token suggestion,
- * which would have collapsed each pair onto one emit; the 2026-11-03 and
- * 2026-10-15 eras that preceded it hold the same discipline: cites in files
- * untouched since a stamp remain verified by that sweep's spot-checks.
- * Re-sweep with `npm run verify:cites` (scripts/check-error-cites.mjs) after
- * any hub/server error-file churn, then re-stamp the paragraph above.
+ * It re-anchored thirteen drifted hub coordinates, all in the claim/hub-proxy
+ * cluster the hub claim-code sha256 wave (migration 052 era) reshuffled. The
+ * `server.key_invalid` quartet was re-read arm-by-arm inside
+ * `validateJwkStructure` and the `claim.code_not_found` pair site-by-site —
+ * re-anchored by handler identity, never by the tripwire nearest-token
+ * suggestion, which would collapse such pairs onto one emit — while the
+ * proxy refusals and the rate-limit builder slid with the insertions in
+ * their files and the `hub.internal_error` default arm followed its mapError
+ * match block; no blanket-delta shifts were applied. The registry rows are
+ * byte-unchanged: docs-only, no code, no wire, no dist payload bytes moved.
+ * Preceding eras are narrated in the CHANGELOG (its `[Unreleased]` and
+ * release entries), the single source for stamp history; this header
+ * deliberately carries only the current stamp. Cites in files untouched
+ * since a stamp remain verified by that sweep spot-checks. Re-sweep with
+ * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
+ * hub/server error-file churn, then re-stamp the paragraph above.
  *
  * CONTENTS:
  *  1. Every dotted and bare-snake code actually emitted on the wire today by
@@ -312,7 +307,7 @@ const CODES = {
      */
     PROTOCOL_UNSUPPORTED: 'hub.protocol_unsupported',
     /**
-     * hub ServerClaimController.php:350 · hub ServerController.php:260 —
+     * hub ServerClaimController.php:355 · hub ServerController.php:260 —
      * the mapError default 500. Hub W3 promoted: dotted rides `code`, the
      * SCREAMING `HUB_INTERNAL_ERROR` is parked in the `error` TEXT (dual
      * placement; clients may match either).
@@ -331,19 +326,19 @@ const CODES = {
   claim: {
     /**
      * hub ServerClaimController.php:268 (404 arm 266-271) ← throws at
-     * hub ClaimRequestHandler.php:312,353 — dotted on `code`, SCREAMING
+     * hub ClaimRequestHandler.php:338,379 — dotted on `code`, SCREAMING
      * `CLAIM_CODE_NOT_FOUND` parked in `error` text (dual).
      */
     CODE_NOT_FOUND: 'claim.code_not_found',
     /**
      * hub ServerClaimController.php:274 (410 arm 272-277) ← throw at
-     * hub ClaimRequestHandler.php:367 — dotted on `code`, SCREAMING
+     * hub ClaimRequestHandler.php:393 — dotted on `code`, SCREAMING
      * `CLAIM_CODE_EXPIRED` parked in `error` text (dual).
      */
     CODE_EXPIRED: 'claim.code_expired',
     /**
      * hub ServerClaimController.php:280 (409 arm 278-283) ← throw at
-     * hub ClaimRequestHandler.php:376 — dotted on `code`, SCREAMING
+     * hub ClaimRequestHandler.php:402 — dotted on `code`, SCREAMING
      * `CLAIM_CODE_ALREADY_CLAIMED` parked in `error` text (dual).
      */
     CODE_ALREADY_CLAIMED: 'claim.code_already_claimed',
@@ -375,7 +370,7 @@ const CODES = {
     NO_TUNNEL: 'server.no_tunnel',
     /**
      * hub ServerClaimController.php:317 (400 arm 315-320) ← throws at
-     * hub ClaimRequestHandler.php:708,711,714,718 — the server's Ed25519 key
+     * hub ClaimRequestHandler.php:780,783,786,790 — the server's Ed25519 key
      * failed validation during claim. Hub W3 promoted: dotted rides `code`,
      * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
      * placement; clients may match either).
@@ -391,7 +386,7 @@ const CODES = {
 
   /** Hub bandwidth quota gate. */
   quota: {
-    /** hub ServerProxyController.php:1398 */
+    /** hub ServerProxyController.php:1434 */
     EXCEEDED: 'quota.exceeded',
   },
 
@@ -405,7 +400,7 @@ const CODES = {
    * (dual placement; clients may match `code`, `error` text or `denial_type`).
    */
   stream: {
-    /** hub ServerProxyController.php:1153 */
+    /** hub ServerProxyController.php:1189 */
     LIMIT: 'stream.limit',
     /**
      * srv StreamLimitMiddleware.php:139-143 (429) ·
@@ -435,7 +430,7 @@ const CODES = {
 
   /** Hub→server upstream gateway failures. */
   gateway: {
-    /** hub ServerProxyController.php:1186, RelayProxyManager.php:724, RelayProxyBridge.php:315 */
+    /** hub ServerProxyController.php:1222, RelayProxyManager.php:724, RelayProxyBridge.php:315 */
     TIMEOUT: 'gateway.timeout',
   },
 
@@ -741,7 +736,7 @@ const CODES = {
    * two unmatched-route fallbacks onto it.
    */
   common: {
-    /** srv Core/Application.php:2787 · hub Application.php:266 (+3) */
+    /** srv Core/Application.php:2787 · hub Application.php:271 (+3) */
     RATE_LIMITED: 'rate_limited',
     /** srv AuthController.php:351,386 (LDAP) */
     PROVIDER_UNAVAILABLE: 'provider_unavailable',

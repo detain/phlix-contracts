@@ -18,6 +18,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — LW-091: verify-cites re-anchor at the estate final tips (comment currency only; zero wire change) — 2026-11-09
+
+- **Thirteen drifted hub coordinates re-anchored at source** in
+  `src/errors.ts` against the final tips hub `81be1692` / server `94619b49`.
+  The hub claim-code sha256 wave (migration 052 era) moved the
+  `ClaimRequestHandler` throw arms and `ServerClaimController`'s mapError
+  match block, the inserted `ServerProxyController` refusal comments slid
+  the stream-limit / gateway-timeout / quota legs, and the hub `Application`
+  429 builder shifted with them. Every cite was re-read at its current emit
+  site in detached read-only worktrees, never guessed from offsets: the
+  `server.key_invalid` quartet re-anchored arm-by-arm inside
+  `validateJwkStructure` (kty / crv / x-presence / decoded-length, in the
+  old cites' order) and the `claim.code_not_found` pair site-by-site
+  (empty-after-normalisation refusal, then unknown-row refusal) — the
+  tripwire's nearest-token suggestion would have collapsed each group onto
+  one emit. `npm run verify:cites` goes **ok=422 / problems=13 → ok=435 /
+  problems=0** at those tips; the 435 parsed cites stay above the tool's
+  400-cite anti-vacuity floor. No emit site itself changed; only docblock
+  prose moved.
+- **Provenance:** the thirteen re-anchors were drafted 2026-11-07 by the
+  lane this card first dispatched; that run ended before commit. This wave
+  re-read every cited emit line in the hub working tree, reproduced the
+  before-figure (`ok=422 / problems=13`) on the parent, re-ran the tripwire
+  at the identical tips, and landed the entry — the currency this commit
+  stamps is this wave's executed run.
+- **Header COORDINATE CURRENCY re-stamped** to the 2026-11-09 era in
+  colon-faded prose — a bare colon-number in that module docblock would
+  attach to the last `.php` file cited in the same comment. The superseded
+  2026-11-06 era narration left the header because its story stands in the
+  `[0.5.7]` entries above — this file is the single source for stamp
+  history, exactly as the header itself prescribes.
+- **README notation bullets — currency (estate review contracts__writer
+  Info 1/2):** the `tripwire` bullet now names the real cite grammar —
+  every `hub`/`srv`-prefixed file-colon-line cite — instead of the
+  sweep-era family labels `SRV-HTTP`/`HUB`, which are re-anchor programme
+  history, not cite notation; and the `W`-notation bullet carries the
+  settings-programme parenthetical — a lone `W4` in CHANGELOG-era prose is
+  the server settings wave 4 (a header-file lane), never an emit wave.
+- **[Unreleased] footer link re-pointed** to `v0.5.7...HEAD` (the standing
+  LW-008 rotation the v0.5.7 release commit left behind).
+- **Build bytes:** `dist/errors.d.ts` and both source maps re-vendored
+  (docblock text plus the re-stamped header shift `sourcesContent`/VLQ; the
+  `.d.ts` is comment-stripped-identical — zero type surface moved); the JS
+  bundles are byte-identical and the trio `dist/error-codes.json` /
+  `dist/server-route-manifest.json` / `dist/mcp-scopes.json` md5s
+  (`5d1783a7` / `90b79e35` / `8c92c070`) all held unchanged. Zero registry
+  values moved, zero new wire codes.
+
 ## [0.5.7] - 2026-11-06
 
 ### Changed — LW-071: `exactOptionalPropertyTypes` enabled — the absent-vs-null doctrine gets compiler teeth — 2026-11-06
@@ -2937,7 +2985,7 @@ understates it; it is not retro-fixable without moving a published tag.
   `formatDuration` — all pure, matching the math in mobile `formatters.ts` and
   tizen `Helpers.js`.
 
-[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.5.6...HEAD
+[Unreleased]: https://github.com/detain/phlix-contracts/compare/v0.5.7...HEAD
 [0.5.6]: https://github.com/detain/phlix-contracts/compare/v0.5.5...v0.5.6
 [0.5.5]: https://github.com/detain/phlix-contracts/compare/v0.5.4...v0.5.5
 [0.5.4]: https://github.com/detain/phlix-contracts/compare/v0.5.3...v0.5.4
