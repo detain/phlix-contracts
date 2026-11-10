@@ -209,13 +209,13 @@ declare const CODES: {
      * emit-wave will promote them.
      */
     readonly auth: {
-        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
+        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:130 */
         readonly REQUIRED: "auth.required";
         /** srv AdminMiddleware.php:106 (+9) · hub AdminMiddleware.php:62 */
         readonly NOT_ADMIN: "auth.not_admin";
-        /** hub AuthMiddleware.php:117, McpController.php:352 */
+        /** hub AuthMiddleware.php:135, McpController.php:352 */
         readonly INVALID_TOKEN: "auth.invalid_token";
-        /** hub AuthMiddleware.php:128 — token subject has no user row */
+        /** hub AuthMiddleware.php:146 — token subject has no user row */
         readonly USER_NOT_FOUND: "auth.user_not_found";
         /**
          * srv SignupDisabledException.php:28 → srv AuthController.php:195
@@ -763,7 +763,7 @@ declare const CODES: {
          * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
          * (R-HUB-W2-C1) as the shared generic-404 rail; the hub flipped both
          * producers onto this word in `e5aa57e2`. The emit sites:
-         * hub AuthController.php:71 · Router.php:457.
+         * hub AuthController.php:95 · Router.php:457.
          * AuthController's arm is the `default =>` of the `/auth/{action}`
          * dispatcher; Router's is `notFound()`, the unmatched-route fallback.
          * Both now speak the unified member-facing envelope the mint's ruling
@@ -1249,13 +1249,13 @@ export declare const ERROR_CODE: {
      * emit-wave will promote them.
      */
     readonly auth: {
-        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:112 */
+        /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:130 */
         readonly REQUIRED: "auth.required";
         /** srv AdminMiddleware.php:106 (+9) · hub AdminMiddleware.php:62 */
         readonly NOT_ADMIN: "auth.not_admin";
-        /** hub AuthMiddleware.php:117, McpController.php:352 */
+        /** hub AuthMiddleware.php:135, McpController.php:352 */
         readonly INVALID_TOKEN: "auth.invalid_token";
-        /** hub AuthMiddleware.php:128 — token subject has no user row */
+        /** hub AuthMiddleware.php:146 — token subject has no user row */
         readonly USER_NOT_FOUND: "auth.user_not_found";
         /**
          * srv SignupDisabledException.php:28 → srv AuthController.php:195
@@ -1803,7 +1803,7 @@ export declare const ERROR_CODE: {
          * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
          * (R-HUB-W2-C1) as the shared generic-404 rail; the hub flipped both
          * producers onto this word in `e5aa57e2`. The emit sites:
-         * hub AuthController.php:71 · Router.php:457.
+         * hub AuthController.php:95 · Router.php:457.
          * AuthController's arm is the `default =>` of the `/auth/{action}`
          * dispatcher; Router's is `notFound()`, the unmatched-route fallback.
          * Both now speak the unified member-facing envelope the mint's ruling

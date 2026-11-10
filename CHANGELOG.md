@@ -18,6 +18,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — four hub cite coordinates re-anchored at hub `506110fa` (the CP-011 cookie dual-emit lane shifted the cited lines inside `AuthMiddleware.php` and `AuthController.php`; comment-only) — 2026-11-09
+
+- Coordinates moved to the emit sites they name: `auth.required` hub
+  `AuthMiddleware.php:112` → `:130`, `auth.invalid_token` `:117` → `:135`,
+  `auth.user_not_found` `:128` → `:146`, `not_found` hub `AuthController.php:71`
+  → `:95` (the dispatcher default arm; its docblock text still describes the
+  same arm). Zero registry change: the frozen trio (`error-codes.json`
+  5d1783a7…, `server-route-manifest.json` 90b79e35…, `mcp-scopes.json`
+  8c92c070…) verified byte-identical pre/post regen; `dist/` moves are the
+  sourcesContent + VLQ shift class of the 2026-10-15 sweep only.
+- Tripwire evidence: `verify:cites` re-run against hub `506110fa` — the hub
+  drift set restored to EXACTLY the 26 pre-existing backlog entries this lane
+  measured at the hub parent `4b6de702` (the CP-011 commit had added 4 pure
+  line-shift drifts; this entry cures its own wake — the terminal re-anchor
+  row CP-025 still owns the backlog, incl. the AlexaSignatureMiddleware /
+  RequestController / SyncPlayManager families). Gates: vitest 18 files /
+  210 tests green unchanged, eslint clean, build deterministic ×2, no new
+  tests (coordinate edits cannot add legs).
+
 ### Added — CP-001: CookieMode custody marker + cookie-program docblock truth (types + docs only; zero wire change) — 2026-11-09
 
 - `src/auth.ts` gains the designed token-custody bifurcation record
