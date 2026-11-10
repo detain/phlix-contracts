@@ -18,6 +18,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — CP-025: verify:cites re-anchor sweep at final tips (comment currency only; zero wire change) — 2026-11-10
+
+- **Baseline (measured at this lane's run, never carried):** `npm run
+  verify:cites` against hub `e27be256` / server `b96e9a8f` reported ok 267 with
+  168 problems — every one a DRIFT of the 435-cite set (no MISS/FILE/ORPHAN),
+  the accumulated line churn of the hub and server cookie/CSRF/WS-carrier
+  chains since the 11-09 re-anchor. The tripwire now exits 0 at those tips
+  (ok 435, problems 0), restored re-anchoring every coordinate to disk-opened
+  emit sites via per-file diff-line maps from the previously-named stamp tips
+  plus arm-by-arm handler-identity re-reads — no blanket-delta shifts, and
+  emit twins (FederationController offer/master_only arms, SyncPlay inner-path
+  arms, legacy SCREAMING emits) kept pair-separated where the nearest-token
+  suggestion would have collapsed them.
+- **Stamp correction (own-confession class):** the 11-09 currency paragraph
+  claimed ok 435 problems 0 at its named tips; re-measured against read-only
+  clones of exactly those commits it actually reported ok 431 with 4 problems
+  (hub `AuthMiddleware` bearer trio, `AuthController` not-found default arm —
+  stale in the CP-011 era before that sweep stamped). This entry replaces the
+  paragraph with the honest 2026-11-10 stamp at hub `e27be256` / server
+  `b96e9a8f` and fixes those four to their real sites.
+- **Premise-falsification (anchor-alive) sweep:** every re-anchored cite's
+  adjacent backticked anchor words were re-verified alive at the new location
+  by grep against target disk — all anchors survived; no symbol had to be
+  re-pointed to a substitute or honestly removed.
+- **Comment-only proven:** non-comment lines of `src/errors.ts` are
+  byte-identical pre/post (stripped-source cmp); registry rows untouched; the
+  owner-frozen pair `dist/error-codes.json` (205 codes, md5 `5d1783a7…`) and
+  `dist/mcp-scopes.json` (md5 `8c92c070…`) stayed byte-ident through re-emit
+  and the in-suite byte-freeze tests; `dist/server-route-manifest.json`
+  (`cd4673e1…`, 416 tuples, regen #37 era) unmoved. Rebuild moved exactly
+  `dist/errors.d.ts` (embeds docblocks) and the two source maps (VLQ offsets +
+  `sourcesContent` carry the new comment text; sources list identical) — the
+  JS/CJS bundles are cmp-ident. CI committed-freshness leg
+  (`git diff --exit-code -- dist/`) satisfied by committing the rebuilt tree.
+- **Copy-audit leg (report-only, this lane wrote no foreign repo):** vendored
+  `server-route-manifest.json` fixtures downstream were measured against this
+  tip's export — the five client copies (mobile `src/api/test`, roku/tizen/
+  console `tests/fixtures`, ui `src/api/test`) are byte-ident at the 415-tuple
+  `90b79e35…` era, one regen behind: the sole delta is the absence of
+  `["POST","/api/v1/auth/logout"]`; they re-vendor with their repos' pin waves
+  (their own gates read their pinned copies, not this master artifact — regen
+  #36 doctrine). Hub's committed `contracts-server-route-manifest.json` is
+  byte-ident to this tip export, and hub's live-router dump is set-equal to it
+  at 416 tuples (serialization shape differs by fixture design), corroborating
+  the tip export as current against today's server disk. No version bump, no
+  tag created or moved. Gates at this commit: lint 0, vitest serial 18 files
+  210 tests 0 failures, `npm run build` re-run leaves `dist/` clean,
+  `verify:cites` exit 0 at hub `e27be256` / server `b96e9a8f`.
+
 ### Changed — route-manifest regen #37: CONTENT 415→416 tuples at server `5c78f6a4` — 2026-11-10
 
 - **Trigger: phlix-server master gained a route.** Server w29L1 CP-004 commit
