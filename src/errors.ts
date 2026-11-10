@@ -61,8 +61,14 @@
  * which would collapse such pairs onto one emit — preserving pair separation
  * across the FederationController offer/master_only families, the SyncPlay
  * inner-path arms and the legacy SCREAMING emits; every re-anchored cite's
- * adjacent backticked anchor words were then re-verified alive against target
- * disk (premise-falsification sweep — all anchors survived, none vanished).
+ * adjacent backticked anchor words were then re-verified against target disk
+ * by token proximity — and the same-day independent review showed proximity
+ * green is not emit-site truth: 13 coordinates passed on pool-generic tokens
+ * while pointing at comment prose, guard regions, or the wrong match arm. All
+ * 13 were re-anchored in the same-day R2 sweep with per-coordinate
+ * emit-site greps executed against the named tips (proof table:
+ * .reviews/2026-11-10/FIX-contracts-w36L1-round2.md); the earlier
+ * "all anchors survived, none vanished" claim stands retracted there.
  * The registry rows are byte-unchanged: docs-only, no code, no wire, no dist
  * payload bytes moved; the owner-frozen registry md5 trio held.
  * Preceding eras are narrated in the CHANGELOG (its `[Unreleased]` and
@@ -105,9 +111,9 @@
  *     file:line evidence): ALL EIGHT rows are LIVE on the wire — the seven
  *     twin rows with server #798, and the eighth row
  *     `syncplay.queue_limit_exceeded` with server 7baa398a: the
- *     playback-queue cap at srv SyncPlayManager.php:1278 emits it directly
+ *     playback-queue cap at srv SyncPlayManager.php:1347 emits it directly
  *     while the group-count cap keeps `syncplay.group_limit_reached` at
- *     :707 — the documented split. The four INNER-PATH specializations —
+ *     :733 — the documented split. The four INNER-PATH specializations —
  *     `syncplay.group_limit_reached`, `syncplay.group_not_found`,
  *     `syncplay.invalid_password`, `syncplay.group_full` — reach the client
  *     because the create/join carriers forward any inner code through
@@ -116,7 +122,7 @@
  *     trio went LIVE with server #798: `syncplay.create_failed` is the
  *     create-carrier fallback at srv SyncPlayManager.php:1945,
  *     `syncplay.join_failed` the join-carrier fallback at srv
- *     SyncPlayManager.php:1919, and `syncplay.leave_failed` the leave
+ *     SyncPlayManager.php:2004, and `syncplay.leave_failed` the leave
  *     carrier's direct emit at srv SyncPlayManager.php:2053 (its inner
  *     failure paths carry no `error_code`). The flip was client-unblocked
  *     before it landed: console #167 + roku #90 proved both clients already
@@ -165,7 +171,7 @@
  *    `Messages::error` docblock examples `GROUP_FULL`/`INVALID_PASSWORD`.
  *  - Text words that are display aliases of ALREADY-registered codes — the
  *    hub W3 emit-wave co-emits them with their twins, no new vocabulary:
- *    `SERVER_NOT_FOUND` (hub ServerController.php:181-186,238-243, and the
+ *    `SERVER_NOT_FOUND` (hub ServerController.php:181-186,252-256, and the
  *    hub SubdomainController.php:128 allocation 404 where hub #322 landed the
  *    dual placement — dotted on `code`, legacy literal parked in `error`
  *    TEXT; clients may match either) → `server.not_found`;
@@ -741,7 +747,7 @@ const CODES = {
    * two unmatched-route fallbacks onto it.
    */
   common: {
-    /** srv Core/Application.php:2791 · hub Application.php:271 (+3) */
+    /** srv Core/Application.php:2791 · hub Application.php:279 */
     RATE_LIMITED: 'rate_limited',
     /** srv AuthController.php:400,435 (LDAP) */
     PROVIDER_UNAVAILABLE: 'provider_unavailable',
@@ -1133,14 +1139,14 @@ const CODES = {
    * the client because the WS carriers forward any inner code on
    * `error_code`: `sendError($connection, $result['error_code'] ??
    * 'syncplay.create_failed', ...)` at srv SyncPlayManager.php:1945 and the
-   * join twin at srv SyncPlayManager.php:1919. The four inner-path codes:
-   * `syncplay.group_limit_reached` at srv SyncPlayManager.php:707,
-   * `syncplay.group_not_found` at srv SyncPlayManager.php:799,
+   * join twin at srv SyncPlayManager.php:2004. The four inner-path codes:
+   * `syncplay.group_limit_reached` at srv SyncPlayManager.php:733,
+   * `syncplay.group_not_found` at srv SyncPlayManager.php:837,
    * `syncplay.invalid_password` at srv SyncPlayManager.php:895,
    * `syncplay.group_full` at srv SyncPlayManager.php:901.
    * The `_failed` trio proper — `syncplay.create_failed` (srv
    * SyncPlayManager.php:1945), `syncplay.join_failed` (srv
-   * SyncPlayManager.php:1919) and `syncplay.leave_failed`, emitted directly
+   * SyncPlayManager.php:2004) and `syncplay.leave_failed`, emitted directly
    * by the leave carrier at srv SyncPlayManager.php:2053 (its inner failure
    * paths carry no `error_code`) — was RESERVED until server #798 replaced
    * the three SCREAMING fallback literals with these dotted twins; the
@@ -1153,7 +1159,7 @@ const CODES = {
    * server 7baa398a: the playback-queue cap at srv
    * SyncPlayManager.php:1347 emits it directly (fail-loud on
    * `GroupState::MAX_QUEUE_SIZE` overflow, current queue left untouched),
-   * while the group-count cap keeps `syncplay.group_limit_reached` at :707
+   * while the group-count cap keeps `syncplay.group_limit_reached` at :733
    * — the documented split.
    */
   syncplay: {
@@ -1199,7 +1205,7 @@ const CODES = {
      */
     GROUP_FULL: 'syncplay.group_full',
     /**
-     * srv SyncPlayManager.php:1278 — LIVE on the wire since server 7baa398a
+     * srv SyncPlayManager.php:1347 — LIVE on the wire since server 7baa398a
      * (deferred-mint flip landed right after the v0.5.3 pin): the
      * playback-queue cap (`GroupState::MAX_QUEUE_SIZE` overflow in
      * `handlePlaybackQueue`) emits this dedicated code fail-loud, leaving
@@ -1489,10 +1495,10 @@ export const SYNCPLAY_ERROR_CODES: readonly SyncPlayErrorCode[] = [
  * (or un-wraps from a prose carrier). Status at srv 9b2394ee: ALL SEVEN rows
  * are LIVE. The four inner-path rows ride the `?? ` wrap sites — the carriers
  * forward any inner code at srv SyncPlayManager.php:1945 and srv
- * SyncPlayManager.php:1919. The three `*_failed` rows landed with the server
+ * SyncPlayManager.php:2004. The three `*_failed` rows landed with the server
  * #798 carrier flip: `syncplay.create_failed` is now the create fallback at
  * srv SyncPlayManager.php:1945, `syncplay.join_failed` the join fallback at
- * srv SyncPlayManager.php:1919, and `syncplay.leave_failed` the leave
+ * srv SyncPlayManager.php:2004, and `syncplay.leave_failed` the leave
  * carrier's direct emit at srv SyncPlayManager.php:2053. The SCREAMING legacy
  * values stay registered for in-flight and older-server traffic; the wire
  * channel (`error_code`) and the read order never change. The eighth syncplay

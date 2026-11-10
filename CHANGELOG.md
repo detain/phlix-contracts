@@ -18,6 +18,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed — w36 L1-R2: 13 cites that passed the proximity tripwire without being emit sites re-anchored with executed emit-proof (comment currency only; zero wire change) — 2026-11-10
+
+- **Trigger (independent review of the CP-025 sweep below, verdict
+  PATCH-FIRST):** twelve coordinates passed the ±3 token-proximity tripwire
+  while NOT being the emit sites the prose names — stale `:1278` (auth-guard
+  line) and `:707`/`:799`/`:1919` (comment prose, password-guard region,
+  create-gate emit) survives inside the SyncPlay module header, the
+  syncplay-domain docblock and the twins table, plus a `SERVER_NOT_FOUND`
+  range cite (`ServerController.php:238-243`) landing on the mapError
+  docblock/signature instead of the arm. One further coord (hub
+  `Application.php:271 (+3)`, `rate_limited`) was a minor imprecision inside
+  the same family. The per-comment token pool made all of these vacuously
+  green in the big prose blocks.
+- **Cure (emit-true proof per coord, executed greps at server `b96e9a8f` /
+  hub `e27be256` clone pins):** queue-cap `:1278` → `:1347` (`$this->sendError(`
+  statement head, literal `syncplay.queue_limit_exceeded` at `:1349`; matches
+  the corrected siblings); group-count cap `:707` → `:733`
+  (`'error_code' => 'syncplay.group_limit_reached',`); join-carrier fallback
+  `:1919` → `:2004` (`$errorCode = $result['error_code'] ??
+  'syncplay.join_failed';` — five instances incl the twins table);
+  group-not-found `:799` → `:837` (single-line `return [...]` carrying
+  `'syncplay.group_not_found'`); hub SERVER_NOT_FOUND arm
+  `:238-243` → `:252-256` (the actual `'SERVER_NOT_FOUND' => (new
+  Response())->error(` arm); hub `rate_limited` `:271 (+3)` → `:279` (the 429
+  `->json([... 'code' => 'rate_limited'])` emit). Full verbatim-line proof
+  table: `.reviews/2026-11-10/FIX-contracts-w36L1-round2.md`.
+- **Forward correction (verbatim-history rule — new entry, the text above is
+  untouched):** the CP-025 entry's claim that its sweep re-anchored
+  "EVERY coordinate to disk-opened emit sites" and its anchor-alive sweep
+  "all anchors survived; no symbol had to be re-pointed" are retracted for
+  these 13: exit 0 at ±3 was in part maintained BY the stale coords, the
+  tool's own header warning ("a token can coincidentally reappear near a
+  stale coord") having been allowed to govern. The register
+  `.reviews/2026-11-10/FIX-contracts-w36L1.md` carries the matching errata
+  appended below its Counts line.
+- **Convention kept:** the 42 further cites that hold only at ±2/±3 were
+  independently audited as statement-head spans of the same multi-line emit
+  (or named-helper prose regions) — legitimate, left in place, and recorded
+  as such. Making the tripwire bind each cite to its own entry token instead
+  of the whole-comment pool is a tool-hardening card, deliberately not taken
+  here (the sweep script is untouched).
+- **Comment-only proven:** every changed `src/errors.ts` diff line is a
+  comment line (awk class assert); rebuild moved exactly `dist/errors.d.ts`
+  and the two source maps — VLQ `mappings` byte-identical pre/post, sources
+  list identical (14), only the `../src/errors.ts` `sourcesContent` entry
+  re-emitted (compared equal to disk); bundles `dist/phlix-contracts.js` and
+  `.umd.cjs` cmp-identical; the owner-frozen trio `5d1783a7…` / `8c92c070…` /
+  `cd4673e1…` byte-held. No version bump, no tag created or moved.
+- **Gates at this commit:** lint exit 0; vitest serial `--no-file-parallelism`
+  18 files, 209 passed, 1 skipped — exact at parent and tip (zero movement);
+  `verify:cites` re-run exit 0 at hub `e27be256` / server `b96e9a8f` (ok 435,
+  problems 0) — proximity figure PLUS the executed per-coord emit greps above
+  are the joint standard this entry claims, never the exit code alone.
+
 ### Fixed — CP-025: verify:cites re-anchor sweep at final tips (comment currency only; zero wire change) — 2026-11-10
 
 - **Baseline (measured at this lane's run, never carried):** `npm run
