@@ -18,6 +18,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — route-manifest regen #37: CONTENT 415→416 tuples at server `5c78f6a4` — 2026-11-10
+
+- **Trigger: phlix-server master gained a route.** Server w29L1 CP-004 commit
+  `afd3337d` adds `POST /api/v1/auth/logout` (hosted-SPA logout-404 cure) to the
+  Application guard table (376→377); the WebPortal table is untouched (50), the
+  shared overlap holds at 11, and the union grows 415→416 `[method, path]`
+  tuples. Regenerated with `scripts/generate-server-route-manifest.mjs` from a
+  read-only export of the two guard-table sources at server commit `5c78f6a4`
+  (`--server-sha` passed explicitly — the generator-documented idiom for a
+  pinned ref rather than a live worktree). The empirical tuple diff against the
+  previous `58530ec2`-era snapshot is EXACTLY that one addition — zero removals,
+  zero other movement.
+- **Generator parity cross-checked against the estate.** The CONTENT digest —
+  sorted-unique `METHOD path` lines, newline-joined, the same corpus the hub
+  S492 dumper hashes — is
+  `7a14dd8bad618346e185ebebd3e4a197422adb62152306f350af8dfe9a0e0c60` at 416
+  tuples, equal to the byte hub's executed regen recorded: two independent
+  parsers (Node generator, PHP gate port) agree on the exact digest.
+- **Provenance stamps source_sha `5c78f6a4`**, the hub transcript's pin and the
+  trigger sha. Server master has since advanced one tests-only commit
+  (`88610042`: two plugin test files, +147 lines, zero route-source movement —
+  both guard tables byte-identical `5c78f6a4` ↔ `88610042`), so this content
+  snapshot is CURRENT at either sha; a provenance lag is an S492 warning, never
+  drift, by the gate's own owner-ratified doctrine.
+- **Zero registry movement:** `dist/error-codes.json` (205 codes, md5
+  `5d1783a7…`) and `dist/mcp-scopes.json` (md5 `8c92c070…`) are BYTE-IDENTICAL
+  pre/post regen — verified by re-emit and the in-suite byte-freeze tests. The
+  trio's move-together-or-not-at-all law holds via the manifest legitimately
+  moving with routes (the v0.5.3-era 410→412 @serverSha precedent; codes and
+  scopes byte-ident both times).
+- **Test pins rotate in the same commit** (regen #35/#36 precedent):
+  provenance sha, per-source/total counts and the byte-freeze md5 re-pinned
+  from the measured red; the new tuple joins the independent known-served
+  restatement. The cs#47 merge-ritual survival token deliberately does NOT
+  rotate — it is a pair with the hub-side const and advances only in a
+  coordinated consumer re-vendor leg.
+- **Consumers pinning `#v0.5.7`-era tags keep the 415-tuple manifest until the
+  next owner-authorized release wave** — downstream gates read tag-pinned
+  vendored copies, not this master artifact (the regen #36 disclosure; report-
+  only). This master landing is what unblocks the hub route-snapshot sync,
+  which reads master. No version bump, no tag created or moved. Gates: lint 0,
+  typecheck 0, vitest serial green, `npm run build` re-run leaves `dist/` clean
+  (CI committed-freshness leg).
+
 ### Changed — four hub cite coordinates re-anchored at hub `506110fa` (the CP-011 cookie dual-emit lane shifted the cited lines inside `AuthMiddleware.php` and `AuthController.php`; comment-only) — 2026-11-09
 
 - Coordinates moved to the emit sites they name: `auth.required` hub

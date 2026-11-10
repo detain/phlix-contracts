@@ -864,6 +864,7 @@ var Me = [
 	["POST", "/api/v1/audiobooks/{id}/progress"],
 	["POST", "/api/v1/auth/hub-token"],
 	["POST", "/api/v1/auth/login"],
+	["POST", "/api/v1/auth/logout"],
 	["POST", "/api/v1/auth/quick-connect/initiate"],
 	["POST", "/api/v1/auth/quick-connect/{code}/approve"],
 	["POST", "/api/v1/auth/quick-connect/{code}/token"],
@@ -960,18 +961,18 @@ var Me = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], qe = {
-	serverSha: "58530ec207b0d40c3386ed10215d5bda3eaf54af",
-	generatedAt: "2026-11-04T07:29:19Z",
+	serverSha: "5c78f6a4dc36d4cb799b7131162fcfffba1fb822",
+	generatedAt: "2026-11-10T15:33:45Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
-		count: 376
+		count: 377
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
 		count: 50
 	}],
 	shared: 11,
-	total: 415
+	total: 416
 }, $ = /* @__PURE__ */ new Map();
 function Je(e) {
 	let t = $.get(e);

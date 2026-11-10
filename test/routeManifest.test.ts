@@ -48,11 +48,11 @@ function key(method: string, pathTemplate: string): string {
 const KEYS = new Set(SERVER_ROUTE_MANIFEST.map(([m, p]) => key(m, p)));
 
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 58530ec2 (regen #36 CONTENT regen — a86e0999 adds the WebPortal history-alias pair (48→50) and 8bb435cf adds the Application GET /api/v1/servers/{id} (375→376): total 412→415; other manifest-file commits in the span change annotations only)', () => {
+  it('is derived from phlix-server master 5c78f6a4 (regen #37 CONTENT regen — server w29L1 CP-004 commit afd3337d adds the Application POST /api/v1/auth/logout (376→377): total 415→416; the empirical tuple diff vs the 58530ec2-era snapshot is EXACTLY that one added tuple, zero removals)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '58530ec207b0d40c3386ed10215d5bda3eaf54af',
+      '5c78f6a4dc36d4cb799b7131162fcfffba1fb822',
     );
   });
 
@@ -60,7 +60,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.sources).toEqual([
       {
         file: 'tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php',
-        count: 376,
+        count: 377,
       },
       {
         file: 'tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php',
@@ -68,7 +68,7 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
       },
     ]);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
-    expect(SERVER_ROUTE_MANIFEST.length).toBe(415);
+    expect(SERVER_ROUTE_MANIFEST.length).toBe(416);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
   });
 });
@@ -112,6 +112,7 @@ describe('SERVER_ROUTE_MANIFEST — known tuples (independent restatement)', () 
       key('GET', '/api/v1/profiles'),
       key('POST', '/api/v1/profiles/{profileId}/switch'),
       key('POST', '/api/v1/auth/refresh'),
+      key('POST', '/api/v1/auth/logout'),
       key('GET', '/api/v1/admin/livetv/channels/{id}/stream'),
       key('GET', '/health'),
     ]) {
@@ -254,7 +255,9 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // roku/console/hub) vendor THIS JSON and key their currency pins on its md5.
   // Structural equality above cannot catch a formatting-only re-emit; this
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
-  const CS22_MANIFEST_MD5 = '90b79e355055307d5ba2cc0ef98e2300';
+  // Regen #37 rotation: measured from the red at this commit (90b79e35-era
+  // bytes → 416-tuple payload @ server 5c78f6a4).
+  const CS22_MANIFEST_MD5 = 'cd4673e1e4074f3981c826dc722343a1';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
