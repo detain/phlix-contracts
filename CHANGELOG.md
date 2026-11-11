@@ -18,6 +18,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — route-manifest regen #38: CONTENT 416→418 tuples at server `413765b6` — 2026-11-10
+
+- **Trigger: phlix-server master gained routes.** Server w38 L1 CP-029 / D-1a
+  commit `413765b6` adds `GET /api/v1/auth/sessions` and
+  `DELETE /api/v1/auth/sessions/{id}` (session-family revocation) to the
+  Application guard table (377→379); the WebPortal table is untouched (50),
+  the shared overlap holds at 11, and the union grows 416→418 `[method, path]`
+  tuples. Regenerated with `scripts/generate-server-route-manifest.mjs` from a
+  clean `phlix-server` checkout at exactly `413765b6` (tree verified clean,
+  HEAD == origin/master by ls-remote before and after the read). The empirical
+  tuple diff vs the `5c78f6a4`-era snapshot is EXACTLY those two added tuples,
+  zero removals.
+- **This regen was UNBLOCKING, not opportunistic:** phlix-hub's S492
+  `Server Route Snapshot Currency` job diffs the hub's boot-derived vendored
+  snapshot against live server routes on every hub CI run, and the CP-029 hub
+  twin landed the same session endpoints — the hub-side lockstep re-vendor
+  (vendored contracts export + regenerated boot snapshot + rotated `S332`
+  source-sha pin) rides the hub commit of the same era, per the regen #37
+  precedent.
+- **Rotated from measured red in this commit:** `CS22_MANIFEST_MD5`
+  `cd4673e1…` → `c2111cd3…` (the byte-freeze leg failed first on the new
+  418-tuple bytes; the value is the md5 of exactly what the committed dist
+  artifact hashes to), the derived-from sha pin `5c78f6a4…` → `413765b6…`, the
+  union counts (377→379, 416→418) and the regen-staircase test name. The
+  cs#47 survival token is deliberately NOT rotated (regen #35/#37 law: a
+  contracts-side-only change leaves downstream vendored bytes untouched; the
+  paired const advances only in a coordinated re-vendor leg — the hub side
+  carries its own copy forward unchanged).
+- **Frozen trio held:** `dist/error-codes.json` md5 `5d1783a7…` and
+  `dist/mcp-scopes.json` md5 `8c92c070…` byte-ident before/after (zero code or
+  scope change; the zero-new-wire-codes law rode the server twin and holds
+  here too — the manifest is routing, never permission). Vitest 18 files /
+  210 tests green serial; `tsc --noEmit` + full build deterministic; the dist
+  bundle/d.ts churn is the embedded manifest projection only.
+- **Tag posture:** the master-side currency rides the NEXT contracts wave;
+  pinned consumers stay on the `v0.54.0`-era export until then (paired-wave
+  law) — the hub sync vendors from master bytes exactly as regen #37 did.
+
 ### Fixed — w36 L1-R2: 13 cites that passed the proximity tripwire without being emit sites re-anchored with executed emit-proof (comment currency only; zero wire change) — 2026-11-10
 
 - **Trigger (independent review of the CP-025 sweep below, verdict

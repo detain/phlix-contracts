@@ -557,6 +557,7 @@ var Me = [
 	["DELETE", "/api/v1/admin/users/{id}"],
 	["DELETE", "/api/v1/admin/webhooks/subscriptions/{id}"],
 	["DELETE", "/api/v1/admin/webhooks/{id}"],
+	["DELETE", "/api/v1/auth/sessions/{id}"],
 	["DELETE", "/api/v1/collections/{id}"],
 	["DELETE", "/api/v1/collections/{id}/items/{mediaItemId}"],
 	["DELETE", "/api/v1/libraries/{id}"],
@@ -668,6 +669,7 @@ var Me = [
 	["GET", "/api/v1/audiobooks/{id}/stream"],
 	["GET", "/api/v1/auth/me"],
 	["GET", "/api/v1/auth/quick-connect/{code}/status"],
+	["GET", "/api/v1/auth/sessions"],
 	["GET", "/api/v1/books"],
 	["GET", "/api/v1/books/{id}"],
 	["GET", "/api/v1/books/{id}/cover"],
@@ -961,18 +963,18 @@ var Me = [
 	["PUT", "/api/v1/profiles/{profileId}/stream-limits"],
 	["PUT", "/api/v1/users/me/settings"]
 ], qe = {
-	serverSha: "5c78f6a4dc36d4cb799b7131162fcfffba1fb822",
-	generatedAt: "2026-11-10T15:33:45Z",
+	serverSha: "413765b6d4385a3445ac1dddbc4ced16e0e281f6",
+	generatedAt: "2026-11-11T02:47:36Z",
 	generator: "scripts/generate-server-route-manifest.mjs",
 	sources: [{
 		file: "tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php",
-		count: 377
+		count: 379
 	}, {
 		file: "tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php",
 		count: 50
 	}],
 	shared: 11,
-	total: 416
+	total: 418
 }, $ = /* @__PURE__ */ new Map();
 function Je(e) {
 	let t = $.get(e);
