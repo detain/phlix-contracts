@@ -36,6 +36,7 @@ import {
   SERVER_ROUTE_MANIFEST,
   SERVER_ROUTE_MANIFEST_PROVENANCE,
   isServedRoute,
+  type HttpMethod,
 } from '../src/routeManifest';
 
 const VERBS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']);
@@ -70,6 +71,16 @@ describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.shared).toBe(11);
     expect(SERVER_ROUTE_MANIFEST.length).toBe(418);
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.total).toBe(SERVER_ROUTE_MANIFEST.length);
+  });
+});
+
+describe('SERVER_ROUTE_MANIFEST — literal HttpMethod typing (CTR-9)', () => {
+  it('tuples carry the HttpMethod literal union, not a widened string', () => {
+    const m: HttpMethod = SERVER_ROUTE_MANIFEST[0][0];
+    expect(VERBS.has(m)).toBe(true);
+    // @ts-expect-error — an arbitrary string is not an HttpMethod
+    const bad: HttpMethod = 'TRACE';
+    expect(bad).toBe('TRACE');
   });
 });
 

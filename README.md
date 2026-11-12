@@ -123,7 +123,7 @@ The root barrel (`src/index.ts`) re-exports all 25 modules below.
 | `events.ts`   | event payload interfaces (`PhlixEvent` base + per-event `*Event`) + `PLUGIN_EVENT`/`PluginEventName`, `WEBHOOK_EVENT`/`WebhookEventType`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
 | `mcp.ts`      | `MCP_SCOPE`, `McpScope`, `MCP_SCOPES`, `MCP_TOKEN_PREFIX` (mirrored to `dist/mcp-scopes.json`) |
 | `errors.ts`   | `ERROR_CODE`, `ERROR_CODES`, `ERROR_DOMAINS`/`ErrorDomain`, `ErrorCode`/`ErrorCodeIn`, per-domain code lists + unions, `SYNCPLAY_ERROR_CODES`/`SyncPlayErrorCode`, `LEGACY_SYNCPLAY_ERROR_CODES`, `SYNCPLAY_ERROR_CODE_TWINS` (mirrored to `dist/error-codes.json`) |
-| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `BuildPhlixHeadersOptions`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1) |
+| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `BuildPhlixHeadersOptions`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1 — estate workspace-root doc, not vendored) |
 | `ticks.ts`    | `TICKS_PER_SECOND`/`_MINUTE`/`_HOUR`, `ticksToSeconds`, `secondsToTicks`, `ticksToMinutes`, `ticksToHms`, `formatRuntime`, `formatDuration` |
 | `Rating.ts`   | `Rating`, `MediaRatings`, `RatingValue`, `RatingSortKey`, `MinRatingFilter`, `MaxRatingFilter`, `SmartRuleField`, `MediaItemRatingSource`, `pickDisplayRating`, `ManualMatchOverride` |
 | `Chapter.ts`  | `ChapterMarker`, `ChapterTrack`, `ChapterInfo`, `TrickplaySprite`, `TrickplayInfo`, `SkipConfig`, `MarkerTimeline` |

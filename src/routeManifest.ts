@@ -22,8 +22,9 @@
  * @license MIT
  */
 
-import { SERVER_ROUTE_MANIFEST } from './routeManifest.generated';
+import { SERVER_ROUTE_MANIFEST, type HttpMethod } from './routeManifest.generated';
 
+export type { HttpMethod } from './routeManifest.generated';
 export {
   SERVER_ROUTE_MANIFEST,
   SERVER_ROUTE_MANIFEST_PROVENANCE,
@@ -54,7 +55,7 @@ function anchoredTemplate(pathTemplate: string): RegExp {
  * `GET /api/v1/media/{id}/not-a-route` (sibling-wildcard absorption: the
  * S276/S279/S280 defect family this package exists to prevent).
  */
-export function isServedRoute(method: string, concretePath: string): boolean {
+export function isServedRoute(method: HttpMethod, concretePath: string): boolean {
   return SERVER_ROUTE_MANIFEST.some(
     ([m, template]) => m === method && anchoredTemplate(template).test(concretePath),
   );

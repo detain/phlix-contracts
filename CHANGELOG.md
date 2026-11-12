@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — routeManifest literal-type restoration (CTR-9) — 2026-11-12
+
+- `SERVER_ROUTE_MANIFEST` is now typed `ReadonlyArray<readonly [HttpMethod, string]>`
+  (was widened to `[string, string]`), and `isServedRoute` takes
+  `method: HttpMethod`. New exported `HttpMethod` union
+  (`'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS'`) is
+  derived from the generator's pinned verb set. **Type-breaking for callers
+  passing arbitrary `string`s** — to be cut at the next version bump; consumers
+  (ui/tizen/windows) must run vue-tsc/tsc against it before the tag ships.
+  `dist/server-route-manifest.json` bytes are unchanged.
+
 ### Docs — COOKIE-DESIGN.md citation locations + headers.ts wording (CTR-14/CTR-20) — 2026-11-12
 
 - `COOKIE-DESIGN.md` is cited by `README.md`, `src/auth.ts` and `src/headers.ts`

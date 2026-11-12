@@ -41,7 +41,9 @@
  * tuple-exact — a request that matches by substring or prefix is a defect.
  * Routing only: permission is decided at runtime — see the file header.
  */
-export declare const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [string, string]>;
+/** The HTTP verbs the server manifest may carry (derived from the generator's pinned verb set). */
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
+export declare const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [HttpMethod, string]>;
 /** Provenance — the server commit + generator this manifest was derived from. */
 export declare const SERVER_ROUTE_MANIFEST_PROVENANCE: {
     readonly serverSha: "413765b6d4385a3445ac1dddbc4ced16e0e281f6";
