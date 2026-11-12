@@ -219,6 +219,11 @@ php scripts/dump-server-syncplay-vectors.php /path/to/phlix-server \
   > test/fixtures/syncplay-envelope-vectors.json     # needs a THROWAWAY MySQL:
   # PHLIX_VEC_MYSQL_HOST / PHLIX_VEC_MYSQL_PORT / PHLIX_VEC_MYSQL_USER /
   # PHLIX_VEC_MYSQL_PASSWORD env — never point it at estate data
+php scripts/dump-server-playback-info-vectors.php /path/to/phlix-server \
+  > test/fixtures/playback-info-vectors.json         # same THROWAWAY MySQL env
+php scripts/dump-server-stream-session-vectors.php /path/to/phlix-server \
+  > test/fixtures/stream-session-vectors.json        # same THROWAWAY MySQL env
+  # (both refuse a checkout not at their recorded authority sha)
 
 # regenerate src/routeManifest.generated.ts from a phlix-server checkout
 node scripts/generate-server-route-manifest.mjs <phlix-server-checkout>

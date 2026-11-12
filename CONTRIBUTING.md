@@ -51,7 +51,7 @@ Commit the regenerated TS **and** the `npm run build` output together —
 `dist/server-route-manifest.json` is emitted from it and CI's
 `git diff --exit-code -- dist/` freshness step reddens on any drift. The
 tuple-count floor and provenance pins live in
-`test/routeManifest.test.ts` (the `toBe(415)` total, the
+`test/routeManifest.test.ts` (the exact tuple total the test pins, the
 `SERVER_ROUTE_MANIFEST_PROVENANCE` cross-check, and the artifact-for-artifact
 comparison that downstream repos key their md5 currency on); rotate them the
 same measured-red way, and treat the trio (`dist/error-codes.json` /
@@ -59,10 +59,14 @@ same measured-red way, and treat the trio (`dist/error-codes.json` /
 moves-TOGETHER-or-not-at-all: a docs-only commit must not move any of them.
 
 Server-verified wire fixtures (`test/fixtures/stream-track-vectors.json`,
-`test/fixtures/syncplay-envelope-vectors.json`) regenerate with the two
+`test/fixtures/syncplay-envelope-vectors.json`,
+`test/fixtures/playback-info-vectors.json`,
+`test/fixtures/stream-session-vectors.json`) regenerate with the four
 `scripts/dump-server-*.php` dumpers — see README Development for exact
 invocations, the provenance-`serverSha` rule, and the throwaway-MySQL
-requirement of the syncplay dumper. Re-run both `*ShapeParity` suites after.
+requirement of the syncplay, playback-info and stream-session dumpers.
+Re-run all four `*ShapeParity` suites after (`trackShapeParity`,
+`syncPlayShapeParity`, `playbackShapeParity`, `streamSessionShapeParity`).
 
 ## Release ritual
 
