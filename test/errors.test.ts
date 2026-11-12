@@ -12,6 +12,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import {
   ERROR_CODE,
@@ -106,6 +107,52 @@ describe('error-code registry invariants', () => {
   it('walks ERROR_DOMAINS in declaration order for the flat list', () => {
     const ordered = ERROR_DOMAINS.flatMap((domain) => Object.values(ERROR_CODE[domain]));
     expect([...ERROR_CODES]).toEqual(ordered);
+  });
+
+  it('pins ERROR_DOMAINS to an independently restated order (not a self-walk)', () => {
+    // Teeth (CTR-10, mirrors LW-012): the walk above derives both sides from
+    // ERROR_DOMAINS, so a domain permutation moves them together and stays
+    // green. This literal is restated by hand; reordering src/errors.ts is RED.
+    expect([...ERROR_DOMAINS]).toEqual([
+      'auth',
+      'hub',
+      'claim',
+      'server',
+      'proxy',
+      'quota',
+      'stream',
+      'access',
+      'gateway',
+      'relay',
+      'mcp',
+      'mcp_token',
+      'alexa',
+      'tls',
+      'csrf',
+      'user',
+      'plugin',
+      'library',
+      'metadata',
+      'poster',
+      'profile',
+      'dlna',
+      'casting',
+      'quickconnect',
+      'common',
+      'federation',
+      'share',
+      'invite',
+      'request',
+      'admin',
+      'updates',
+      'identity',
+      'provider',
+      'oauth',
+      'ldap',
+      'syncplay',
+      'legacy',
+    ]);
+    expect(ERROR_DOMAINS).toHaveLength(37);
   });
 
   it('uses the lowercase dotted/snake wire form everywhere except pinned legacy SCREAMING', () => {
@@ -546,5 +593,12 @@ describe('the committed dist/error-codes.json artifact', () => {
       2,
     )}\n`;
     expect(bytes).toBe(regenerated);
+  });
+
+  it('is byte-frozen at the pinned error-codes.json md5', () => {
+    // Independent of the regenerated-bytes check above: a permutation that the
+    // emitter reproduces faithfully still changes the md5 consumers key on.
+    const md5 = createHash('md5').update(readFileSync(resolve(__dirname, '..', 'dist', 'error-codes.json'))).digest('hex');
+    expect(md5).toBe('5d1783a71a3c4e128b2021327cad3717');
   });
 });
