@@ -37,14 +37,14 @@
  * @license MIT
  */
 
+/** The HTTP verbs the server manifest may carry (derived from the generator's pinned verb set). */
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
+
 /**
  * The EXACT set of `[method, pathTemplate]` tuples phlix-server registers,
  * tuple-exact — a request that matches by substring or prefix is a defect.
  * Routing only: permission is decided at runtime — see the file header.
  */
-/** The HTTP verbs the server manifest may carry (derived from the generator's pinned verb set). */
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
-
 export const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [HttpMethod, string]> = [
     ['DELETE', '/api/v1/admin/backup/{id}'],
     ['DELETE', '/api/v1/admin/livetv/recordings/{id}'],

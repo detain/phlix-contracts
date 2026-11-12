@@ -36,13 +36,13 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT
  */
+/** The HTTP verbs the server manifest may carry (derived from the generator's pinned verb set). */
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 /**
  * The EXACT set of `[method, pathTemplate]` tuples phlix-server registers,
  * tuple-exact — a request that matches by substring or prefix is a defect.
  * Routing only: permission is decided at runtime — see the file header.
  */
-/** The HTTP verbs the server manifest may carry (derived from the generator's pinned verb set). */
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'OPTIONS';
 export declare const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [HttpMethod, string]>;
 /** Provenance — the server commit + generator this manifest was derived from. */
 export declare const SERVER_ROUTE_MANIFEST_PROVENANCE: {
