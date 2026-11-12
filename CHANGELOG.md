@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   210 tests green serial; `tsc --noEmit` + full build deterministic; the dist
   bundle/d.ts churn is the embedded manifest projection only.
 - **Tag posture:** the master-side currency rides the NEXT contracts wave;
-  pinned consumers stay on the `v0.54.0`-era export until then (paired-wave
+  pinned consumers stay on the `v0.5.7`-era export until then (paired-wave
   law) — the hub sync vendors from master bytes exactly as regen #37 did.
 
 ### Fixed — w36 L1-R2: 13 cites that passed the proximity tripwire without being emit sites re-anchored with executed emit-proof (comment currency only; zero wire change) — 2026-11-10

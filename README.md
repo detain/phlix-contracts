@@ -16,10 +16,12 @@ Phlix client and both servers, so they stop redeclaring divergent local types.
 - Mirrors the PHP `detain/phlix-shared` package and the Phlix server's JSON
   response shapes.
 - **REST/wire response types use the server's `snake_case` field names
-  verbatim.** Two deliberate `camelCase` exceptions: `LibraryQuery`'s query
-  params (`yearFrom`, `yearTo`, `libraryId`, `parentId`, `topLevel`) follow
-  `library-query.schema.json`, and `JwtClaims.serverId` follows the PHP
-  `JwtClaims::toPayload()` claim key.
+  verbatim.** Deliberate `camelCase` exceptions include: `LibraryQuery`'s
+  query params (`yearFrom`, `yearTo`, `libraryId`, `parentId`, `topLevel`)
+  follow `library-query.schema.json`, and `JwtClaims.serverId` follows the PHP
+  `JwtClaims::toPayload()` claim key; PHP-DTO mirrors (`UserInfo`,
+  `ProviderAuthResult`) and PSR-14 event payloads also keep their PHP
+  camelCase.
 - **Hub DTOs use the `camelCase` payload keys** the PHP `toPayload()` emits.
 
 ## Install
