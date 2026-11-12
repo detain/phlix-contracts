@@ -95,7 +95,8 @@
  *     The server text-only families (`identity.*`, `provider.*`, `oauth.*`,
  *     `ldap.*`, `auth.missing_credentials` / `auth.invalid_credentials` and
  *     the four profile text traps) are the remaining `error`-TEXT minority;
- *     their per-domain "promote in W2" caveats stay until they land.
+ *     their per-domain "the emit-wave will promote them" caveats stay until
+ *     they land.
  *  2. `legacy` — the 12 SCREAMING_SNAKE codes of the SyncPlay WebSocket wire
  *     history (the exact `sendError`/`Messages::error` literal set in
  *     `phlix-server/src/Session/SyncPlay/SyncPlayManager.php` and
@@ -195,7 +196,7 @@
  * `dist/mcp-scopes.json` for PHP consumers (hub/server have no Node step).
  * `test/errors.test.ts` pins every wire value independently and byte-freezes
  * the WORKING-COPY artifact; committed-freshness is gated in CI by the
- * `git diff --exit-code -- dist/error-codes.json` step that runs immediately
+ * whole-tree `git diff --exit-code -- dist/` step that runs immediately
  * after `npm run build` (the build heals the working copy before the suite
  * runs, so the test alone cannot see a stale COMMITTED file in CI).
  *

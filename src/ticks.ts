@@ -19,9 +19,9 @@
  * What the wave did NOT
  * decide is a migration aid (a parallel `_ms` key on the REST rails) and
  * whether the server payload docblocks state the unit inline — both are
- * open producer-side calls as of v0.5.7 (no `_ms` key exists on any rail
- * yet); nothing here changes until one of them lands, and no existing
- * field's meaning moved.
+ * open producer-side calls as of v0.5.7 (no parallel `_ms` twin of any
+ * `*_ticks` field exists on any rail yet); nothing here changes until one of
+ * them lands, and no existing field's meaning moved.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
