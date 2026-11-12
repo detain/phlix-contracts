@@ -116,8 +116,15 @@ export declare const PLUGIN_EVENT: {
 };
 export type PluginEventName = (typeof PLUGIN_EVENT)[keyof typeof PLUGIN_EVENT];
 /**
- * Webhook event types a subscription may select. Mirrors the `events[]` of
- * `phlix-shared/schemas/webhook-events.json`. DISTINCT from {@link PLUGIN_EVENT}.
+ * Webhook event types a subscription may select. DISTINCT from {@link PLUGIN_EVENT}.
+ *
+ * Authorities (verified 2026-11-12): the `events[]` of
+ * `phlix-shared/schemas/webhook-events.json` (schema da48887) and the server's
+ * `WebhookEventCatalog`. This object mirrors the schema EXCEPT `MEDIA_ADDED`,
+ * which is a legacy alias: the schema does not list `media.added`, and the
+ * server normalizes it to `library.updated` via `WebhookEventCatalog::LEGACY_ALIASES`.
+ * Prefer `LIBRARY_UPDATED`; removal of `MEDIA_ADDED` is a breaking change
+ * reserved for a tag-wave decision.
  */
 export declare const WEBHOOK_EVENT: {
     readonly PLAYBACK_STARTED: "playback.started";
@@ -126,6 +133,7 @@ export declare const WEBHOOK_EVENT: {
     readonly DOWNLOAD_COMPLETE: "download.complete";
     readonly RECORDING_STARTED: "recording.started";
     readonly RECORDING_STOPPED: "recording.stopped";
+    /** @deprecated Legacy alias of `library.updated` (not in the shared schema). */
     readonly MEDIA_ADDED: "media.added";
     readonly ALERT: "alert";
 };
@@ -163,6 +171,7 @@ export declare const EVENT: {
         readonly DOWNLOAD_COMPLETE: "download.complete";
         readonly RECORDING_STARTED: "recording.started";
         readonly RECORDING_STOPPED: "recording.stopped";
+        /** @deprecated Legacy alias of `library.updated` (not in the shared schema). */
         readonly MEDIA_ADDED: "media.added";
         readonly ALERT: "alert";
     };
