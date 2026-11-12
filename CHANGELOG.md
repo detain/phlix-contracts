@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Notes — CTR-16 watch item: `./routeManifest` subpath layout (no action; docs only) — 2026-11-12
+
+- **Watch, do not re-litigate:** the `./routeManifest` subpath's
+  `import`/`require` conditions deliberately resolve to the root bundles
+  (`dist/phlix-contracts.js` / `dist/phlix-contracts.umd.cjs`) with only
+  `types` subpath-specific (`dist/routeManifest.d.ts`), because
+  `vite.config.ts` builds ONE lib entry; reviewer verdict "no action required"
+  — revisit only if the build moves to per-entry chunks, at which point the
+  subpath re-points to its own chunk and the `test/routeManifest.test.ts`
+  exports-hygiene pins rotate in the same commit.
+
 ### Changed — route-manifest regen #38: CONTENT 416→418 tuples at server `413765b6` — 2026-11-10
 
 - **Trigger: phlix-server master gained routes.** Server w38 L1 CP-029 / D-1a
