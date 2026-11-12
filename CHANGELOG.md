@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Docs — COOKIE-DESIGN.md citation locations + headers.ts wording (CTR-14/CTR-20) — 2026-11-12
+
+- `COOKIE-DESIGN.md` is cited by `README.md`, `src/auth.ts` and `src/headers.ts`
+  but lives only at the estate workspace root, not in this package; those
+  citations now say so (vendoring a §2.1 excerpt is an owner-gated alternative,
+  not done). `src/headers.ts` "bearer custody bearer" tautology reworded to
+  "CLASS DEVICE on bearer custody". Comment/doc-only: no wire, type or
+  error-code change. The released-era line in the 0.5.x entry citing the doc is
+  verbatim history and is left as written.
+
 ### Notes — CTR-16 watch item: `./routeManifest` subpath layout (no action; docs only) — 2026-11-12
 
 - **Watch, do not re-litigate:** the `./routeManifest` subpath's

@@ -9,7 +9,8 @@
  * `JwtClaims::toPayload()`), so we keep `serverId` camelCase here. The REST
  * login response uses snake_case (`session_id`), so those stay snake_case.
  *
- * Token custody is a DESIGNED, permanent bifurcation (COOKIE-DESIGN.md §2.1,
+ * Token custody is a DESIGNED, permanent bifurcation (COOKIE-DESIGN.md §2.1 —
+ * an estate workspace-root doc, not vendored in this package;
  * owner rulings CD-1a..CD-8a 2026-11-05 — CP-001 records it in types/docs;
  * ZERO wire payload and ZERO error-code change, §3): CLASS BROWSER — the SPA
  * rendered at same-origin `/app` on server or hub — authenticates with the

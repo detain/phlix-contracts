@@ -5,7 +5,8 @@
  * windows client (`api.ts`) and tizen client, which the server reads on every
  * authenticated request.
  *
- * Custody law (COOKIE-DESIGN.md §2.1, CP-001 — doc-only pass, behavior
+ * Custody law (COOKIE-DESIGN.md §2.1 — an estate workspace-root doc, not
+ * vendored in this package; CP-001 — doc-only pass, behavior
  * UNCHANGED): these device headers are also the server's cookie OPT-OUT
  * discriminator. A request carrying `X-Phlix-Device-Type` is CLASS DEVICE:
  * the server keeps it on bearer custody and NEVER emits Set-Cookie. The
@@ -30,7 +31,7 @@ export declare const X_PHLIX_DEVICE_TYPE = "X-Phlix-Device-Type";
 export declare const X_PHLIX_SESSION_ID = "X-Phlix-Session-ID";
 /**
  * Client platform values the server recognizes for `X-Phlix-Device-Type`.
- * Every member is a CLASS DEVICE bearer custody bearer (COOKIE-DESIGN.md
+ * Every member is CLASS DEVICE on bearer custody (COOKIE-DESIGN.md
  * §2.1), and the union deliberately has NO browser member — a browser must
  * not device-class itself into cookie opt-out. The five wire spellings below
  * are exactly what the windows/tizen/roku/mobile clients send. Console and
