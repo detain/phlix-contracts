@@ -35,7 +35,7 @@ for the newest one):
 // package.json
 {
   "dependencies": {
-    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.7"
+    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.8"
   }
 }
 ```
@@ -117,7 +117,7 @@ The root barrel (`src/index.ts`) re-exports all 25 modules below.
 |---------------|---------|
 | `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `MediaItemUserData`, `UserData`, `Library`, `LibrariesResponse`, `LibraryResponse`, `MediaItemsResponse`, `PagedMediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
 | `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`/`RENDITION_KEYS`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SKIP_BUTTON_SPEC_KEYS`, `SkipMarkers`/`PlaybackMarkers`, `TimeMarker`/`TIME_MARKER_KEYS`, `PlaybackInfoChapter`/`PLAYBACK_INFO_CHAPTER_KEYS`, `Crossfade`/`CROSSFADE_KEYS`, `PlaybackConstraints`/`PLAYBACK_CONSTRAINTS_KEYS`, `PlaybackInfo` (`quality_ladder` key always present, value `Rendition[] \| null` — LW-069), `PlaybackInfoBase`/`PLAYBACK_INFO_KEYS`, `PLAYBACK_INFO_KEY_TIES` (+ the `*KeysTied` compile-time tie types), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
-| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ `JwtIssuer`/`JwtAudience`/`JwtType`), `COOKIE_MODE`/`CookieMode` (since v0.5.8 — unreleased, master-only; absent from the `v0.5.7` tag) — token custody modes (COOKIE-DESIGN.md §2.1 — an estate workspace-root doc, not vendored here: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
+| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ `JwtIssuer`/`JwtAudience`/`JwtType`), `COOKIE_MODE`/`CookieMode` (since v0.5.8; absent from the `v0.5.7` tag) — token custody modes (COOKIE-DESIGN.md §2.1 — an estate workspace-root doc, not vendored here: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
 | `events.ts`   | event payload interfaces (`PhlixEvent` base + per-event `*Event`) + `PLUGIN_EVENT`/`PluginEventName`, `WEBHOOK_EVENT`/`WebhookEventType`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |

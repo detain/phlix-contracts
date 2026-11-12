@@ -18,6 +18,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.8] - 2026-11-12
+
+Release cut (CTR-S14) over the v0.5.7 base: bundles the CTR-S3/S6/S11 content
+below and the CTR-S13 registry check (`auth.invalid_credentials` already
+registered; no registry change).
+
+- **Type-breaking for callers passing arbitrary `string`s** (CTR-S6/CTR-9):
+  `SERVER_ROUTE_MANIFEST` / `isServedRoute` literal `HttpMethod` typing. Consumers
+  (ui/tizen/windows) must run vue-tsc/tsc on re-pin. The `ErrorCode` union did
+  NOT grow (no TS2741 cohort).
+- Registry trio at the cut: `dist/error-codes.json` 5d1783a7 (205 codes, held),
+  `dist/mcp-scopes.json` 8c92c070 (held), `dist/server-route-manifest.json`
+  90b79e35 -> c2111cd3 (418 tuples @ server 413765b6, the regen #38 entry below).
+- Whole-dist aggregate md5 (`find dist -type f | sort | xargs md5sum | md5sum`):
+  a6e453d6 (v0.5.7) -> 0ed5804a3731baeba990a26bd2a7f0af.
+- Gates at cut: eslint/tsc 0, vitest serial 18 files / 213 tests at 100% coverage,
+  build clean-tree deterministic. `verify:cites` reports 10 DRIFT rows against
+  the moved hub/server heads (sibling-repo line drift, not contracts content).
+
 ### Changed — routeManifest literal-type restoration (CTR-9) — 2026-11-12
 
 - `SERVER_ROUTE_MANIFEST` is now typed `ReadonlyArray<readonly [HttpMethod, string]>`
