@@ -242,11 +242,21 @@ Notation the README, source docblocks, and CHANGELOG use throughout:
 - **`(+N)`** — in an emit-site cite (e.g. ``srv AuthMiddleware.php:62 (+24 controller/helper sites)``),
   "N further emit sites are not enumerated"; the full set lives in the server source.
 - **`#NNN`** — a GitHub PR/issue number in the repo the surrounding prose names.
-- **`SNNN`** — an estate audit-programme ticket (S280 = the route-manifest generation
-  programme; S249 = the MCP-scope census this package also vendors).
+- **`SNNN`** — an estate audit-program ticket (S280 = the route-manifest generation
+  program; S249 = the MCP-scope census this package also vendors).
+- **`CP-NNN`** — a Cookie Program row: the estate token-custody program
+  COOKIE-DESIGN.md specifies (CP-001 = the `COOKIE_MODE` custody marker this package
+  records; CP-011 = the cookie dual-emit lane). Rows also carry the program's
+  knock-on work (CP-025 = the `verify:cites` re-anchor sweep after cookie-era churn).
+- **`LW-NNN`** — an estate-review ledger row: one cross-repo review finding and the
+  cure that answers it (LW-040 = the `WireKeysExact` consolidation; LW-069 = the
+  `PlaybackInfo` key-set truth). Source and test docblocks cite the row a pin answers.
+- **`CD-Na`** — an owner ruling recorded in COOKIE-DESIGN.md (CD-1a..CD-8a, ruled
+  2026-11-05); e.g. CD-2a = the envelope law (device-class requests never receive
+  `Set-Cookie`), CD-3a = the https/localhost `Secure` law.
 - **`W1`/`W1b`/`W2`/`W3`/`W5`** — the numbered server/hub emit-wave lanes that promoted
   wire literals onto the dotted `code` channel (each tag names the lane its codes landed in).
-  The `W`-prefix is shared vocabulary: the settings-programme lanes number their own
+  The `W`-prefix is shared vocabulary: the settings-program lanes number their own
   sequence the same way, so a lone `W4` in this repo's CHANGELOG-era prose names the
   server settings wave 4 (a header-file lane), never an emit wave.
 - **`tripwire`** — `npm run verify:cites` (`scripts/check-error-cites.mjs`), which

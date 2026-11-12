@@ -293,9 +293,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **README notation bullets — currency (estate review contracts__writer
   Info 1/2):** the `tripwire` bullet now names the real cite grammar —
   every `hub`/`srv`-prefixed file-colon-line cite — instead of the
-  sweep-era family labels `SRV-HTTP`/`HUB`, which are re-anchor programme
+  sweep-era family labels `SRV-HTTP`/`HUB`, which are re-anchor program
   history, not cite notation; and the `W`-notation bullet carries the
-  settings-programme parenthetical — a lone `W4` in CHANGELOG-era prose is
+  settings-program parenthetical — a lone `W4` in CHANGELOG-era prose is
   the server settings wave 4 (a header-file lane), never an emit wave.
 - **[Unreleased] footer link re-pointed** to `v0.5.7...HEAD` (the standing
   LW-008 rotation the v0.5.7 release commit left behind).
