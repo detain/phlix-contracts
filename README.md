@@ -53,9 +53,11 @@ lives in `CONTRIBUTING.md`.
 
 The three machine-readable registries ship inside the tagged tarball as
 prebuilt `dist/` artifacts — **reading them costs no build toolchain** (only
-building this package does; see Development). The exported subpaths are
+building this package does; see Development). The registry subpaths are
 `./dist/error-codes.json`, `./dist/mcp-scopes.json`, and
-`./dist/server-route-manifest.json`:
+`./dist/server-route-manifest.json` (the full `exports` map in `package.json`
+also carries the root `.`, the typed `./routeManifest` subpath — see
+Modules — and `./package.json`):
 
 ```ts
 // ESM — JSON module import attribute (Node >=20.10, modern bundlers)
@@ -69,7 +71,8 @@ const errorCodes = require('@phlix/contracts/dist/error-codes.json');
 
 - **TypeScript consumers** usually skip the JSON subpaths entirely: the same
   data is typed at the root export (`ERROR_CODES`, per-domain unions, and
-  `SERVER_ROUTE_MANIFEST` from `routeManifest.generated.ts`).
+  `SERVER_ROUTE_MANIFEST` plus the `isServedRoute` matcher from
+  `routeManifest.ts`, also importable as `@phlix/contracts/routeManifest`).
 - **PHP-side vendoring idiom** (as phlix-server and phlix-hub do): copy the
   registry JSON into the repo's contract-test fixture path and keep that
   repo's `ErrorCodesContractTest` byte-pin green — the pin test is the
@@ -108,17 +111,19 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 
 ## Modules
 
+The root barrel (`src/index.ts`) re-exports all 25 modules below.
+
 | Module        | Exports |
 |---------------|---------|
 | `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `MediaItemUserData`, `UserData`, `Library`, `LibrariesResponse`, `LibraryResponse`, `MediaItemsResponse`, `PagedMediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
-| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SkipMarkers`/`PlaybackMarkers`, `TimeMarker`, `PlaybackInfo` (+ optional `quality_ladder`), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
-| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE`, `COOKIE_MODE` (+ type aliases) — token custody modes (COOKIE-DESIGN.md §2.1: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
+| `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`/`RENDITION_KEYS`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SKIP_BUTTON_SPEC_KEYS`, `SkipMarkers`/`PlaybackMarkers`, `TimeMarker`/`TIME_MARKER_KEYS`, `PlaybackInfoChapter`/`PLAYBACK_INFO_CHAPTER_KEYS`, `Crossfade`/`CROSSFADE_KEYS`, `PlaybackConstraints`/`PLAYBACK_CONSTRAINTS_KEYS`, `PlaybackInfo` (`quality_ladder` key always present, value `Rendition[] \| null` — LW-069), `PlaybackInfoBase`/`PLAYBACK_INFO_KEYS`, `PLAYBACK_INFO_KEY_TIES` (+ the `*KeysTied` compile-time tie types), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
+| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ `JwtIssuer`/`JwtAudience`/`JwtType`), `COOKIE_MODE`/`CookieMode` (since v0.5.8 — unreleased, master-only; absent from the `v0.5.7` tag) — token custody modes (COOKIE-DESIGN.md §2.1: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
-| `events.ts`   | event payload interfaces + `PLUGIN_EVENT`, `WEBHOOK_EVENT`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
+| `events.ts`   | event payload interfaces (`PhlixEvent` base + per-event `*Event`) + `PLUGIN_EVENT`/`PluginEventName`, `WEBHOOK_EVENT`/`WebhookEventType`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
 | `mcp.ts`      | `MCP_SCOPE`, `McpScope`, `MCP_SCOPES`, `MCP_TOKEN_PREFIX` (mirrored to `dist/mcp-scopes.json`) |
-| `errors.ts`   | `ERROR_CODE`, `ERROR_CODES`, `ERROR_DOMAINS`, `ErrorCode`, per-domain code lists + unions, `SyncPlayErrorCode`, `LEGACY_SYNCPLAY_ERROR_CODES`, `SYNCPLAY_ERROR_CODE_TWINS` (mirrored to `dist/error-codes.json`) |
-| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1) |
+| `errors.ts`   | `ERROR_CODE`, `ERROR_CODES`, `ERROR_DOMAINS`/`ErrorDomain`, `ErrorCode`/`ErrorCodeIn`, per-domain code lists + unions, `SYNCPLAY_ERROR_CODES`/`SyncPlayErrorCode`, `LEGACY_SYNCPLAY_ERROR_CODES`, `SYNCPLAY_ERROR_CODE_TWINS` (mirrored to `dist/error-codes.json`) |
+| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `BuildPhlixHeadersOptions`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1) |
 | `ticks.ts`    | `TICKS_PER_SECOND`/`_MINUTE`/`_HOUR`, `ticksToSeconds`, `secondsToTicks`, `ticksToMinutes`, `ticksToHms`, `formatRuntime`, `formatDuration` |
 | `Rating.ts`   | `Rating`, `MediaRatings`, `RatingValue`, `RatingSortKey`, `MinRatingFilter`, `MaxRatingFilter`, `SmartRuleField`, `MediaItemRatingSource`, `pickDisplayRating`, `ManualMatchOverride` |
 | `Chapter.ts`  | `ChapterMarker`, `ChapterTrack`, `ChapterInfo`, `TrickplaySprite`, `TrickplayInfo`, `SkipConfig`, `MarkerTimeline` |
@@ -130,10 +135,10 @@ const label = formatRuntime(runtimeTicks); // "1h 30m"
 | `Collection.ts` | `CollectionBoxSet`, `CollectionMember` |
 | `AccessSchedule.ts` | `DayOfWeek`, `AccessSchedule` |
 | `ProfileTag.ts` | `ProfileTag` |
-| `StreamSession.ts` | `ProfileStreamLimit`, `StreamType`, `ActiveStream` |
+| `StreamSession.ts` | `ProfileStreamLimit`/`PROFILE_STREAM_LIMIT_KEYS`, `StreamType`, `ActiveStream`/`ACTIVE_STREAM_KEYS`, `STREAM_SESSION_KEY_TIES` (+ `*KeysTied` tie types) |
 | `Music.ts`    | `MusicArtist`, `MusicAlbum`, `MusicTrack`, `AudioPreferences` |
 | `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup` (`SyncPlayRoom` is a deprecated alias), `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` |
-| `routeManifest.generated.ts` | `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` (generated — see `scripts/generate-server-route-manifest.mjs`) |
+| `routeManifest.ts` | `isServedRoute` (the client-side tuple-exact match law), plus `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` re-exported unchanged from `routeManifest.generated.ts` (generated, never hand-edited — see `scripts/generate-server-route-manifest.mjs`); also importable via the `@phlix/contracts/routeManifest` subpath |
 
 Registry provenance, deliberately:
 
