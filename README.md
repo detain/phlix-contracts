@@ -15,19 +15,25 @@ Phlix client and both servers, so they stop redeclaring divergent local types.
   functions only.
 - Mirrors the PHP `detain/phlix-shared` package and the Phlix server's JSON
   response shapes.
-- **REST/wire types use the server's `snake_case` field names verbatim.**
+- **REST/wire response types use the server's `snake_case` field names
+  verbatim.** Two deliberate `camelCase` exceptions: `LibraryQuery`'s query
+  params (`yearFrom`, `yearTo`, `libraryId`, `parentId`, `topLevel`) follow
+  `library-query.schema.json`, and `JwtClaims.serverId` follows the PHP
+  `JwtClaims::toPayload()` claim key.
 - **Hub DTOs use the `camelCase` payload keys** the PHP `toPayload()` emits.
 
 ## Install
 
 `@phlix/contracts` is distributed as a **git-tagged dependency** (not published to
-npm). Pin an exact tag — the current release:
+npm). Pin an exact tag — the current release at this writing (the
+[tags page](https://github.com/detain/phlix-contracts/tags) is the authority
+for the newest one):
 
 ```jsonc
 // package.json
 {
   "dependencies": {
-    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.6"
+    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.7"
   }
 }
 ```
@@ -70,23 +76,13 @@ const errorCodes = require('@phlix/contracts/dist/error-codes.json');
 ## Usage
 
 ```ts
-import type {
-  MediaItem,
-  MediaItemsResponse,
-  PlaybackInfo,
-  LibraryQuery,
-  HeartbeatDto,
-  JwtClaims,
-} from '@phlix/contracts';
+import type { MediaItem } from '@phlix/contracts';
 
 import {
   buildPhlixHeaders,
   ticksToSeconds,
   secondsToTicks,
   formatRuntime,
-  TICKS_PER_SECOND,
-  EVENT,
-  X_PHLIX_DEVICE_ID,
 } from '@phlix/contracts';
 
 // The example assumes values a live client already holds: `accessToken` is the
