@@ -91,6 +91,19 @@ export interface MediaStream {
 export interface MediaItemUserData {
     favorite: boolean;
     rating: number | null;
+    /**
+     * ADD-ONLY child-list fields. Rows of `GET /api/v1/media?parentId=<id>`
+     * (season/episode drill-down lists) carry a `user_data` block of
+     * `{watched, position_ticks, duration_ticks, progress_percent}` (and NOT
+     * `favorite`/`rating`) so clients can paint watched/progress marks without a
+     * per-row detail fetch. `watched` is true for a manual mark OR completed
+     * history; the tick fields are 100-ns ticks, 0 when never played;
+     * `progress_percent` is 0-100.
+     */
+    watched?: boolean;
+    position_ticks?: number;
+    duration_ticks?: number;
+    progress_percent?: number;
 }
 /**
  * A single media item, as returned by the browse/list endpoints.

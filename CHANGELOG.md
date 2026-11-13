@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `MediaItemUserData` gains optional `watched`, `position_ticks`, `duration_ticks`,
+  `progress_percent` for the add-only per-row `user_data` block on
+  `GET /api/v1/media?parentId=` child lists (ROK-S23 / ROK-24; server 553e56f).
+
 ## [0.5.8] - 2026-11-12
 
 Release cut (CTR-S14) over the v0.5.7 base: bundles the CTR-S3/S6/S11 content

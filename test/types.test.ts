@@ -174,6 +174,20 @@ describe('type-level construction smoke', () => {
     expect(item.user_data?.rating).toBe(7);
   });
 
+  it('constructs a child-list row user_data with watched/progress fields', () => {
+    const ud: MediaItemUserData = {
+      favorite: false,
+      rating: null,
+      watched: true,
+      position_ticks: 300,
+      duration_ticks: 1000,
+      progress_percent: 30,
+    };
+    const item: MediaItem = { id: 'e1', name: 'E1', type: 'episode', user_data: ud };
+    expect(item.user_data?.watched).toBe(true);
+    expect(item.user_data?.progress_percent).toBe(30);
+  });
+
   it('allows a null user_data when unauthenticated (B2)', () => {
     const item: MediaItem = {
       id: 'd2',
