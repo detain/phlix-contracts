@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Dev-dependency upgrade: eslint 9 -> 10.14 (+ @eslint/js 10), @types/node 26, vite 8.3.8, vitest/coverage-v8 5.1, typescript-eslint 8.72.2. TypeScript stays on 6.0.x because typescript-eslint 8 supports only `<6.1.0` (TS 7 unsupported). `dist/` is byte-identical; GitHub Actions were already at latest majors. `npm audit` still reports only the single upstream minimatch advisory (no fix available; more dependents listed under eslint 10).
+
 ### Added
 
 - `MediaItemUserData` gains optional `watched`, `position_ticks`, `duration_ticks`,
