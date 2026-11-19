@@ -48,11 +48,12 @@
  * Conventions break-on-upgrade bullet.
  *
  * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-19 at the estate
- * tips hub `ce493818` / server `1de9bca6` with the default nearest-line
- * window — the dev-only tripwire exits 0 there (ok 434, problems 0). The
- * 2026-11-21 stamp heads hub `52aa9874` / server `016ea759` advanced only
- * via lanes touching no cited error-emit file, so this sweep moved no
- * coordinate; that 2026-11-21 sweep had re-anchored the 100 drifted or relocated
+ * tips hub 62efb787c3b0d09f8d8f0d7dab91f25e0bf3c445 / server
+ * b74b1140f67987abb561b73527615b38b2f0d8ee with the default nearest-line
+ * window — the dev-only tripwire exits 0 there (ok 435, problems 0). The
+ * hub M-28 WriteResult retirement renumbered the claim key-validation arms
+ * past the `ce493818` / `1de9bca6` stamp; that 2026-11-21 sweep had
+ * re-anchored the 100 drifted or relocated
  * coordinates the prior stamp left behind, then a further 7 that re-drifted
  * mid-sweep under the continuing churn — every final anchor read from the
  * named tips as literal emit lines, never the tripwire nearest-token
@@ -380,10 +381,10 @@ const CODES = {
     NO_TUNNEL: 'server.no_tunnel',
     /**
      * hub ServerClaimController.php:317 (400 arm 315-320) ← throws at
-     * hub ClaimRequestHandler.php:780,783,786,790 — the server's Ed25519 key
-     * failed validation during claim. Hub W3 promoted: dotted rides `code`,
-     * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
-     * placement; clients may match either).
+     * hub ClaimRequestHandler.php:773,776,779,782,786 — the server's Ed25519
+     * key failed validation during claim. Hub W3 promoted: dotted rides
+     * `code`, the SCREAMING `SERVER_KEY_INVALID` is parked in the `error`
+     * TEXT (dual placement; clients may match either).
      */
     KEY_INVALID: 'server.key_invalid',
   },
