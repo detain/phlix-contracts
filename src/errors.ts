@@ -47,28 +47,25 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-10 at the estate
- * tips hub `e27be256` / server `b96e9a8f` with the default nearest-line
- * window — the dev-only tripwire exits 0 there (ok 435, problems 0). It
- * re-anchored 168 drifted coordinates, the accumulated churn of the hub and
- * server cookie/CSRF/WS-carrier chains since the 11-09 stamp, and carries an
- * honest correction: that stamp's zero-problems claim was itself inflated —
- * at its own named tips the tripwire actually reported ok 431 with 4 problems
- * (the hub `AuthMiddleware` bearer trio and the `AuthController` not-found
- * default arm were already stale when that sweep stamped). Re-anchoring used
- * per-file diff-line maps from the named stamp tips plus arm-by-arm
- * handler-identity re-reads — never the tripwire nearest-token suggestion,
- * which would collapse such pairs onto one emit — preserving pair separation
- * across the FederationController offer/master_only families, the SyncPlay
- * inner-path arms and the legacy SCREAMING emits; every re-anchored cite's
- * adjacent backticked anchor words were then re-verified against target disk
- * by token proximity — and the same-day independent review showed proximity
- * green is not emit-site truth: 13 coordinates passed on pool-generic tokens
- * while pointing at comment prose, guard regions, or the wrong match arm. All
- * 13 were re-anchored in the same-day R2 sweep with per-coordinate
- * emit-site greps executed against the named tips (proof table:
- * .reviews/2026-11-10/FIX-contracts-w36L1-round2.md); the earlier
- * "all anchors survived, none vanished" claim stands retracted there.
+ * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-21 at the estate
+ * tips hub `52aa9874` / server `016ea759` with the default nearest-line
+ * window — the dev-only tripwire exits 0 there (ok 434, problems 0). The
+ * refactor era moved both repos massively (100+ commits: the hub
+ * ControllerErrorFrames and JSON-envelope consolidation, the server
+ * http-envelope waves); this sweep re-anchored the 100 drifted or relocated
+ * coordinates the prior stamp left behind, then a further 7 that re-drifted
+ * mid-sweep under the continuing churn — every final anchor read from the
+ * named tips as literal emit lines, never the tripwire nearest-token
+ * suggestion, which would collapse two-arm families onto one emit. Three
+ * constructs relocated into the shared hub ControllerErrorFrames builder (the
+ * mapError default 500, the missing-user-id refusal, the admin not-found
+ * refusal); the server rate-limited envelope moved from the Application
+ * dispatcher onto the Response builder seam on both hosts; the server
+ * access-schedule no-profile arm trio consolidated into one builder, so that
+ * cite now names the two current emits (parsed cites 435 to 434). Pair
+ * separation was preserved arm-by-arm across the FederationController
+ * offer/master_only families, the quota-gate sites and the legacy SCREAMING
+ * emits; no coordinate was faked onto a passing-but-wrong region.
  * The registry rows are byte-unchanged: docs-only, no code, no wire, no dist
  * payload bytes moved; the owner-frozen registry md5 trio held.
  * Preceding eras are narrated in the CHANGELOG (its `[Unreleased]` and
@@ -186,7 +183,7 @@
  *    `UPGRADE_REQUIRED` (hub RelayController.php:137,
  *    ClientMountController.php:185) co-emits `relay.ws_http_endpoint` /
  *    `relay.client_ws_endpoint` on `code`; `NOT_IMPLEMENTED_VIA_HTTP` and
- *    `NOT_IMPLEMENTED` (hub ClientMountController.php:198,
+ *    `NOT_IMPLEMENTED` (hub ClientMountController.php:193,
  *    RelayController.php:163, SubdomainController.php:185) co-emit the
  *    registered `relay.*`/`tls.*` codes on `code` in the same payload —
  *    covered.
@@ -222,13 +219,13 @@ const CODES = {
    * emit-wave will promote them.
    */
   auth: {
-    /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:135 */
+    /** srv AuthMiddleware.php:62 (+24 controller/helper sites) · hub AuthMiddleware.php:145 */
     REQUIRED: 'auth.required',
-    /** srv AdminMiddleware.php:106 (+9) · hub AdminMiddleware.php:62 */
+    /** srv AdminMiddleware.php:101 (+9) · hub AdminMiddleware.php:57 */
     NOT_ADMIN: 'auth.not_admin',
-    /** hub AuthMiddleware.php:140, McpController.php:352 */
+    /** hub AuthMiddleware.php:150, McpController.php:348 */
     INVALID_TOKEN: 'auth.invalid_token',
-    /** hub AuthMiddleware.php:151 — token subject has no user row */
+    /** hub AuthMiddleware.php:176 — token subject has no user row */
     USER_NOT_FOUND: 'auth.user_not_found',
     /**
      * srv SignupDisabledException.php:28 → srv AuthController.php:223
@@ -242,7 +239,7 @@ const CODES = {
     ACCOUNT_PENDING: 'auth.account_pending',
     /** srv AccountInactiveException.php:32 */
     ACCOUNT_DISABLED: 'auth.account_disabled',
-    /** srv PasswordChangeRequiredException.php:56 */
+    /** srv PasswordChangeRequiredException.php:60 */
     PASSWORD_CHANGE_REQUIRED: 'auth.password_change_required',
     /**
      * hub ServerClaimController.php:211 — 401 on the claim route when no user
@@ -319,8 +316,9 @@ const CODES = {
      */
     PROTOCOL_UNSUPPORTED: 'hub.protocol_unsupported',
     /**
-     * hub ServerClaimController.php:355 · hub ServerController.php:260 —
-     * the mapError default 500. Hub W3 promoted: dotted rides `code`, the
+     * hub ControllerErrorFrames.php:184 — the mapError default 500 that the
+     * ServerClaimController and ServerController mapError arms delegate to.
+     * Hub W3 promoted: dotted rides `code`, the
      * SCREAMING `HUB_INTERNAL_ERROR` is parked in the `error` TEXT (dual
      * placement; clients may match either).
      */
@@ -368,15 +366,15 @@ const CODES = {
      */
     NOT_FOUND: 'server.not_found',
     /**
-     * hub ServerManageController.php:73,117 · ServerDetailController.php:92 ·
-     * ClientRelayTokenController.php:103 — owner-known surfaces only; the proxy
+     * hub ServerManageController.php:67,102 · ServerDetailController.php:86 ·
+     * ClientRelayTokenController.php:97 — owner-known surfaces only; the proxy
      * path's ownership leg answers the byte-identical 404 `server.not_found`
      * law (M-HUB-27) at hub ServerProxyController.php:1034
      */
     NOT_OWNED: 'server.not_owned',
-    /** hub ServerProxyController.php:1052 — relay tunnel not connected */
+    /** hub ServerProxyController.php:1063 — relay tunnel not connected */
     RELAY_UNAVAILABLE: 'server.relay_unavailable',
-    /** hub ServerProxyController.php:1059, RelayProxyManager.php:582 */
+    /** hub ServerProxyController.php:1070, RelayProxyManager.php:582 */
     OFFLINE: 'server.offline',
     /** hub RelayProxyManager.php:251 */
     NO_TUNNEL: 'server.no_tunnel',
@@ -392,13 +390,13 @@ const CODES = {
 
   /** Hub reverse-proxy scope gates. */
   proxy: {
-    /** hub ServerProxyController.php:1093,1108 */
+    /** hub ServerProxyController.php:1102,1115 */
     SCOPE_DENIED: 'proxy.scope_denied',
   },
 
   /** Hub bandwidth quota gate. */
   quota: {
-    /** hub ServerProxyController.php:1434 */
+    /** hub ServerProxyController.php:1440 */
     EXCEEDED: 'quota.exceeded',
   },
 
@@ -412,11 +410,11 @@ const CODES = {
    * (dual placement; clients may match `code`, `error` text or `denial_type`).
    */
   stream: {
-    /** hub ServerProxyController.php:1189 */
+    /** hub ServerProxyController.php:1195 */
     LIMIT: 'stream.limit',
     /**
      * srv StreamLimitMiddleware.php:139-143 (429) ·
-     * PreRouterFastPaths.php:601-603 (429) — `'code' =>
+     * PreRouterFastPaths.php:943-945 (429) — `'code' =>
      * 'stream.limit_exceeded'` alongside the parked `'error' =>
      * 'StreamLimitExceeded'` and `'denial_type' => 'stream_limit_exceeded'`
      * mirror (server W2 dual placement).
@@ -433,7 +431,8 @@ const CODES = {
    */
   access: {
     /**
-     * srv AccessScheduleMiddleware.php:112-114,122-124,130-132 — 403 outside
+     * srv AccessScheduleMiddleware.php:308-310 (window) · 384-386 (the two
+     * no-profile fail-closed arms, consolidated into one builder) — 403 outside
      * the profile's allowed window; `'code' => 'access.scheduled'` with
      * `'error' => 'AccessScheduled'` parked in text (server W2).
      */
@@ -442,13 +441,13 @@ const CODES = {
 
   /** Hub→server upstream gateway failures. */
   gateway: {
-    /** hub ServerProxyController.php:1222, RelayProxyManager.php:724, RelayProxyBridge.php:315 */
+    /** hub ServerProxyController.php:1228, RelayProxyManager.php:724, RelayProxyBridge.php:315 */
     TIMEOUT: 'gateway.timeout',
   },
 
   /** Hub relay endpoint-shape refusals. */
   relay: {
-    /** hub ClientMountController.php:186,199 — HTTP hit on the client WS mount */
+    /** hub ClientMountController.php:183,193 — HTTP hit on the client WS mount */
     CLIENT_WS_ENDPOINT: 'relay.client_ws_endpoint',
     /** hub RelayController.php:137,164 — HTTP hit on the server WS endpoint */
     WS_HTTP_ENDPOINT: 'relay.ws_http_endpoint',
@@ -466,7 +465,7 @@ const CODES = {
     STREAMING_UNSUPPORTED: 'mcp.streaming_unsupported',
     /** hub McpController.php:238 */
     SSE_NOT_ACCEPTABLE: 'mcp.sse_not_acceptable',
-    /** hub McpController.php:305 */
+    /** hub McpController.php:301 */
     UNSUPPORTED_PROTOCOL_VERSION: 'mcp.unsupported_protocol_version',
   },
 
@@ -669,7 +668,7 @@ const CODES = {
   /**
    * Server profile PIN/switch/denial gates. Dotted wire values that CURRENTLY
    * RIDE A NON-`code` FIELD, not the `code` channel: the first four emit the
-   * string with NO `code` key — srv ProfilesController.php:215
+   * string with NO `code` key — srv ProfilesController.php:219
    * `profile.use_switch`, srv ProfilesController.php:274 `profile.last_profile`,
    * srv ProfilesController.php:403 `profile.no_pin`, srv
    * ProfilesController.php:407 `profile.pin_mismatch`. `profile.not_found` was
@@ -680,7 +679,7 @@ const CODES = {
    * `error` text, not in `code`.
    */
   profile: {
-    /** srv ProfilesController.php:215 */
+    /** srv ProfilesController.php:219 */
     USE_SWITCH: 'profile.use_switch',
     /** srv ProfilesController.php:274 */
     LAST_PROFILE: 'profile.last_profile',
@@ -690,7 +689,7 @@ const CODES = {
     PIN_MISMATCH: 'profile.pin_mismatch',
     /**
      * srv StreamLimitMiddleware.php:93-96,100-103 (403) ·
-     * srv PreRouterFastPaths.php:629-631 (403) — the request carries a profile
+     * srv PreRouterFastPaths.php:971-973 (403) — the request carries a profile
      * that doesn't exist. Server W2 promoted it: `'code' =>
      * 'profile.not_found'` rides the `code` channel alongside the parked
      * `'error' => 'StreamLimitExceeded'` and the machine `'denial_type' =>
@@ -728,15 +727,15 @@ const CODES = {
   quickconnect: {
     /** srv QuickConnectController.php:245 */
     UNAUTHORIZED: 'unauthorized',
-    /** srv QuickConnectController.php:272 */
+    /** srv QuickConnectController.php:284 */
     INVALID_SECRET: 'invalid_secret',
-    /** srv QuickConnectController.php:275 */
+    /** srv QuickConnectController.php:291 */
     PAIRING_NOT_PENDING: 'pairing_not_pending',
-    /** srv QuickConnectController.php:394 — consent gate on telemetry heartbeat */
+    /** srv QuickConnectController.php:418 — consent gate on telemetry heartbeat */
     CONSENT_REQUIRED: 'consent_required',
-    /** srv QuickConnectController.php:511 */
+    /** srv QuickConnectController.php:536 */
     PAIRING_NOT_FOUND: 'pairing_not_found',
-    /** srv QuickConnectController.php:522 */
+    /** srv QuickConnectController.php:584 */
     STORAGE_UNAVAILABLE: 'storage_unavailable',
   },
 
@@ -748,35 +747,35 @@ const CODES = {
    * two unmatched-route fallbacks onto it.
    */
   common: {
-    /** srv Core/Application.php:2791 · hub Application.php:279 */
+    /** srv Response.php:263 · hub Response.php:271 — the central 429 builder; both Application seams delegate */
     RATE_LIMITED: 'rate_limited',
-    /** srv AuthController.php:400,435 (LDAP) */
+    /** srv AuthController.php:405,447 (LDAP) */
     PROVIDER_UNAVAILABLE: 'provider_unavailable',
-    /** srv QuickConnectController.php:260,306 · hub InviteLinkController.php:224 */
+    /** srv QuickConnectController.php:261,322 · hub InviteLinkController.php:194 */
     INVALID_REQUEST: 'invalid_request',
     /**
-     * hub FederationController.php:185 · InviteLinkController.php:167 ·
-     * LibraryShareController.php:85,231
+     * hub FederationController.php:188 · InviteLinkController.php:133 ·
+     * LibraryShareController.php:54,212
      */
     INVALID_BODY: 'invalid_body',
     /** srv QuickConnectController.php:396-422 · hub AdminUpdatesController.php:109 */
     INVALID_PAYLOAD: 'invalid_payload',
-    /** hub InviteLinkController.php:226 (+2) · LibraryShareController.php:157 (+2) */
+    /** hub InviteLinkController.php:253 (+2) · LibraryShareController.php:189 (+2) */
     UNKNOWN_ERROR: 'unknown_error',
-    /** hub AdminUserController.php:527 */
+    /** hub AdminUserController.php:479 */
     VALIDATION_FAILED: 'validation_failed',
     /**
-     * hub RequestController.php:466 · UserQuotaController.php:332 ·
+     * hub RequestController.php:426 · UserQuotaController.php:337 ·
      * AdminUpdatesController.php:165
      */
     ADMIN_REQUIRED: 'admin_required',
-    /** hub FederationController.php:1092,1143 */
+    /** hub FederationController.php:1069,1118 */
     MASTER_ONLY: 'master_only',
     /** hub FederationController.php:225,449 */
     INVALID_URL: 'invalid_url',
     /** hub FederationController.php:209 */
     INVALID_ROLE: 'invalid_role',
-    /** hub FederationController.php:813 (also LibraryShareController.php:253) */
+    /** hub FederationController.php:799 (also LibraryShareController.php:238) */
     INVALID_PERMISSION: 'invalid_permission',
     /** hub FederationController.php:436 */
     MISSING_URL: 'missing_url',
@@ -784,23 +783,23 @@ const CODES = {
     MISSING_NAME: 'missing_name',
     /** hub FederationController.php:440 */
     MISSING_PUBLIC_KEY: 'missing_public_key',
-    /** hub FederationController.php:1163 · UserQuotaController.php:350 */
+    /** hub FederationController.php:1138 · ControllerErrorFrames.php:172 — UserQuotaController's arms delegate */
     MISSING_USER_ID: 'missing_user_id',
     /**
-     * hub InviteLinkController.php:182 · LibraryController.php:54 ·
-     * LibraryShareController.php:108
+     * hub InviteLinkController.php:150 · LibraryController.php:51 ·
+     * LibraryShareController.php:79
      */
     MISSING_SERVER_ID: 'missing_server_id',
     /**
-     * hub InviteLinkController.php:221 · LibraryController.php:62 ·
-     * LibraryShareController.php:149
+     * hub InviteLinkController.php:191 · LibraryController.php:56 ·
+     * LibraryShareController.php:126
      */
     NOT_SERVER_OWNER: 'not_server_owner',
     /**
      * LIVE on the wire. Minted RESERVED at v0.5.5 on the hub's request
      * (R-HUB-W2-C1) as the shared generic-404 rail; the hub flipped both
      * producers onto this word in `e5aa57e2`. The emit sites:
-     * hub AuthController.php:103 · Router.php:457.
+     * hub AuthController.php:103 · Router.php:518.
      * AuthController's arm is the `default =>` of the `/auth/{action}`
      * dispatcher; Router's is `notFound()`, the unmatched-route fallback.
      * Both now speak the unified member-facing envelope the mint's ruling
@@ -831,21 +830,21 @@ const CODES = {
     PEER_KEY_EXISTS: 'peer_key_exists',
     /** hub FederationController.php:529 */
     PEER_NOT_FOUND: 'peer_not_found',
-    /** hub FederationController.php:986,1042 */
+    /** hub FederationController.php:969,1022 */
     OFFER_NOT_FOUND: 'offer_not_found',
-    /** hub FederationController.php:994,1050 */
+    /** hub FederationController.php:976,1029 */
     OFFER_ALREADY_RESPONDED: 'offer_already_responded',
-    /** hub FederationController.php:1208 */
+    /** hub FederationController.php:1180 */
     DELEGATION_NOT_FOUND: 'delegation_not_found',
     /** hub FederationController.php:513 */
     MISSING_PEER_ID: 'missing_peer_id',
-    /** hub FederationController.php:979,1035 */
+    /** hub FederationController.php:964,1017 */
     MISSING_OFFER_ID: 'missing_offer_id',
-    /** hub FederationController.php:1201 */
+    /** hub FederationController.php:1175 */
     MISSING_DELEGATION_ID: 'missing_delegation_id',
-    /** hub FederationController.php:797 (also LibraryShareController.php:112) */
+    /** hub FederationController.php:786 (also LibraryShareController.php:85) */
     MISSING_LIBRARY_ID: 'missing_library_id',
-    /** hub FederationController.php:817 (also LibraryShareController.php:116) */
+    /** hub FederationController.php:803 (also LibraryShareController.php:89) */
     MISSING_LIBRARY_NAME: 'missing_library_name',
     /**
      * hub FederationController.php:544 — LIVE on the wire since hub f44275f
@@ -867,33 +866,33 @@ const CODES = {
 
   /** Hub library-share CRUD (bare snake on `code`). */
   share: {
-    /** hub FederationController.php:896 · LibraryShareController.php:203,247 */
+    /** hub FederationController.php:882 · LibraryShareController.php:184,232 */
     NOT_FOUND: 'share_not_found',
-    /** hub FederationController.php:889 · LibraryShareController.php:194,226 */
+    /** hub FederationController.php:877 · LibraryShareController.php:175,207 */
     MISSING_SHARE_ID: 'missing_share_id',
-    /** hub LibraryShareController.php:102 */
+    /** hub LibraryShareController.php:71 */
     MISSING_COLLABORATOR_EMAIL: 'missing_collaborator_email',
-    /** hub LibraryShareController.php:152 */
+    /** hub LibraryShareController.php:131 */
     EXISTS: 'share_exists',
-    /** hub LibraryShareController.php:206,250 */
+    /** hub LibraryShareController.php:187,235 */
     NOT_OWNER: 'not_share_owner',
-    /** hub LibraryShareController.php:237 */
+    /** hub LibraryShareController.php:220 */
     MISSING_PERMISSION: 'missing_permission',
   },
 
   /** Hub invite-link lifecycle (bare snake on `code`). */
   invite: {
-    /** hub InviteLinkController.php:261 */
+    /** hub InviteLinkController.php:233 */
     MISSING_LINK_ID: 'missing_link_id',
-    /** hub InviteLinkController.php:270,324 */
+    /** hub InviteLinkController.php:246,304 */
     LINK_NOT_FOUND: 'invite_link_not_found',
-    /** hub InviteLinkController.php:273 */
+    /** hub InviteLinkController.php:251 */
     NOT_LINK_OWNER: 'not_link_owner',
-    /** hub InviteLinkController.php:294 */
+    /** hub InviteLinkController.php:272 */
     MISSING_TOKEN: 'missing_token',
-    /** hub InviteLinkController.php:321 */
+    /** hub InviteLinkController.php:299 */
     INVALID: 'invalid_invite',
-    /** hub InviteLinkController.php:327 — 410 */
+    /** hub InviteLinkController.php:309 — 410 */
     EXPIRED_OR_EXHAUSTED: 'invite_expired_or_exhausted',
   },
 
@@ -905,23 +904,23 @@ const CODES = {
     INVALID_TMDB_ID: 'invalid_tmdb_id',
     /** hub RequestController.php:107 */
     MISSING_TITLE: 'missing_title',
-    /** hub RequestController.php:212 (+3) */
+    /** hub RequestController.php:205 (+3) */
     MISSING_REQUEST_ID: 'missing_request_id',
-    /** hub RequestController.php:220 (+3) */
+    /** hub RequestController.php:210 (+3) */
     NOT_FOUND: 'request_not_found',
-    /** hub RequestController.php:226,263 */
+    /** hub RequestController.php:213,241 */
     NOT_OWNER: 'not_request_owner',
-    /** hub RequestController.php:338 */
+    /** hub RequestController.php:318,325 */
     APPROVE_FAILED: 'approve_failed',
-    /** hub RequestController.php:430 */
+    /** hub RequestController.php:386,393 */
     DENY_FAILED: 'deny_failed',
   },
 
   /** Hub admin user/quota management (bare snake on `code`). */
   admin: {
     /**
-     * hub AdminUserController.php:491 — bare; distinct from auth.user_not_found
-     * / user.not_found
+     * hub ControllerErrorFrames.php:160 — bare; distinct from auth.user_not_found
+     * (AdminUserController's not-found arms delegate to it) / user.not_found
      */
     USER_NOT_FOUND: 'user_not_found',
     /** hub AdminUserController.php:287 */
@@ -930,9 +929,9 @@ const CODES = {
     LAST_ADMIN: 'last_admin',
     /** hub AdminUserController.php:319 */
     CANNOT_DEMOTE_SELF: 'cannot_demote_self',
-    /** hub UserQuotaController.php:358 */
+    /** hub UserQuotaController.php:345 */
     INVALID_QUOTA: 'invalid_quota',
-    /** hub UserQuotaController.php:367 */
+    /** hub UserQuotaController.php:352 */
     INVALID_THROTTLE: 'invalid_throttle',
   },
 
@@ -1233,7 +1232,7 @@ const CODES = {
     UNKNOWN_MESSAGE: 'UNKNOWN_MESSAGE',
     /** srv SyncPlayManager.php:658 */
     HANDLER_ERROR: 'HANDLER_ERROR',
-    /** srv SyncPlayManager.php:1131 · srv MessageHandler.php:156 */
+    /** srv SyncPlayManager.php:1131 · srv MessageHandler.php:177 */
     NOT_AUTHENTICATED: 'NOT_AUTHENTICATED',
     /** srv SyncPlayManager.php:1139 */
     NOT_IN_GROUP: 'NOT_IN_GROUP',
@@ -1267,7 +1266,7 @@ const CODES = {
      */
     LEAVE_FAILED: 'LEAVE_FAILED',
     /**
-     * srv MessageHandler.php:188-191. Wave ruling (R-SP-W2-01, protocol-version
+     * srv MessageHandler.php:214-217. Wave ruling (R-SP-W2-01, protocol-version
      * half): this SCREAMING legacy row IS the registered version-refusal rail —
      * port 8097 emits it on a too-high/invalid inbound `protocol_version` and
      * drops the frame. No dotted `syncplay.*` twin is minted for the same
