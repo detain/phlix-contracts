@@ -47,12 +47,12 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-21 at the estate
- * tips hub `52aa9874` / server `016ea759` with the default nearest-line
+ * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-19 at the estate
+ * tips hub `ce493818` / server `1de9bca6` with the default nearest-line
  * window — the dev-only tripwire exits 0 there (ok 434, problems 0). The
- * refactor era moved both repos massively (100+ commits: the hub
- * ControllerErrorFrames and JSON-envelope consolidation, the server
- * http-envelope waves); this sweep re-anchored the 100 drifted or relocated
+ * 2026-11-21 stamp heads hub `52aa9874` / server `016ea759` advanced only
+ * via lanes touching no cited error-emit file, so this sweep moved no
+ * coordinate; that 2026-11-21 sweep had re-anchored the 100 drifted or relocated
  * coordinates the prior stamp left behind, then a further 7 that re-drifted
  * mid-sweep under the continuing churn — every final anchor read from the
  * named tips as literal emit lines, never the tripwire nearest-token
