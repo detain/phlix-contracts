@@ -47,33 +47,39 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-21 at the estate
- * tips hub `52aa9874` / server `016ea759` with the default nearest-line
- * window — the dev-only tripwire exits 0 there (ok 434, problems 0). The
- * refactor era moved both repos massively (100+ commits: the hub
- * ControllerErrorFrames and JSON-envelope consolidation, the server
- * http-envelope waves); this sweep re-anchored the 100 drifted or relocated
- * coordinates the prior stamp left behind, then a further 7 that re-drifted
- * mid-sweep under the continuing churn — every final anchor read from the
- * named tips as literal emit lines, never the tripwire nearest-token
- * suggestion, which would collapse two-arm families onto one emit. Three
- * constructs relocated into the shared hub ControllerErrorFrames builder (the
- * mapError default 500, the missing-user-id refusal, the admin not-found
- * refusal); the server rate-limited envelope moved from the Application
- * dispatcher onto the Response builder seam on both hosts; the server
- * access-schedule no-profile arm trio consolidated into one builder, so that
- * cite now names the two current emits (parsed cites 435 to 434). Pair
- * separation was preserved arm-by-arm across the FederationController
- * offer/master_only families, the quota-gate sites and the legacy SCREAMING
- * emits; no coordinate was faked onto a passing-but-wrong region.
- * The registry rows are byte-unchanged: docs-only, no code, no wire, no dist
- * payload bytes moved; the owner-frozen registry md5 trio held.
- * Preceding eras are narrated in the CHANGELOG (its `[Unreleased]` and
- * release entries), the single source for stamp history; this header
- * deliberately carries only the current stamp. Cites in files untouched
- * since a stamp remain verified by that sweep spot-checks. Re-sweep with
- * `npm run verify:cites` (scripts/check-error-cites.mjs) after any
- * hub/server error-file churn, then re-stamp the paragraph above.
+ * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-19 at the estate
+ * final program tips hub a4f95c8f80b8d20520dd28d6e12ab4d4668d4836 / server
+ * fbc1987aefd7eb2b21bb24c6acc057726d960c13 with the default nearest-line
+ * window — the dev-only tripwire exits 0 there (ok 435, problems 0) and this
+ * sweep moved no coordinate. Both hosts advanced past the `62efb787` /
+ * `b74b1140` stamp only via lanes touching no cited error-emit file: the hub
+ * leg is four commits wholly outside its src tree (the README-migrations
+ * executable tripwire test, the testkit dev-enable, two IdsTest cure legs),
+ * while the server leg is the shared v0.57 consumer wave (dependency pin,
+ * the MysqlError and WriteResult twin retirements, the thin Uuid shell, the
+ * SettingsCodec decode forward, the LivenessWindows and HostGrammar
+ * adoptions) across 25 changed src files — none of them a file any cite
+ * names. The `b74b1140` stamp era had itself re-anchored the claim
+ * key-validation arms after the hub M-28 WriteResult retirement renumbered
+ * them (parsed cites 434 to 435), reading every final anchor as a literal
+ * emit line, never the tripwire nearest-token suggestion, which would
+ * collapse two-arm families onto one emit; that law stands inherited. Belt
+ * and braces beyond the ±3 pass: with both prior-stamp heads re-materialized
+ * from git archives, a zero-tolerance sweep (window set to zero, so a cite
+ * holds only when an anchor token sits on the cited line itself) produces a
+ * per-cite fingerprint — exact-line hits, adjacent-line hits and every
+ * nearest-token delta — identical, file for file and line for line, to the
+ * same sweep at the final tips — 224 exact-line holds plus 211 holds whose
+ * cited line opens or labels the emit while the literal sits inside the
+ * window. No anchor slid even inside tolerance. The registry rows are
+ * byte-unchanged: docs-only, no code, no wire, no dist payload bytes moved;
+ * the owner-frozen registry md5 trio held. Preceding eras are narrated in
+ * the CHANGELOG (its `[Unreleased]` and release entries), the single source
+ * for stamp history; this header deliberately carries only the current
+ * stamp. Cites in files untouched since a stamp remain verified by that
+ * sweep spot-checks. Re-sweep with `npm run verify:cites`
+ * (scripts/check-error-cites.mjs) after any hub/server error-file churn,
+ * then re-stamp the paragraph above.
  *
  * CONTENTS:
  *  1. Every dotted and bare-snake code actually emitted on the wire today by
@@ -376,10 +382,10 @@ declare const CODES: {
         readonly NO_TUNNEL: "server.no_tunnel";
         /**
          * hub ServerClaimController.php:317 (400 arm 315-320) ← throws at
-         * hub ClaimRequestHandler.php:780,783,786,790 — the server's Ed25519 key
-         * failed validation during claim. Hub W3 promoted: dotted rides `code`,
-         * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
-         * placement; clients may match either).
+         * hub ClaimRequestHandler.php:773,776,779,782,786 — the server's Ed25519
+         * key failed validation during claim. Hub W3 promoted: dotted rides
+         * `code`, the SCREAMING `SERVER_KEY_INVALID` is parked in the `error`
+         * TEXT (dual placement; clients may match either).
          */
         readonly KEY_INVALID: "server.key_invalid";
     };
@@ -1418,10 +1424,10 @@ export declare const ERROR_CODE: {
         readonly NO_TUNNEL: "server.no_tunnel";
         /**
          * hub ServerClaimController.php:317 (400 arm 315-320) ← throws at
-         * hub ClaimRequestHandler.php:780,783,786,790 — the server's Ed25519 key
-         * failed validation during claim. Hub W3 promoted: dotted rides `code`,
-         * the SCREAMING `SERVER_KEY_INVALID` is parked in the `error` TEXT (dual
-         * placement; clients may match either).
+         * hub ClaimRequestHandler.php:773,776,779,782,786 — the server's Ed25519
+         * key failed validation during claim. Hub W3 promoted: dotted rides
+         * `code`, the SCREAMING `SERVER_KEY_INVALID` is parked in the `error`
+         * TEXT (dual placement; clients may match either).
          */
         readonly KEY_INVALID: "server.key_invalid";
     };
