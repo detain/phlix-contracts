@@ -47,33 +47,33 @@
  * M-CONTRACTS-01/06 forward-correction entry (2026-10-30) and the README
  * Conventions break-on-upgrade bullet.
  *
- * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-19 at the estate
- * final program tips hub a4f95c8f80b8d20520dd28d6e12ab4d4668d4836 / server
- * fbc1987aefd7eb2b21bb24c6acc057726d960c13 with the default nearest-line
- * window — the dev-only tripwire exits 0 there (ok 435, problems 0) and this
- * sweep moved no coordinate. Both hosts advanced past the `62efb787` /
- * `b74b1140` stamp only via lanes touching no cited error-emit file: the hub
- * leg is four commits wholly outside its src tree (the README-migrations
- * executable tripwire test, the testkit dev-enable, two IdsTest cure legs),
- * while the server leg is the shared v0.57 consumer wave (dependency pin,
- * the MysqlError and WriteResult twin retirements, the thin Uuid shell, the
- * SettingsCodec decode forward, the LivenessWindows and HostGrammar
- * adoptions) across 25 changed src files — none of them a file any cite
- * names. The `b74b1140` stamp era had itself re-anchored the claim
- * key-validation arms after the hub M-28 WriteResult retirement renumbered
- * them (parsed cites 434 to 435), reading every final anchor as a literal
- * emit line, never the tripwire nearest-token suggestion, which would
- * collapse two-arm families onto one emit; that law stands inherited. Belt
- * and braces beyond the ±3 pass: with both prior-stamp heads re-materialized
- * from git archives, a zero-tolerance sweep (window set to zero, so a cite
- * holds only when an anchor token sits on the cited line itself) produces a
- * per-cite fingerprint — exact-line hits, adjacent-line hits and every
- * nearest-token delta — identical, file for file and line for line, to the
- * same sweep at the final tips — 224 exact-line holds plus 211 holds whose
- * cited line opens or labels the emit while the literal sits inside the
- * window. No anchor slid even inside tolerance. The registry rows are
- * byte-unchanged: docs-only, no code, no wire, no dist payload bytes moved;
- * the owner-frozen registry md5 trio held. Preceding eras are narrated in
+ * COORDINATE CURRENCY: the current re-sweep ran on 2026-11-20 at the final
+ * v0.59-era consumer tips hub 447aad561838152da7e070625ed4d45e4c66e798 /
+ * server cd66c556ef43eee8f23591a4bf3d22ead0a31bdf with the default
+ * nearest-line window — the dev-only tripwire exits 0 there (ok 435,
+ * problems 0); it opened the era at ok 432 problems 3, and the parsed-cite
+ * total held at 435 across the sweep. The server leg is 37 commits of the
+ * v0.59 shared-kernel wave (the Base64Url decode seam, the GrantConsume
+ * answer, the RowMap thin delegate, the TxLease ceremony and the carrier
+ * census rotations) and moved no cited coordinate; the hub leg is 22
+ * commits, of which exactly one touched a cited error-emit file — the
+ * RowMap adoption at `43d651ea` renumbered the key-validation family
+ * inside ClaimRequestHandler.php twelve lines up-file. Its five throws,
+ * cited as 773,776,779,782,786, were re-anchored to the literal emit lines
+ * 761,764,767,770,774 under the `b74b1140`-era law carried forward above:
+ * every final anchor is read as a literal emit line, never the tripwire
+ * nearest-token suggestion, which here would collapse all five arms onto
+ * their last line. One window-masked follow-up in the same entry was cured
+ * on the way: the ServerClaimController response-mapping cite had already
+ * gone stale at the previous stamp tip (the named opening 317 held only
+ * because the true 319 sat inside the tolerance); re-anchored to 319, and
+ * its labelled span range moved from 315-320 to the six-line 400 response
+ * at 319-324. The registry rows are byte-unchanged: docs-only, no code, no
+ * wire; the owner-frozen registry md5 trio held. This file's comment text
+ * rides inside the committed dist, so the rebuilt errors.d.ts and both
+ * source maps land in the same commit as these edits — the wave-three
+ * freshness-gate lesson the `b64b1e9` cure records: a stamp drift
+ * committed src-alone reddens contracts-ci. Preceding eras are narrated in
  * the CHANGELOG (its `[Unreleased]` and release entries), the single source
  * for stamp history; this header deliberately carries only the current
  * stamp. Cites in files untouched since a stamp remain verified by that
@@ -385,8 +385,8 @@ const CODES = {
     /** hub RelayProxyManager.php:251 */
     NO_TUNNEL: 'server.no_tunnel',
     /**
-     * hub ServerClaimController.php:317 (400 arm 315-320) ← throws at
-     * hub ClaimRequestHandler.php:773,776,779,782,786 — the server's Ed25519
+     * hub ServerClaimController.php:319 (400 arm 319-324) ← throws at
+     * hub ClaimRequestHandler.php:761,764,767,770,774 — the server's Ed25519
      * key failed validation during claim. Hub W3 promoted: dotted rides
      * `code`, the SCREAMING `SERVER_KEY_INVALID` is parked in the `error`
      * TEXT (dual placement; clients may match either).
