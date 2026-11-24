@@ -3,7 +3,7 @@
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
-import type { AudioTrack } from './playback';
+import type { AudioTrack } from './playback.js';
 /**
  * Select the best audio track matching user's preferred languages.
  *

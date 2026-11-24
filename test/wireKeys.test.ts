@@ -77,7 +77,11 @@ const SRC_CONSUMERS = ['src/playback.ts', 'src/SyncPlay.ts', 'src/StreamSession.
 /** The committed dist mirror of every rostered consumer. */
 const DIST_CONSUMERS = SRC_CONSUMERS.map((f) => f.replace(/^src\//, 'dist/').replace(/\.ts$/, '.d.ts'));
 
-const THE_IMPORT = "import type { WireKeysExact } from './internal/wireKeys';";
+// NodeNext-safe relative specifiers (S-contracts-01): the import carries the
+// explicit `.js` extension in BOTH trees — src sources are written with it and
+// tsc mirrors it verbatim into the emitted .d.ts, so src and dist share one
+// literal import line here.
+const THE_IMPORT = "import type { WireKeysExact } from './internal/wireKeys.js';";
 
 describe('WireKeysExact — one definition (LW-040)', () => {
   it('is declared by exactly one src file: src/internal/wireKeys.ts', () => {

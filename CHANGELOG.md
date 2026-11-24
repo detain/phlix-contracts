@@ -38,6 +38,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- All 35 relative `./x` specifiers across the eight src modules that carry
+  them (`index.ts`, `library.ts`, `SyncPlay.ts`, `routeManifest.ts`,
+  `StreamSession.ts`, `Audio.ts`, `Chapter.ts`, `playback.ts`) now read
+  `./x.js` (S-contracts-01 / phlix-contracts-001 [High]). tsc mirrors
+  specifiers verbatim into the emitted declarations, so the shipped
+  `dist/*.d.ts` tree previously carried extensionless ESM-relative paths:
+  legal only under bundler-mode resolution, hard-rejected by a consumer at
+  `moduleResolution: NodeNext` (reviewer-measured TS2834/TS2307 class), and —
+  worse — with the common `skipLibCheck: true` a silent loss of every named
+  export (TS2305). `src/internal/wireKeys.ts` carried none (verified). The
+  dev tsconfig stays `moduleResolution: bundler` (that is the estate
+  consumers' actual mode); the class is now policed by a new CI job:
+  `nodecheck` typechecks the scratch strict consumer
+  (`scripts/consumer-nodecheck/`: `probe.ts` + its own NodeNext
+  `tsconfig.json`, `skipLibCheck: false`) against the committed `dist/` via
+  bare-name `exports`-map self-reference, root entry and the
+  `./routeManifest` subpath both probed. Gate teeth measured: the fixture
+  produces 38 errors (25 TS2834 / 3 TS2307 / 10 TS2305) against the
+  pre-fix declaration tree and zero after the sweep. `test/wireKeys.test.ts`
+  rotates its `THE_IMPORT` literal to the `.js` form (src and dist mirrors
+  share it); `.claude/rules/coverage-ci.md` documents the new job.
+  Regenerated `dist/`: the eight declaration mirrors and both bundle
+  source-maps move; both bundle files are byte-ident (specifiers are inlined
+  away by the bundler) and the frozen trio (`error-codes.json` `5d1783a7…`,
+  route manifest `c2111cd3…`, `mcp-scopes.json` `8c92c070…`) is byte-ident.
+  Shipped d.ts bytes change → rides the next tag (per plan, with
+  S-contracts-10); today's four bundler-mode estate consumers are unaffected.
+
 - Stale-gate prose pass (phlix-contracts-038 / S-contracts-18): the CI
   freshness gate was folded from three per-JSON `git diff --exit-code --
   dist/<file>.json` steps into the whole-tree `git diff --exit-code -- dist/`

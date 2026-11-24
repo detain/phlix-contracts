@@ -7,7 +7,7 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
-import type { Marker } from './Marker';
+import type { Marker } from './Marker.js';
 
 /**
  * A chapter marker. `index` is the display order (0-based). `startSeconds`

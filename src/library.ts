@@ -10,7 +10,7 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
-import type { ContentRating } from './media';
+import type { ContentRating } from './media.js';
 
 /** Sort field for the media list. */
 export type LibrarySort = 'name' | 'year' | 'rating' | 'date_added' | 'runtime';

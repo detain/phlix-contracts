@@ -6,7 +6,7 @@
  * sheet used for scrubbing preview.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
-import type { Marker } from './Marker';
+import type { Marker } from './Marker.js';
 /**
  * A chapter marker. `index` is the display order (0-based). `startSeconds`
  * and `endSeconds` are floats (e.g. 30.0) denoting the chapter boundaries.

@@ -27,7 +27,7 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
-import type { WireKeysExact } from './internal/wireKeys';
+import type { WireKeysExact } from './internal/wireKeys.js';
 
 export type SyncPlayRole = 'none' | 'contributor' | 'editor' | 'owner';
 

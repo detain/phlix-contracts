@@ -21,9 +21,9 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT
  */
-import { type HttpMethod } from './routeManifest.generated';
-export type { HttpMethod } from './routeManifest.generated';
-export { SERVER_ROUTE_MANIFEST, SERVER_ROUTE_MANIFEST_PROVENANCE, } from './routeManifest.generated';
+import { type HttpMethod } from './routeManifest.generated.js';
+export type { HttpMethod } from './routeManifest.generated.js';
+export { SERVER_ROUTE_MANIFEST, SERVER_ROUTE_MANIFEST_PROVENANCE, } from './routeManifest.generated.js';
 /**
  * The client-side matching law: `concretePath` is served by the manifest
  * under `method` ONLY by a tuple-exact match — anchored, `{param}` spans

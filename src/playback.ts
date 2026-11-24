@@ -33,8 +33,8 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
-import type { MediaItem } from './media';
-import type { WireKeysExact } from './internal/wireKeys';
+import type { MediaItem } from './media.js';
+import type { WireKeysExact } from './internal/wireKeys.js';
 
 /** Stream transport protocol. */
 export type StreamProtocol = 'hls' | 'http';

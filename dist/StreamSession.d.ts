@@ -19,7 +19,7 @@
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
-import type { WireKeysExact } from './internal/wireKeys';
+import type { WireKeysExact } from './internal/wireKeys.js';
 /**
  * Ordered wire keys of {@link ProfileStreamLimit} — exported so the parity
  * test can compare them, EXACTLY and in order, against the executed server

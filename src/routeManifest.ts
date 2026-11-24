@@ -22,13 +22,13 @@
  * @license MIT
  */
 
-import { SERVER_ROUTE_MANIFEST, type HttpMethod } from './routeManifest.generated';
+import { SERVER_ROUTE_MANIFEST, type HttpMethod } from './routeManifest.generated.js';
 
-export type { HttpMethod } from './routeManifest.generated';
+export type { HttpMethod } from './routeManifest.generated.js';
 export {
   SERVER_ROUTE_MANIFEST,
   SERVER_ROUTE_MANIFEST_PROVENANCE,
-} from './routeManifest.generated';
+} from './routeManifest.generated.js';
 
 /**
  * Compiled-template cache: the manifest is immutable, so each `{param}`

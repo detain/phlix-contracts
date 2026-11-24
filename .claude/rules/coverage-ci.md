@@ -26,6 +26,15 @@ alwaysApply: false
 - Gate order is `npm run lint` → `npm run typecheck` → `npm run build` →
   tests. `npm run build` re-runs `tsc --noEmit` itself; keep the standalone
   `typecheck` step as the fast-fail.
+- A second job, `nodecheck`, typechecks `scripts/consumer-nodecheck/` — a
+  scratch consumer at `moduleResolution: NodeNext` + `skipLibCheck: false`
+  importing `@phlix/contracts` and `@phlix/contracts/routeManifest` through
+  the real `exports` map. It guards the emitted `dist/*.d.ts` relative
+  specifiers: they must carry explicit `.js` extensions, or strict Node
+  consumers break (TS2834/TS2307, silently degrading to lost named exports
+  under `skipLibCheck: true` — S-contracts-01 / phlix-contracts-001). Keep
+  src relative specifiers extension-bearing; `moduleResolution: bundler` in
+  the dev tsconfig will NOT catch a regression.
 - `npm run build` also emits the vendored JSON artifacts
   (`node scripts/emit-error-codes.mjs`, `node scripts/emit-mcp-scopes.mjs`,
   `node scripts/emit-server-route-manifest.mjs`) from the built bundle.
