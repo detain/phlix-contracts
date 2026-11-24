@@ -139,11 +139,13 @@ export type PluginEventName = (typeof PLUGIN_EVENT)[keyof typeof PLUGIN_EVENT];
 /**
  * Webhook event types a subscription may select. DISTINCT from {@link PLUGIN_EVENT}.
  *
- * Authorities (verified 2026-11-12): the `events[]` of
- * `phlix-shared/schemas/webhook-events.json` (schema da48887) and the server's
- * `WebhookEventCatalog`. This object mirrors the schema EXCEPT `MEDIA_ADDED`,
- * which is a legacy alias: the schema does not list `media.added`, and the
- * server normalizes it to `library.updated` via `WebhookEventCatalog::LEGACY_ALIASES`.
+ * Authorities (verified 2026-11-24): the `events[]` of
+ * `phlix-shared/schemas/webhook-events.json` (schema 9cc4083e, widened by
+ * S-contracts-08 to carry the three account-lifecycle events) and the server's
+ * `WebhookEventCatalog`, whose 10 names the schema now mirrors exactly. This
+ * object mirrors the schema EXCEPT `MEDIA_ADDED`, which is a legacy alias: the
+ * schema does not list `media.added`, and the server normalizes it to
+ * `library.updated` via `WebhookEventCatalog::LEGACY_ALIASES`.
  * Prefer `LIBRARY_UPDATED`; removal of `MEDIA_ADDED` is a breaking change
  * reserved for a tag-wave decision.
  */
@@ -157,6 +159,9 @@ export const WEBHOOK_EVENT = {
   /** @deprecated Legacy alias of `library.updated` (not in the shared schema). */
   MEDIA_ADDED: 'media.added',
   ALERT: 'alert',
+  USER_LOGIN: 'user.login',
+  USER_LOGOUT: 'user.logout',
+  USER_CREATED: 'user.created',
 } as const;
 export type WebhookEventType = (typeof WEBHOOK_EVENT)[keyof typeof WEBHOOK_EVENT];
 

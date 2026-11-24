@@ -18,6 +18,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `WEBHOOK_EVENT` gained the three account-lifecycle members `USER_LOGIN`
+  (`user.login`), `USER_LOGOUT` (`user.logout`) and `USER_CREATED`
+  (`user.created`) — S-contracts-08 / phlix-contracts-011. The phlix-shared
+  wire-truth schema (`schemas/webhook-events.json`, 9cc4083e) widened to the
+  full 10-event vocabulary in the same program, so this mirror now equals the
+  schema plus the documented `MEDIA_ADDED` legacy alias only; the server's
+  `WebhookEventCatalog` and the admin SPA picker already carried these names
+  (the schema was the laggard, hence the previously-verified 8-keys shape
+  here). Additive, non-breaking: existing keys, values and the
+  `WebhookEventType` derivation are unchanged; a narrowing decision on
+  `MEDIA_ADDED` stays reserved for a tag wave. `test/constants.test.ts` gains
+  the three membership value asserts (the exhaustive key-set/length pins are
+  S-contracts-07's). Regenerated `dist/`: `events.d.ts` and both bundles +
+  maps move; the frozen trio (`error-codes.json` `5d1783a7…`, route manifest
+  `c2111cd3…`, `mcp-scopes.json` `8c92c070…`) is byte-ident.
+
 ### Changed
 
 - `SyncPlayGroup.playback_state` is no longer a bare `string` (phlix-contracts-024): it is now

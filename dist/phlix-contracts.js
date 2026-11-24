@@ -115,7 +115,10 @@ var r = [
 	RECORDING_STARTED: "recording.started",
 	RECORDING_STOPPED: "recording.stopped",
 	MEDIA_ADDED: "media.added",
-	ALERT: "alert"
+	ALERT: "alert",
+	USER_LOGIN: "user.login",
+	USER_LOGOUT: "user.logout",
+	USER_CREATED: "user.created"
 }, s = { TEST: "webhook.test" }, pe = {
 	plugin: a,
 	webhook: o,

@@ -35,6 +35,9 @@ describe('webhook event types', () => {
     expect(WEBHOOK_EVENT.RECORDING_STARTED).toBe('recording.started');
     expect(WEBHOOK_EVENT.RECORDING_STOPPED).toBe('recording.stopped');
     expect(WEBHOOK_EVENT.ALERT).toBe('alert');
+    expect(WEBHOOK_EVENT.USER_LOGIN).toBe('user.login');
+    expect(WEBHOOK_EVENT.USER_LOGOUT).toBe('user.logout');
+    expect(WEBHOOK_EVENT.USER_CREATED).toBe('user.created');
     expect(WEBHOOK_EVENT_RESERVED.TEST).toBe('webhook.test');
   });
 
