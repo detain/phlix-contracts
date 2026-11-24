@@ -6,6 +6,16 @@
 
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// ESM-robust config directory (phlix-contracts-023). This package is
+// `"type": "module"`, so the CJS globals `__dirname`/`__filename` do not
+// exist at config scope natively; relying on the bundling loader's injected
+// boilerplate is the fragility. `import.meta.dirname` would be shorter but
+// requires Node >= 20.11, while package.json engines allow node >= 18 —
+// `fileURLToPath(new URL('.', import.meta.url))` is therefore the deliberate
+// pick: valid on every supported runtime.
+const configDir = fileURLToPath(new URL('.', import.meta.url));
 
 // Framework-agnostic lib build — NO Vue/React plugin, NO runtime externals.
 // Emits ES + CJS so the package is consumable from web bundlers (mobile RN
@@ -22,7 +32,7 @@ export default defineConfig({
     // is what actually guarantees it.
     target: 'es2019',
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(configDir, 'src/index.ts'),
       name: 'PhlixContracts',
       formats: ['es', 'cjs'],
       fileName: (format) => `phlix-contracts.${format === 'es' ? 'js' : 'umd.cjs'}`,
@@ -31,12 +41,17 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
+      '@': resolve(configDir, 'src'),
     },
   },
   test: {
     globals: true,
     environment: 'node',
+    // Estate venue law: vitest runs serial (CONTRIBUTING.md release ritual —
+    // "vitest stays serial: --no-file-parallelism is the estate venue law").
+    // Pinning it in config means contributors get serial execution without
+    // remembering the flag (phlix-contracts-027).
+    fileParallelism: false,
     coverage: {
       provider: 'v8',
       // 'lcov' is REQUIRED: it is the only reporter here that writes
