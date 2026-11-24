@@ -38,6 +38,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `scripts/generate-server-route-manifest.mjs` generator hardening —
+  S-contracts-04 / phlix-contracts-005 [Medium], -020 [Low], -021 [Low].
+  (a) The emitted `SERVER_ROUTE_MANIFEST` const is now UN-ANNOTATED: the old
+  `ReadonlyArray<readonly [HttpMethod, string]> =` annotation defeated the
+  trailing `as const` and widened every path to `string`; the widened
+  readonly-array view ships instead as the separate `ServerRouteManifest`
+  alias (re-exported through `src/routeManifest.ts` and the package root),
+  and `test/routeManifest.test.ts` gains compile-time + structural teeth
+  against the annotation returning. (b) `parseTuple` now rejects any route
+  character outside the emit-safe whitelist `[A-Za-z0-9{}/_.-]` at the
+  boundary — routes are interpolated verbatim into single-quoted TS literals,
+  and the previous structural guards excluded quote/backslash bytes only by
+  coincidence. (c) Each source file's provenance `count` is its DISTINCT
+  tuple set, so `shared = sum(distinct) − union` is honestly `|A ∩ B|`; an
+  intra-file repeat collapses loudly (`console.warn`) instead of being billed
+  as cross-router sharing. Regen #39 against phlix-server `262f01d3`: both
+  server `ROUTE_MANIFEST` files moved bytes since `413765b6` but the
+  extracted 418-tuple set is UNCHANGED and carries zero intra-file
+  duplicates — sources 379/50 and shared 11 all hold; the rotation is
+  provenance-stamp only. `dist/server-route-manifest.json` md5
+  `c2111cd3…` → `626e475b…` (re-vendored downstream at the next tag; the
+  cs#47 pair token stays unrotated — this is a contracts-only regen);
+  `error-codes.json` `5d1783a7…` and `mcp-scopes.json` `8c92c070…` are
+  byte-ident. vitest 18 files / 228 tests green (+5 new).
+
 - All 35 relative `./x` specifiers across the eight src modules that carry
   them (`index.ts`, `library.ts`, `SyncPlay.ts`, `routeManifest.ts`,
   `StreamSession.ts`, `Audio.ts`, `Chapter.ts`, `playback.ts`) now read

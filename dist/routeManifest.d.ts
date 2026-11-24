@@ -15,14 +15,15 @@
  *   import { isServedRoute } from '@phlix/contracts/routeManifest';
  *
  * Exported surface: the generated tuples and provenance (re-exported
- * unchanged) plus `isServedRoute` below. Routing only — a listed tuple never
- * means the caller is PERMITTED; see the generated file's header.
+ * unchanged), the widened `ServerRouteManifest` view type, and
+ * `isServedRoute` below. Routing only — a listed tuple never means the caller
+ * is PERMITTED; see the generated file's header.
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT
  */
 import { type HttpMethod } from './routeManifest.generated.js';
-export type { HttpMethod } from './routeManifest.generated.js';
+export type { HttpMethod, ServerRouteManifest } from './routeManifest.generated.js';
 export { SERVER_ROUTE_MANIFEST, SERVER_ROUTE_MANIFEST_PROVENANCE, } from './routeManifest.generated.js';
 /**
  * The client-side matching law: `concretePath` is served by the manifest

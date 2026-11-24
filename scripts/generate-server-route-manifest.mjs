@@ -144,6 +144,19 @@ function gitSha(repoPath) {
 }
 
 /**
+ * The ONLY characters a route template may carry (phlix-contracts-020). The
+ * verbs are already whitelisted exactly by `HTTP_VERBS.includes`; the routes
+ * are interpolated verbatim into single-quoted TS literals below, so every
+ * character that could end or corrupt such a literal — quote, backslash,
+ * newline, anything outside the URL-shaped set — is rejected HERE, at the
+ * boundary, instead of relying on the structural checks happening to exclude
+ * them. A malicious or buggy server route string can therefore never forge
+ * emit-time content: this whitelist is the explicit law the old guard only
+ * satisfied by coincidence.
+ */
+const ROUTE_ALLOWED = /^[A-Za-z0-9{}/_\-.]+$/;
+
+/**
  * Structural parse of one manifest tuple at generation time: this is the
  * boundary where a malformed route becomes a HARD generator error, so nothing
  * downstream (TS artifact, JSON projection, every client gate) ever has to
@@ -164,6 +177,11 @@ function parseTuple([verb, route], fileLabel) {
     }
     if (/[{}]/.test(route.replace(/\{[^{}]*\}/g, ''))) {
         throw new Error(`${fileLabel}: unbalanced {param} placeholder: ${route}`);
+    }
+    if (!ROUTE_ALLOWED.test(route)) {
+        throw new Error(
+            `${fileLabel}: route contains characters outside the emit-safe whitelist [A-Za-z0-9{}/_.-]: ${route}`,
+        );
     }
     return [verb, route];
 }
@@ -188,7 +206,23 @@ const perSource = [];
 for (const { file, label } of MANIFEST_SOURCES) {
     const fullPath = path.join(serverPath, file);
     const tuples = extractManifest(readFileSync(fullPath, 'utf8'), label).map((t) => parseTuple(t, label));
-    perSource.push({ label, file, count: tuples.length });
+    // Count each source by its DISTINCT tuples (phlix-contracts-021): the
+    // subtraction below is an inclusion-exclusion over the two routers'
+    // SETS, so `shared` must be |A ∩ B| — rails registered by BOTH routers.
+    // An [verb, path] repeat inside one file is that file's own duplicate,
+    // not cross-router sharing, and would inflate `shared` identically if
+    // left raw; collapsing per file first keeps the header arithmetic
+    // (sum of these counts − shared = union) true for any input. A collapsed
+    // duplicate never reaches the union anyway (first occurrence wins), but
+    // it is loud here — provenance readers must be able to see it happen.
+    const distinct = new Set(tuples.map(([verb, route]) => `${verb} ${route}`));
+    if (distinct.size !== tuples.length) {
+        console.warn(
+            `${label}: collapsed ${tuples.length - distinct.size} intra-file duplicate tuple(s) ` +
+                `(${tuples.length} entries → ${distinct.size} distinct)`,
+        );
+    }
+    perSource.push({ label, file, count: distinct.size });
     for (const [verb, route] of tuples) {
         const key = `${verb} ${route}`;
         if (!union.has(key)) union.set(key, [verb, route]);
@@ -244,7 +278,7 @@ const lines = [
     ' * The live gate for any call is its response — never this list.',
     ' *',
     ' * Sources (phlix-server, read-only, at commit `' + serverSha + '`):',
-    ...perSource.map((s) => ` * - \`${s.file}\` — ${s.label} (${s.count} entries)`),
+    ...perSource.map((s) => ` * - \`${s.file}\` — ${s.label} (${s.count} distinct tuples)`),
     ' *',
     ` * Derivation: the UNION of the two ROUTE_MANIFEST constants — clients call`,
     ` * both routers. ${sharedCount} rails are registered by both routers and`,
@@ -268,10 +302,25 @@ const lines = [
     ' * The EXACT set of `[method, pathTemplate]` tuples phlix-server registers,',
     ' * tuple-exact — a request that matches by substring or prefix is a defect.',
     ' * Routing only: permission is decided at runtime — see the file header.',
+    ' *',
+    ' * DELIBERATELY UN-ANNOTATED: a `ReadonlyArray<readonly [HttpMethod,',
+    ' * string]>` annotation here would widen away the literal tuple types',
+    ' * `as const` freezes — per-route lookups and the path union would degrade',
+    ' * to `string` (phlix-contracts-005). The widened readonly-array view is',
+    ' * the separate `ServerRouteManifest` alias below; the const itself keeps',
+    ' * its 418-member literal table.',
     ' */',
-    'export const SERVER_ROUTE_MANIFEST: ReadonlyArray<readonly [HttpMethod, string]> = [',
+    'export const SERVER_ROUTE_MANIFEST = [',
     ...tuples.map(([verb, route]) => `    ['${verb}', '${route}'],`),
     '] as const;',
+    '',
+    '/**',
+    ' * Widened readonly-array VIEW of the manifest — for consumers that pass',
+    ' * the table around as a value instead of pattern-matching its literal',
+    ' * tuples. Same element shape the old annotation carried, without taxing',
+    ' * the const.',
+    ' */',
+    'export type ServerRouteManifest = ReadonlyArray<readonly [HttpMethod, string]>;',
     '',
     '/** Provenance — the server commit + generator this manifest was derived from. */',
     'export const SERVER_ROUTE_MANIFEST_PROVENANCE = {',

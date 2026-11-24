@@ -28,15 +28,17 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import {
   SERVER_ROUTE_MANIFEST,
   SERVER_ROUTE_MANIFEST_PROVENANCE,
   isServedRoute,
   type HttpMethod,
+  type ServerRouteManifest,
 } from '../src/routeManifest';
 
 const VERBS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS']);
@@ -48,12 +50,18 @@ function key(method: string, pathTemplate: string): string {
 
 const KEYS = new Set(SERVER_ROUTE_MANIFEST.map(([m, p]) => key(m, p)));
 
+/** The path column as a literal union — empty-widened only if `as const` teeth are gone. */
+type RoutePathUnion = (typeof SERVER_ROUTE_MANIFEST)[number][1];
+
+/** `true` while the table keeps its literal types; `never` if a widened `string` ever returns. */
+type NotWidened = string extends RoutePathUnion ? never : true;
+
 describe('SERVER_ROUTE_MANIFEST — derivation provenance', () => {
-  it('is derived from phlix-server master 413765b6 (regen #38 CONTENT regen — server w38 L1 CP-029 commit 413765b6 adds the Application GET /api/v1/auth/sessions + DELETE /api/v1/auth/sessions/{id} (377→379): total 416→418; the empirical tuple diff vs the 5c78f6a4-era snapshot is EXACTLY those two added tuples, zero removals)', () => {
+  it('is derived from phlix-server master 262f01d3 (regen #39 GENERATOR regen — S-contracts-04 fixed phlix-contracts-005 (the const is emitted UN-annotated so `as const` carries the literal table; a separate ServerRouteManifest alias supplies the widened readonly-array view), -020 (parseTuple now REJECTS any route character outside [A-Za-z0-9{}/_.-] at the boundary — the old structural guards excluded quotes/backslash only by coincidence) and -021 (each source file is deduped BEFORE the shared subtraction, so `shared` is honestly |A ∩ B|). Both server ROUTE_MANIFEST files moved bytes since 413765b6, but the extracted 418-tuple set is UNCHANGED (zero added, zero removed) and carries ZERO intra-file duplicates, so sources 379/50 and shared 11 all hold — only the sha stamp rotates; this note is the record)', () => {
     // Full sha, not a prefix: a prefix match against a different commit object
     // is exactly the self-adjusting drift this pin exists to catch.
     expect(SERVER_ROUTE_MANIFEST_PROVENANCE.serverSha).toBe(
-      '413765b6d4385a3445ac1dddbc4ced16e0e281f6',
+      '262f01d3785f9a674ab18293809f3462c64ea077',
     );
   });
 
@@ -81,6 +89,137 @@ describe('SERVER_ROUTE_MANIFEST — literal HttpMethod typing (CTR-9)', () => {
     // @ts-expect-error — an arbitrary string is not an HttpMethod
     const bad: HttpMethod = 'TRACE';
     expect(bad).toBe('TRACE');
+  });
+
+  it('is emitted UN-ANNOTATED so `as const` survives (phlix-contracts-005)', () => {
+    // Compile-time teeth: a `ReadonlyArray<readonly [HttpMethod, string]> =`
+    // annotation defeats the trailing `as const` and widens the path column to
+    // `string`. If a regeneration ever brings the annotation back, this file's
+    // own `tsc` pass goes RED — `string extends RoutePathUnion` becomes TRUE,
+    // `NotWidened` collapses to `never`, and `true` is not assignable to it.
+    // (test/** is in tsconfig, so `npm run typecheck` and `npm run build` both
+    // execute this check.) Not a @ts-expect-error case: the error must surface
+    // under the project tsconfig rather than be swallowed locally.
+    const literalTableIntact: NotWidened = true;
+    expect(literalTableIntact).toBe(true);
+    // The widened view is DELIBERATE — it exists, but as a separate alias so
+    // the const keeps its 418-member literal table.
+    const view: ServerRouteManifest = SERVER_ROUTE_MANIFEST;
+    expect(Array.isArray(view)).toBe(true);
+  });
+
+  it('generates the const without annotation plus the separate view alias', () => {
+    const generated = readFileSync(
+      resolve(__dirname, '..', 'src', 'routeManifest.generated.ts'),
+      'utf8',
+    );
+    expect(generated).toContain('export const SERVER_ROUTE_MANIFEST = [');
+    // The shape finding -005 repaired: the const declaration line carries no
+    // type annotation (a `:` right after the name means the annotation is back).
+    expect(generated).not.toMatch(/export const SERVER_ROUTE_MANIFEST:/);
+    expect(generated).toContain(
+      'export type ServerRouteManifest = ReadonlyArray<readonly [HttpMethod, string]>;',
+    );
+  });
+});
+
+describe('generate-server-route-manifest — boundary laws (S-contracts-04)', () => {
+  const GENERATOR = resolve(__dirname, '..', 'scripts', 'generate-server-route-manifest.mjs');
+
+  /** Materialize a scratch phlix-server tree with the given ROUTE_MANIFEST bodies. */
+  function scratchServerTree(appEntries: string[], portalEntries: string[]): string {
+    const dir = mkdtempSync(join(tmpdir(), 'phlix-ctr04-'));
+    const sources: [string, string[]][] = [
+      ['tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php', appEntries],
+      ['tests/Unit/Server/WebPortal/WebPortalRouterWirePathGuardTest.php', portalEntries],
+    ];
+    for (const [rel, entries] of sources) {
+      const file = join(dir, rel);
+      mkdirSync(join(file, '..'), { recursive: true });
+      const body = entries.map((e) => `        '${e}',`).join('\n');
+      writeFileSync(
+        file,
+        `<?php\n\nclass ScratchRoutes\n{\n    private const ROUTE_MANIFEST = [\n${body}\n    ];\n}\n`,
+        'utf8',
+      );
+    }
+    return dir;
+  }
+
+  function runGenerator(dir: string) {
+    return spawnSync(
+      process.execPath,
+      [GENERATOR, dir, '--out', join(dir, 'out.ts'), '--server-sha', '0'.repeat(40)],
+      { encoding: 'utf8' },
+    );
+  }
+
+  it('rejects a route containing quote bytes — the emit-safe whitelist (phlix-contracts-020)', () => {
+    // The generator interpolates `'${verb}', '${route}'` into TS source with no
+    // escaping. A route carrying a single quote would break out of that
+    // literal and forge emit-time content; the parse-time whitelist rejects
+    // such routes at the boundary instead of trusting the structural guards to
+    // coincidentally exclude them. PHP `\'` is captured by the entry regex as
+    // literal backslash+quote, so this fixture lands in the route column.
+    const dir = scratchServerTree(
+      [`GET /api/v1/poison\\'s -> PoisonController::handle [AuthMiddleware]`],
+      ['GET /ok -> OkController::handle [AuthMiddleware]'],
+    );
+    try {
+      const result = runGenerator(dir);
+      expect(result.status).not.toBe(0);
+      expect(`${result.stderr}\n${result.stdout}`).toMatch(/outside the emit-safe whitelist/);
+      expect(`${result.stderr}\n${result.stdout}`).toContain('/api/v1/poison');
+      // Nothing is written when the boundary rejects — a partial emit would be
+      // worse than a failed run.
+      expect(existsSync(join(dir, 'out.ts'))).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('emits when every route stays inside the whitelist (positive control)', () => {
+    const dir = scratchServerTree(
+      ['GET /ok -> OkController::handle [AuthMiddleware]'],
+      ['POST /ok -> OkController::create [AuthMiddleware]'],
+    );
+    try {
+      const result = runGenerator(dir);
+      expect(result.status, `generator failed: ${result.stderr}`).toBe(0);
+      expect(existsSync(join(dir, 'out.ts'))).toBe(true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('dedupes each source BEFORE the shared subtraction (phlix-contracts-021)', () => {
+    // The arithmetic must read: per-file DISTINCT counts − |A ∩ B| = union.
+    // A raw entry count would bill an intra-file repeat as cross-router
+    // sharing (the pre-fix formula reports shared 2 below); collapsing per
+    // file first keeps `shared` honest, and the collapse is LOUD on stderr.
+    const dir = scratchServerTree(
+      [
+        'GET /x -> A::a [M]',
+        'GET /x -> A::a [M]', // intra-file duplicate
+        'GET /y -> A::b [M]',
+        'POST /z -> A::c [M]',
+      ],
+      ['GET /x -> B::a [M]', 'GET /w -> B::b [M]'],
+    );
+    try {
+      const result = runGenerator(dir);
+      expect(result.status, `generator failed: ${result.stderr}`).toBe(0);
+      expect(result.stderr).toMatch(/collapsed 1 intra-file duplicate/);
+      const emitted = readFileSync(join(dir, 'out.ts'), 'utf8');
+      // App: 4 entries → 3 distinct (count billed at 3, not 4); Portal: 2.
+      // Union: GET /x, GET /y, POST /z, GET /w = 4; shared = |A ∩ B| = 1
+      // (only GET /x is registered by both routers).
+      expect(emitted).toContain('{ file: ' + "'tests/Unit/Server/Core/ApplicationRouterWirePathGuardTest.php'" + ', count: 3 }');
+      expect(emitted).toContain('shared: 1,');
+      expect(emitted).toContain('total: 4,');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 
@@ -268,7 +407,13 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // byte-freeze can. Re-pin it in the same commit as an intentional re-vendor.
   // Regen #38 rotation: measured from the red at this commit (cd4673e1-era
   // bytes → 418-tuple payload @ server 413765b6).
-  const CS22_MANIFEST_MD5 = 'c2111cd37f2d1f3148c7ff741e214570';
+  // Regen #39 rotation (S-contracts-04, generator-shape regen): PROVENANCE-ONLY
+  // — serverSha 413765b6→262f01d3 + generatedAt 2026-11-24T20:49:36Z move; the
+  // 418-tuple payload is byte-ident and `shared` UNMOVED at 11 (zero intra-file
+  // duplicates on disk — the plan's 'dedupe moves shared' premise was verified
+  // FALSE-to-disk; the -021 fix keeps the arithmetic honest for future input).
+  // Measured from the red at this commit (c2111cd3-era bytes → 626e475b-era).
+  const CS22_MANIFEST_MD5 = '626e475b3ad74a7b670d0554ae0c027e';
 
   it('is byte-frozen at the cs#22 cascade md5', () => {
     const bytes = createHash('md5').update(readFileSync(artifactPath)).digest('hex');
