@@ -27,7 +27,8 @@ export const X_PHLIX_DEVICE_ID = 'X-Phlix-Device-ID';
 export const X_PHLIX_DEVICE_NAME = 'X-Phlix-Device-Name';
 /**
  * `X-Phlix-Device-Type` — client platform discriminator. Its presence IS the
- * cookie opt-out signal (COOKIE-DESIGN.md §2.1): device-class requests are
+ * cookie opt-out signal (COOKIE-DESIGN.md §2.1 — workspace-root doc,
+ * `../COOKIE-DESIGN.md`; see the file-header note): device-class requests are
  * bearer-only and never receive Set-Cookie.
  */
 export const X_PHLIX_DEVICE_TYPE = 'X-Phlix-Device-Type';
@@ -36,8 +37,9 @@ export const X_PHLIX_SESSION_ID = 'X-Phlix-Session-ID';
 
 /**
  * Client platform values the server recognizes for `X-Phlix-Device-Type`.
- * Every member is CLASS DEVICE on bearer custody (COOKIE-DESIGN.md
- * §2.1), and the union deliberately has NO browser member — a browser must
+ * Every member is CLASS DEVICE on bearer custody (COOKIE-DESIGN.md §2.1 —
+ * workspace-root doc, `../COOKIE-DESIGN.md`; see the file-header note), and
+ * the union deliberately has NO browser member — a browser must
  * not device-class itself into cookie opt-out. The five wire spellings below
  * are exactly what the windows/tizen/roku/mobile clients send. Console and
  * plugin/CLI clients are also CLASS DEVICE bearer custody, but they carry no

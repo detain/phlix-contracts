@@ -52,9 +52,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `test/fixtures/*.json` captures to their parity suites and key-list consts and
   gives the consumer-side run-your-client-against-them recipe (previously each
   client re-derived it); (c) every COOKIE-DESIGN.md cite named by the finding
-  (README x4, `src/headers.ts` x2) gained the doc's resolvable location — the
-  estate workspace root (`../COOKIE-DESIGN.md`), complementing the CTR-14/20 pass
-  that said "not vendored" but gave no path; (d) the `./routeManifest` subpath
+  (README x4, `src/headers.ts` file docblock + `X_PHLIX_DEVICE_TYPE` docblock)
+  gained the doc's resolvable location — the estate workspace root
+  (`../COOKIE-DESIGN.md`), complementing the CTR-14/20 pass that said "not
+  vendored" but gave no path; this step's fix-forward landed the sixth cite and
+  located the adjacent `DeviceType` docblock the same way, one consistent
+  posture per file; (d) the `./routeManifest` subpath
   note records that it resolves to the full package bundle (38,653 B at this
   writing), tree-shaken by bundlers but paid in full by unbundled Node/CJS and
   Metro consumers, cross-referencing the CTR-16 watch item. Comment/doc-only: no

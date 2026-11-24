@@ -230,7 +230,9 @@ are under Development). This package's acceptance bar for its key-list consts:
 
 Run-your-client recipe: in each fixture, every recorded `response`/`state`/
 entry value is **emitted bytes decoded from real server output** — only the
-input literals are hand-built (each file's `$comment` says so). That makes the
+input literals are hand-built (the `playback-info` and `syncplay-envelope`
+`$comment` fields say so; the `stream-track` and `stream-session` comments
+instead record generation from the real server classes). That makes the
 four files a shared conformance corpus for any client: feed each recorded
 payload through your client's JSON parse + model layer and assert the decoded
 object carries exactly the recorded keys and values — the same check the four
