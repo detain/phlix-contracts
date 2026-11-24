@@ -48,6 +48,7 @@ import {
   SYNC_PLAY_KEY_TIES,
 } from '../src/SyncPlay';
 import type {
+  SyncPlayGroup,
   SyncPlayMemberKeysTied,
   SyncPlayQueueItemKeysTied,
   SyncPlayGroupKeysTied,
@@ -58,6 +59,8 @@ import type {
   SyncPlayJoinGroupResponseKeysTied,
   SyncPlayLeaveGroupResponseKeysTied,
   SyncPlayErrorResponseKeysTied,
+  SyncPlayPlaybackState,
+  SyncPlayPlaybackStateName,
 } from '../src/SyncPlay';
 
 // Compile-time ties: these initializations only typecheck while each key-list
@@ -102,6 +105,74 @@ const AUTHORITY_SERVER_SHA = '0134063318bf601dcc152c6c175368cdf9168378';
  * If any live rail ever emits one, the authority changed without a re-ruling.
  */
 const STATE_FICTION_KEYS = ['id', 'name', 'has_password', 'current_media', 'is_playing'];
+
+/**
+ * S-contracts-13 (phlix-contracts-024) — `playback_state` is a BOUNDED union
+ * with a `(string & {})` fallback, not a bare `string`. The pins below are
+ * compile-time: `tsc --noEmit` runs inside `npm run build` and reddens if any
+ * half of the design is lost. Assignability alone is too weak for these ties
+ * (`string` IS assignable to `SyncPlayPlaybackState`), hence the `Exact`
+ * helper below — the same one `test/music.test.ts` uses.
+ *
+ *  - `stateLabel` switches over EVERY {@link SyncPlayPlaybackStateName} arm and
+ *    declares a non-`undefined` return type: under `strict`, adding an arm to
+ *    the named union without handling it (or collapsing that union to `string`)
+ *    makes the function endpoint reachable — TS2366. The suite asserts its
+ *    output for all four arms, so dropping one reddens the runtime half too.
+ *  - `Exact<SyncPlayGroup['playback_state'], SyncPlayPlaybackState>` ties the
+ *    FIELD to the alias: a revert to the old bare `string`, a drift to
+ *    `unknown`, or a narrowing to the strict named union is a typecheck error.
+ *  - `futureStateStillAssigns` puts a string OUTSIDE the named set into a
+ *    {@link SyncPlayPlaybackState}: only the `(string & {})` fallback arm
+ *    admits it, so deleting the fallback (or narrowing the field to the named
+ *    union) reddens the typecheck — the server's unvalidated
+ *    `updatePlayback()` would then silently break typed clients.
+ *  - `playbackStateRejectsNonString` proves the alias did not widen past
+ *    `string`: should it become `any`/`unknown`, the expected error disappears
+ *    and the directive itself becomes the failure.
+ */
+
+/** `true` only when `A` and `B` are the SAME type, not merely assignable. */
+type Exact<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
+
+/** Compile-time assertion: the type argument must resolve to exactly `true`. */
+function assertExact<T extends true>(value: T): T {
+  return value;
+}
+
+/**
+ * The named vocabulary as a runtime list, mirroring `GroupState::STATE_*`. The
+ * annotation below reddens the typecheck if an arm is dropped from
+ * {@link SyncPlayPlaybackStateName}; the exhaustive switch reddens if one is
+ * added unhandled.
+ */
+const NAMED_PLAYBACK_STATES: readonly SyncPlayPlaybackStateName[] = [
+  'playing',
+  'paused',
+  'buffering',
+  'stopped',
+];
+
+function stateLabel(state: SyncPlayPlaybackStateName): string {
+  switch (state) {
+    case 'playing':
+      return 'Playing';
+    case 'paused':
+      return 'Paused';
+    case 'buffering':
+      return 'Buffering';
+    case 'stopped':
+      return 'Stopped';
+  }
+}
+
+// Compile-time tie: an unseen server string remains assignable (the fallback).
+export const futureStateStillAssigns: SyncPlayPlaybackState = 'preparing_cassette';
+
+// Compile-time tie: a playback state is still a string on the wire.
+// @ts-expect-error the server never hands back a numeric playback_state
+export const playbackStateRejectsNonString: SyncPlayPlaybackState = 7;
 
 describe('SyncPlayShapeParity', () => {
   describe('fixture integrity (empty-set defences)', () => {
@@ -228,6 +299,55 @@ describe('SyncPlayShapeParity', () => {
       expect(Object.keys(fixture.rails.createGroupError.response)).toEqual([...SYNC_PLAY_ERROR_RESPONSE_KEYS]);
       expect(fixture.rails.getGroupNotFound.status).toBe(404);
       expect(Object.keys(fixture.rails.getGroupNotFound.response)).toEqual([...SYNC_PLAY_ERROR_RESPONSE_KEYS]);
+    });
+  });
+
+  describe('playback_state vocabulary (S-contracts-13 / phlix-contracts-024)', () => {
+    it('types the wire field as the bounded union + fallback, never a bare string', () => {
+      // The field must be the alias (this is the exact regression the finding
+      // reported: a bare `string`, which no runtime test can see).
+      expect(assertExact<Exact<SyncPlayGroup['playback_state'], SyncPlayPlaybackState>>(true)).toBe(true);
+      // The alias must be union + intersection fallback, in that shape.
+      expect(
+        assertExact<Exact<SyncPlayPlaybackState, SyncPlayPlaybackStateName | (string & {})>>(true),
+      ).toBe(true);
+      // The named half must stay the four spelled-out server states.
+      expect(
+        assertExact<Exact<SyncPlayPlaybackStateName, 'playing' | 'paused' | 'buffering' | 'stopped'>>(
+          true,
+        ),
+      ).toBe(true);
+    });
+
+    it('the named arms are EXACTLY the server GroupState::STATE_* set', () => {
+      expect([...NAMED_PLAYBACK_STATES].sort()).toEqual(['buffering', 'paused', 'playing', 'stopped']);
+    });
+
+    it('the exhaustive switch over the named arms handles each one', () => {
+      // Runtime half of pin (1); the compile-time half is the declared return
+      // type of stateLabel(), which fails to typecheck if the arms drift.
+      expect(NAMED_PLAYBACK_STATES.map((state) => stateLabel(state))).toEqual([
+        'Playing',
+        'Paused',
+        'Buffering',
+        'Stopped',
+      ]);
+    });
+
+    it('every playback_state the server emitted in the fixture is a NAMED arm', () => {
+      const emitted: unknown[] = [fixture.groupState.state.playback_state];
+      for (const rail of ['createGroup', 'joinGroup', 'getGroup']) {
+        const group = fixture.rails[rail].response.group as Record<string, unknown>;
+        emitted.push(group.playback_state);
+      }
+      expect(emitted.length).toBeGreaterThan(0);
+      for (const state of emitted) {
+        expect(typeof state).toBe('string');
+        expect(
+          NAMED_PLAYBACK_STATES,
+          `server emitted '${String(state)}' outside the named vocabulary — widen the union and re-rule`,
+        ).toContain(state);
+      }
     });
   });
 });

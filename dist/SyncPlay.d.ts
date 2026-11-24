@@ -61,6 +61,26 @@ export interface SyncPlayQueueItem {
     added_by: string | null;
 }
 /**
+ * Named `playback_state` vocabulary — the four states the server's
+ * `GroupState::STATE_*` constants can put on the wire (`'stopped'` is the
+ * initial state). Narrow a {@link SyncPlayGroup}'s `playback_state` against
+ * this type when a switch must cover every state the server emits today.
+ */
+export type SyncPlayPlaybackStateName = 'playing' | 'paused' | 'buffering' | 'stopped';
+/**
+ * The `playback_state` field exactly as it reaches the wire: the named
+ * vocabulary {@link SyncPlayPlaybackStateName} plus a `(string & {})`
+ * fallback arm.
+ *
+ * `GroupState::updatePlayback()` stores the string it was handed without
+ * validation, so a server (or a future release) that adds a state must not
+ * break a client that types this field — hence the fallback, which keeps any
+ * server string assignable while the four known states stay spelled out for
+ * editors and switches. Write it as an intersection: a bare `| string` arm
+ * would collapse the whole union to `string` and erase the named arms.
+ */
+export type SyncPlayPlaybackState = SyncPlayPlaybackStateName | (string & {});
+/**
  * Full SyncPlay group state — the verbatim emission of
  * `GroupState::getState()`, carried by GET /groups/{id}, POST /groups and
  * POST /groups/{id}/join.
@@ -76,7 +96,9 @@ export interface SyncPlayQueueItem {
  * - `playback_state` — the server stores the string it was handed
  *   (`updatePlayback()` is unvalidated); the emitted vocabulary today is
  *   `'playing' | 'paused' | 'buffering' | 'stopped'` with `'stopped'` the
- *   initial state.
+ *   initial state. Typed {@link SyncPlayPlaybackState}: the named arms of
+ *   {@link SyncPlayPlaybackStateName} with a `(string & {})` fallback so an
+ *   unseen server string stays assignable.
  * - `playback_position` / `current_media_duration` — milliseconds.
  */
 export declare const SYNC_PLAY_GROUP_KEYS: readonly ["group_id", "group_name", "member_count", "members", "host_id", "current_media_id", "current_media_duration", "playback_position", "playback_state", "queue", "created_at", "last_activity_at"];
@@ -89,7 +111,7 @@ export interface SyncPlayGroup {
     current_media_id: string | null;
     current_media_duration: number;
     playback_position: number;
-    playback_state: string;
+    playback_state: SyncPlayPlaybackState;
     queue: SyncPlayQueueItem[];
     created_at: number;
     last_activity_at: number;

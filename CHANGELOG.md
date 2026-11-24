@@ -20,6 +20,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `SyncPlayGroup.playback_state` is no longer a bare `string` (phlix-contracts-024): it is now
+  `SyncPlayPlaybackState = SyncPlayPlaybackStateName | (string & {})`, where
+  `SyncPlayPlaybackStateName` spells out the four states the server's `GroupState::STATE_*`
+  constants emit (`playing`, `paused`, `buffering`, `stopped`). The named arms give editors and
+  switches the vocabulary; the `(string & {})` arm is kept deliberately because
+  `GroupState::updatePlayback()` stores the string it is handed without validation, so an unseen
+  server string stays assignable and the full-group-state docblock's openness note remains truthful
+  forward-compatibility, not a hole. Additive type surface (two exported aliases), zero new wire
+  codes, and the `SYNC_PLAY_GROUP_KEYS` list is untouched, so the S415 golden-vector tie holds.
+  `test/syncPlayShapeParity.test.ts` gains compile-time pins (`Exact`/`assertExact`, the
+  `test/music.test.ts` idiom) tying the field to the alias and the alias to its union+fallback
+  shape, an exhaustive `switch` over the named arms, and a runtime assertion that every
+  `playback_state` in the captured server vectors is a named arm. Type-only change: the frozen
+  artifacts (`error-codes.json` `5d1783a7…`, route manifest `c2111cd3…`, `mcp-scopes.json`
+  `8c92c070…`) and both bundle bytes are byte-ident; only `dist/SyncPlay.d.ts` and the source
+  maps move, absorbed by the next tag cut.
+
 - Attribution unified to one identity narrative across the package (CTR-33 / phlix-contracts-033):
   `package.json` `author` and the `LICENSE` copyright line now read
   `Joe Huss <detain@interserver.net>`, matching the canonical `@copyright`
