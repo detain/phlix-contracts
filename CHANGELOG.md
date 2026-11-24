@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Attribution unified to one identity narrative across the package (CTR-33 / phlix-contracts-033):
+  `package.json` `author` and the `LICENSE` copyright line now read
+  `Joe Huss <detain@interserver.net>`, matching the canonical `@copyright`
+  header every `src/` file already carries (estate-wide convention shared with
+  server/hub). Cosmetic/legal-clarity only — no source bytes moved, `dist/`
+  unchanged.
 - Dev-dependency upgrade: eslint 9 -> 10.15 (+ @eslint/js 10), @types/node 26, vite 8.3.8, vitest/coverage-v8 5.1, typescript-eslint 8.72.2. TypeScript stays on 6.0.x because typescript-eslint 8 supports only `<6.1.0` (TS 7 unsupported). `dist/` is byte-identical; GitHub Actions were already at latest majors. `npm audit` still reports only the single upstream minimatch advisory (no fix available; more dependents listed under eslint 10).
 
 ### Added

@@ -52,7 +52,7 @@
     "type": "git",
     "url": "github:detain/phlix-contracts"
   },
-  "author": "detain",
+  "author": "Joe Huss <detain@interserver.net>",
   "keywords": [
     "phlix",
     "contracts",
