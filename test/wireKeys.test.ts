@@ -6,10 +6,14 @@
  * "keep it local so the file stays self-contained" rationale and hoisted the
  * helper to its single home, `src/internal/wireKeys.ts`; the first landing
  * migrated only `src/playback.ts`, and this suite exists so a half-migration
- * can never re-land: it pins ONE declaration site, BOTH consumers importing
- * it, the retired rationale surviving only as the internal header's quotation
- * of history, and the helper staying package-private through the shipped
- * surface (the exports map governs, never intra-src reachability).
+ * can never re-land: it pins ONE declaration site, the COMPLETE consumer
+ * roster importing it (the roster froze at the first two files while
+ * `src/StreamSession.ts` became a third tie consumer — estate review
+ * phlix-contracts-026; it is now scan-checked against the tree so a fourth
+ * consumer or a silently dropped tie reddens this suite, never passes it
+ * unseen), the retired rationale surviving only as the internal header's
+ * quotation of history, and the helper staying package-private through the
+ * shipped surface (the exports map governs, never intra-src reachability).
  *
  * The dist/ legs read the COMMITTED declaration tree, mirroring the precedent
  * in `test/routeManifest.test.ts`: locally that catches a stale or hand-edited
@@ -45,13 +49,33 @@ function tsTree(rootDir: string): Map<string, string> {
   return files;
 }
 
-/** Files whose text declares the helper — an import never matches: the
- *  declaration is the only place `WireKeysExact` is directly followed by `<`. */
+/** Files whose text DECLARES the helper type: the declaration is the only
+ *  place `WireKeysExact` directly follows `type`. Import and use lines never
+ *  match — a use reads `export type X = WireKeysExact<Y, …>`, where `type`
+ *  is followed by the tied alias name, not by the helper. */
 function declaringFiles(texts: Map<string, string>): string[] {
   return [...texts.entries()]
     .filter(([, text]) => /type\s+WireKeysExact\s*</.test(text))
     .map(([path]) => path);
 }
+
+/** Files that APPLY the helper to tie a wire shape (use without declaring):
+ *  scan-based, so the consumer set is observed from the tree rather than
+ *  remembered — the phlix-contracts-026 coverage gap was exactly a roster
+ *  that froze while the tree grew. */
+function consumerFiles(texts: Map<string, string>): string[] {
+  return [...texts.entries()]
+    .filter(([, text]) => !/type\s+WireKeysExact\s*</.test(text) && /\bWireKeysExact</.test(text))
+    .map(([path]) => path)
+    .sort();
+}
+
+/** The complete src consumer roster — equality-pinned against the scan
+ *  below, so a new tie without a roster entry and a silently dropped tie
+ *  both redden this suite. */
+const SRC_CONSUMERS = ['src/playback.ts', 'src/SyncPlay.ts', 'src/StreamSession.ts'];
+/** The committed dist mirror of every rostered consumer. */
+const DIST_CONSUMERS = SRC_CONSUMERS.map((f) => f.replace(/^src\//, 'dist/').replace(/\.ts$/, '.d.ts'));
 
 const THE_IMPORT = "import type { WireKeysExact } from './internal/wireKeys';";
 
@@ -60,8 +84,13 @@ describe('WireKeysExact — one definition (LW-040)', () => {
     expect(declaringFiles(tsTree(SRC))).toEqual(['src/internal/wireKeys.ts']);
   });
 
-  it('is imported — not re-declared — by both wire-shape consumers', () => {
-    for (const consumer of ['src/playback.ts', 'src/SyncPlay.ts']) {
+  it('is imported — not re-declared — by every wire-shape consumer, and only by rostered ones', () => {
+    // Completeness first: the applied-helper scan must find exactly the
+    // rostered consumers (phlix-contracts-026 — the old two-file list let
+    // src/StreamSession.ts ride unpoliced).
+    expect(consumerFiles(tsTree(SRC))).toEqual([...SRC_CONSUMERS].sort());
+    // Fidelity per rostered file: shared import, no local re-declaration.
+    for (const consumer of SRC_CONSUMERS) {
       const text = readFileSync(resolve(__dirname, '..', consumer), 'utf8');
       expect(text, `${consumer} must import the shared helper`).toContain(THE_IMPORT);
       expect(/type\s+WireKeysExact\s*</.test(text), `${consumer} must not declare it locally`).toBe(false);
@@ -83,10 +112,11 @@ describe('WireKeysExact — one definition (LW-040)', () => {
   });
 
   it('dist mirrors the single-declaration shape', () => {
-    // The .d.ts tree: declared once (in dist/internal/), imported by both
-    // consumers, never re-declared by a consumer.
+    // The .d.ts tree: declared once (in dist/internal/), imported by every
+    // consumer mirror and no others, never re-declared by a consumer.
     expect(declaringFiles(tsTree(DIST))).toEqual(['dist/internal/wireKeys.d.ts']);
-    for (const mirror of ['dist/playback.d.ts', 'dist/SyncPlay.d.ts']) {
+    expect(consumerFiles(tsTree(DIST))).toEqual([...DIST_CONSUMERS].sort());
+    for (const mirror of DIST_CONSUMERS) {
       expect(readFileSync(resolve(__dirname, '..', mirror), 'utf8'), `${mirror} must carry the import form`).toContain(THE_IMPORT);
     }
   });
