@@ -51,114 +51,39 @@
  * train people to ignore reds. Run it locally whenever hub/server error files
  * churn, then re-stamp the currency line in the errors.ts module header.
  *
+ * TESTING (phlix-contracts-029, S-contracts-16): the grammar itself used to be
+ * untested, which is exactly how a cite sweep goes falsely green — a parser
+ * break leaves ok=0/problems=0 and the exit code alone never tells. The pure
+ * parse legs (extractComments/normalizeComment/followingEntryValue/STOP/
+ * candidateTokens/CITE_RE/MALFORMED_WRAP_RE/parseLineList/scanCites) are now
+ * EXPORTED and pinned golden-case by golden-case in
+ * test/checkErrorCites.test.ts; the executable sweep lives in runCli() behind
+ * an entry guard, so importing this module never reads sibling checkouts,
+ * prints, or process.exits a foreign host (vitest workers). The refactor is
+ * zero-semantic-change by construction: `npm run verify:cites` byte-identical
+ * output and totals before/after.
+ *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT
  */
 
-import { readFileSync, existsSync, readdirSync, lstatSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, lstatSync, realpathSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
-// ─── args ────────────────────────────────────────────────────────────────────
-const argv = process.argv.slice(2);
-const flagValue = (name, fallback) => {
-  const i = argv.indexOf(name);
-  return i >= 0 && i + 1 < argv.length ? argv[i + 1] : fallback;
-};
-const WINDOW = Number(flagValue('--window', '3'));
-if (!Number.isInteger(WINDOW) || WINDOW < 0) {
-  console.error(`--window must be a non-negative integer, got ${flagValue('--window', 'unset')}`);
-  process.exit(2);
-}
-const AS_JSON = argv.includes('--json');
+// ─── pure parser (exported — pinned by test/checkErrorCites.test.ts) ─────────
 
-// Anti-vacuity floor (estate review 2026-10-28, m2): exit 0 must mean "every
-// cite held", never "nothing was checked". A CITE_RE grammar break after an
-// errors.ts reflow — or a wholesale strip of the cites — would leave
-// ok=0/problems=0 and the tool would vacuously "pass" while verifying
-// nothing. The registry only ever grows, so a parsed-cite count under this
-// floor can only mean the sweep itself broke. Measured at the 2026-10-30 cure
-// stamp: 429 cites parsed (ok=364 + problems=65 drift era). Raise only when
-// cites are legitimately REMOVED — never to silence a low count.
-const MIN_VERIFIED_CITES = 400;
-
-// ─── resolve the cited repos; without the code there is nothing to verify ───
-const REPOS = {
-  hub: resolve(root, flagValue('--hub', process.env.PHLIX_CONTRACTS_HUB_REPO ?? '../phlix-hub')),
-  srv: resolve(root, flagValue('--srv', process.env.PHLIX_CONTRACTS_SRV_REPO ?? '../phlix-server')),
-};
-for (const [kind, path] of Object.entries(REPOS)) {
-  if (!existsSync(join(path, 'src'))) {
-    console.error(
-      `missing ${kind} checkout at ${path} — clone it or set ` +
-        `PHLIX_CONTRACTS_${kind.toUpperCase()}_REPO. This script verifies cites ` +
-        'against real code; with no code it verifies nothing, so it refuses to run.',
-    );
-    process.exit(2);
-  }
-}
-const headSha = (path) => {
-  try {
-    return execFileSync('git', ['-C', path, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-  } catch {
-    return 'NOT-A-GIT-CHECKOUT';
-  }
-};
-const HEADS = { hub: headSha(REPOS.hub), srv: headSha(REPOS.srv) };
-
-// ─── basename → absolute paths, so cites may omit directories ───────────────
-function walkPhp(dir, out) {
-  for (const entry of readdirSync(dir)) {
-    const p = join(dir, entry);
-    // lstat, never stat (estate review 2026-10-28, m3): stat FOLLOWS
-    // symlinks, so a symlinked directory cycle in a sibling checkout would
-    // recurse until the stack overflows and hangs this dev tool. Tracked
-    // trees hold real directories; symlinked .php FILES still resolve fine
-    // via readFileSync, they are simply never descended into.
-    if (lstatSync(p).isDirectory()) walkPhp(p, out);
-    else if (entry.endsWith('.php')) out.push(p);
-  }
-}
-const FILES = {};
-for (const [kind, repo] of Object.entries(REPOS)) {
-  const map = new Map();
-  const phpFiles = [];
-  walkPhp(join(repo, 'src'), phpFiles);
-  for (const abs of phpFiles) {
-    const rel = abs.slice(repo.length + 1);
-    const base = rel.slice(rel.lastIndexOf('/') + 1);
-    if (!map.has(base)) map.set(base, []);
-    map.get(base).push(abs);
-  }
-  FILES[kind] = map;
-}
-function resolveFile(kind, citedPath) {
-  const candidates = (FILES[kind].get(citedPath.slice(citedPath.lastIndexOf('/') + 1)) ?? []);
-  if (candidates.length === 1) return { path: candidates[0] };
-  if (candidates.length > 1) {
-    const byRel = candidates.filter((abs) => abs.endsWith(`/${citedPath}`));
-    if (byRel.length === 1) return { path: byRel[0] };
-    return { error: `AMBIGUOUS '${citedPath}' in ${kind} repo (${candidates.length} matches) — cite the full relative path` };
-  }
-  return { error: `NOFILE '${citedPath}' not found under ${REPOS[kind]}/src` };
-}
-const CONTENT = new Map();
-function linesOf(abs) {
-  if (!CONTENT.has(abs)) CONTENT.set(abs, readFileSync(abs, 'utf8').split('\n'));
-  return CONTENT.get(abs);
-}
-
-// ─── comments in src/errors.ts, with the registry value each annotates ─────
-const SRC = readFileSync(join(root, 'src/errors.ts'), 'utf8');
 const lineOf = (src, index) => {
   let line = 1;
   for (let i = 0; i < index; i++) if (src[i] === '\n') line++;
   return line;
 };
-function extractComments(src) {
+
+/** Exported: comments in src/errors.ts, with the registry value each annotates. */
+export function extractComments(src) {
   const out = [];
   for (const m of src.matchAll(/\/\*[\s\S]*?\*\//g)) {
     out.push({ startLine: lineOf(src, m.index), start: m.index, end: m.index + m[0].length, raw: m[0] });
@@ -169,7 +94,7 @@ function extractComments(src) {
   return out;
 }
 /** One-line prose + char→source-line map for drift reporting. */
-function normalizeComment(raw, startLine) {
+export function normalizeComment(raw, startLine) {
   const body = raw.replace(/^\/\*+/, '').replace(/\*\/$/, '').replace(/^\/\/[ \t]?/, '');
   const parts = body.split('\n').map((l) => l.replace(/^[ \t]*\*+[ \t]?/, '').replace(/^[ \t]+/, ''));
   const map = [];
@@ -180,17 +105,17 @@ function normalizeComment(raw, startLine) {
   return { text: parts.join(' '), map };
 }
 /** The entry value a docblock annotates: a `KEY: 'value',` line right after it. */
-function followingEntryValue(src, commentEnd) {
+export function followingEntryValue(src, commentEnd) {
   const m = src.slice(commentEnd).match(/^[ \t]*\r?\n[ \t]*[A-Z0-9_]+:[ \t]*'([^']+)'/);
   return m ? m[1] : null;
 }
 
 // ─── anchor tokens per comment ───────────────────────────────────────────────
-const STOP = new Set(['code', 'error', 'error_code', 'denial_type', 'create', 'join',
+export const STOP = new Set(['code', 'error', 'error_code', 'denial_type', 'create', 'join',
   'leave', 'legacy', 'twin', 'twins', 'hub', 'srv', 'server', 'client', 'true', 'false',
   'null', 'messages', 'message', 'today', 'wire', 'text', 'code-shaped', 'snake', 'dotted',
   'screaming', 'domain', 'entry', 'entries', 'forward', 'form']);
-function candidateTokens(text, entryValue) {
+export function candidateTokens(text, entryValue) {
   const tokens = new Set();
   if (entryValue) tokens.add(entryValue);
   // Backticked AND single-quoted code-shaped words are anchor candidates:
@@ -223,7 +148,7 @@ function candidateTokens(text, entryValue) {
 }
 
 // ─── cite scanner ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-const CITE_RE = new RegExp(
+export const CITE_RE = new RegExp(
   [
     '(?:(?<prefix>hub|srv)\\s+)?(?<file>(?:[\\w-]+/)*[\\w-]+\\.php):[ \\t]*(?<lines>\\d[\\d,\\s-]*)',
     '(?<![\\w./:-]):[ \\t]*(?<blines>\\d[\\d,\\s-]*)',
@@ -231,7 +156,15 @@ const CITE_RE = new RegExp(
   ].join('|'),
   'g',
 );
-function parseLineList(s) {
+
+/**
+ * MALFORMED-WRAP detector (estate review LW-009, 2026-11-07) — see the driver
+ * leg below. Exported so the trap case pins the detector itself, not only the
+ * join accident that makes a wrapped cite parse.
+ */
+export const MALFORMED_WRAP_RE = /\.php:[ \t]*$/;
+
+export function parseLineList(s) {
   return s
     .split(',')
     .map((t) => t.trim())
@@ -245,7 +178,7 @@ function parseLineList(s) {
     })
     .filter((c) => c !== null);
 }
-function scanCites(text) {
+export function scanCites(text) {
   const cites = [];
   let lastPrefix = null;
   let lastFile = null;
@@ -274,103 +207,218 @@ function scanCites(text) {
   return cites;
 }
 
-// ─── verification ─────────────────────────────────────────────────────────────
-const problems = [];
-let okCount = 0;
-for (const c of extractComments(SRC)) {
-  const { text, map } = normalizeComment(c.raw, c.startLine);
-  const cites = scanCites(text);
-  if (cites.length === 0) continue;
-  const entryValue = followingEntryValue(SRC, c.end);
-  const tokens = candidateTokens(text, entryValue);
-  for (const cite of cites) {
-    const at = `errors.ts:${map[Math.min(cite.index, map.length - 1)]}`;
-    const label = `${cite.prefix ?? '?'} ${cite.file ?? '(bare)'}:${cite.from}${cite.to !== cite.from ? `-${cite.to}` : ''}`;
-    if (!cite.file) {
-      problems.push({ at, cite: label, status: 'ORPHAN-BARE', note: 'bare cite with no file in the same comment — name the file' });
-      continue;
+// ─── CLI driver (runs only as the entry point — import is parser-only) ───────
+function runCli() {
+  // ─── args ──────────────────────────────────────────────────────────────────
+  const argv = process.argv.slice(2);
+  const flagValue = (name, fallback) => {
+    const i = argv.indexOf(name);
+    return i >= 0 && i + 1 < argv.length ? argv[i + 1] : fallback;
+  };
+  const WINDOW = Number(flagValue('--window', '3'));
+  if (!Number.isInteger(WINDOW) || WINDOW < 0) {
+    console.error(`--window must be a non-negative integer, got ${flagValue('--window', 'unset')}`);
+    process.exit(2);
+  }
+  const AS_JSON = argv.includes('--json');
+
+  // Anti-vacuity floor (estate review 2026-10-28, m2): exit 0 must mean "every
+  // cite held", never "nothing was checked". A CITE_RE grammar break after an
+  // errors.ts reflow — or a wholesale strip of the cites — would leave
+  // ok=0/problems=0 and the tool would vacuously "pass" while verifying
+  // nothing. The registry only ever grows, so a parsed-cite count under this
+  // floor can only mean the sweep itself broke. Measured at the 2026-10-30 cure
+  // stamp: 429 cites parsed (ok=364 + problems=65 drift era). Raise only when
+  // cites are legitimately REMOVED — never to silence a low count.
+  const MIN_VERIFIED_CITES = 400;
+
+  // ─── resolve the cited repos; without the code there is nothing to verify ──
+  const REPOS = {
+    hub: resolve(root, flagValue('--hub', process.env.PHLIX_CONTRACTS_HUB_REPO ?? '../phlix-hub')),
+    srv: resolve(root, flagValue('--srv', process.env.PHLIX_CONTRACTS_SRV_REPO ?? '../phlix-server')),
+  };
+  for (const [kind, path] of Object.entries(REPOS)) {
+    if (!existsSync(join(path, 'src'))) {
+      console.error(
+        `missing ${kind} checkout at ${path} — clone it or set ` +
+          `PHLIX_CONTRACTS_${kind.toUpperCase()}_REPO. This script verifies cites ` +
+          'against real code; with no code it verifies nothing, so it refuses to run.',
+      );
+      process.exit(2);
     }
-    if (!cite.prefix) {
-      problems.push({ at, cite: label, status: 'NO-PREFIX', note: 'first cite of the comment lacks a hub/srv prefix' });
-      continue;
+  }
+  const headSha = (path) => {
+    try {
+      return execFileSync('git', ['-C', path, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+    } catch {
+      return 'NOT-A-GIT-CHECKOUT';
     }
-    if (tokens.size === 0) {
-      problems.push({ at, cite: label, status: 'UNVERIFIABLE', note: 'comment carries no anchor token — mention the wire value or SCREAMING legacy in backticks' });
-      continue;
+  };
+  const HEADS = { hub: headSha(REPOS.hub), srv: headSha(REPOS.srv) };
+
+  // ─── basename → absolute paths, so cites may omit directories ──────────────
+  function walkPhp(dir, out) {
+    for (const entry of readdirSync(dir)) {
+      const p = join(dir, entry);
+      // lstat, never stat (estate review 2026-10-28, m3): stat FOLLOWS
+      // symlinks, so a symlinked directory cycle in a sibling checkout would
+      // recurse until the stack overflows and hangs this dev tool. Tracked
+      // trees hold real directories; symlinked .php FILES still resolve fine
+      // via readFileSync, they are simply never descended into.
+      if (lstatSync(p).isDirectory()) walkPhp(p, out);
+      else if (entry.endsWith('.php')) out.push(p);
     }
-    const r = resolveFile(cite.prefix, cite.file);
-    if (r.error) {
-      problems.push({ at, cite: label, status: 'FILE', note: r.error });
-      continue;
+  }
+  const FILES = {};
+  for (const [kind, repo] of Object.entries(REPOS)) {
+    const map = new Map();
+    const phpFiles = [];
+    walkPhp(join(repo, 'src'), phpFiles);
+    for (const abs of phpFiles) {
+      const rel = abs.slice(repo.length + 1);
+      const base = rel.slice(rel.lastIndexOf('/') + 1);
+      if (!map.has(base)) map.set(base, []);
+      map.get(base).push(abs);
     }
-    const lines = linesOf(r.path);
-    const lo = Math.max(1, cite.from - WINDOW);
-    const hi = Math.min(lines.length, cite.to + WINDOW);
-    let holds = false;
-    for (let i = lo; i <= hi && !holds; i++) {
-      if ([...tokens].some((t) => lines[i - 1].includes(t))) holds = true;
+    FILES[kind] = map;
+  }
+  function resolveFile(kind, citedPath) {
+    const candidates = (FILES[kind].get(citedPath.slice(citedPath.lastIndexOf('/') + 1)) ?? []);
+    if (candidates.length === 1) return { path: candidates[0] };
+    if (candidates.length > 1) {
+      const byRel = candidates.filter((abs) => abs.endsWith(`/${citedPath}`));
+      if (byRel.length === 1) return { path: byRel[0] };
+      return { error: `AMBIGUOUS '${citedPath}' in ${kind} repo (${candidates.length} matches) — cite the full relative path` };
     }
-    if (holds) {
-      okCount++;
-      continue;
-    }
-    let best = null;
-    for (const t of tokens) {
-      for (let i = 0; i < lines.length; i++) {
-        if (!lines[i].includes(t)) continue;
-        const ln = i + 1;
-        const delta = ln < cite.from ? cite.from - ln : ln > cite.to ? ln - cite.to : 0;
-        if (!best || delta < best.delta) best = { token: t, ln, delta };
+    return { error: `NOFILE '${citedPath}' not found under ${REPOS[kind]}/src` };
+  }
+  const CONTENT = new Map();
+  function linesOf(abs) {
+    if (!CONTENT.has(abs)) CONTENT.set(abs, readFileSync(abs, 'utf8').split('\n'));
+    return CONTENT.get(abs);
+  }
+
+  const SRC = readFileSync(join(root, 'src/errors.ts'), 'utf8');
+
+  // ─── verification ──────────────────────────────────────────────────────────
+  const problems = [];
+  let okCount = 0;
+  for (const c of extractComments(SRC)) {
+    const { text, map } = normalizeComment(c.raw, c.startLine);
+    const cites = scanCites(text);
+    if (cites.length === 0) continue;
+    const entryValue = followingEntryValue(SRC, c.end);
+    const tokens = candidateTokens(text, entryValue);
+    for (const cite of cites) {
+      const at = `errors.ts:${map[Math.min(cite.index, map.length - 1)]}`;
+      const label = `${cite.prefix ?? '?'} ${cite.file ?? '(bare)'}:${cite.from}${cite.to !== cite.from ? `-${cite.to}` : ''}`;
+      if (!cite.file) {
+        problems.push({ at, cite: label, status: 'ORPHAN-BARE', note: 'bare cite with no file in the same comment — name the file' });
+        continue;
+      }
+      if (!cite.prefix) {
+        problems.push({ at, cite: label, status: 'NO-PREFIX', note: 'first cite of the comment lacks a hub/srv prefix' });
+        continue;
+      }
+      if (tokens.size === 0) {
+        problems.push({ at, cite: label, status: 'UNVERIFIABLE', note: 'comment carries no anchor token — mention the wire value or SCREAMING legacy in backticks' });
+        continue;
+      }
+      const r = resolveFile(cite.prefix, cite.file);
+      if (r.error) {
+        problems.push({ at, cite: label, status: 'FILE', note: r.error });
+        continue;
+      }
+      const lines = linesOf(r.path);
+      const lo = Math.max(1, cite.from - WINDOW);
+      const hi = Math.min(lines.length, cite.to + WINDOW);
+      let holds = false;
+      for (let i = lo; i <= hi && !holds; i++) {
+        if ([...tokens].some((t) => lines[i - 1].includes(t))) holds = true;
+      }
+      if (holds) {
+        okCount++;
+        continue;
+      }
+      let best = null;
+      for (const t of tokens) {
+        for (let i = 0; i < lines.length; i++) {
+          if (!lines[i].includes(t)) continue;
+          const ln = i + 1;
+          const delta = ln < cite.from ? cite.from - ln : ln > cite.to ? ln - cite.to : 0;
+          if (!best || delta < best.delta) best = { token: t, ln, delta };
+        }
+      }
+      if (!best) {
+        problems.push({ at, cite: label, status: 'MISS', note: `no anchor token occurs in ${cite.prefix} ${cite.file} — verify the emit site by hand` });
+      } else {
+        const signed = best.ln < cite.from ? best.ln - cite.from : best.ln > cite.to ? best.ln - cite.to : 0;
+        problems.push({ at, cite: label, status: 'DRIFT', note: `no token within ±${WINDOW}; nearest '${best.token}' at :${best.ln} (${signed > 0 ? '+' : ''}${signed} vs cited span) — read the code, then re-anchor` });
       }
     }
-    if (!best) {
-      problems.push({ at, cite: label, status: 'MISS', note: `no anchor token occurs in ${cite.prefix} ${cite.file} — verify the emit site by hand` });
-    } else {
-      const signed = best.ln < cite.from ? best.ln - cite.from : best.ln > cite.to ? best.ln - cite.to : 0;
-      problems.push({ at, cite: label, status: 'DRIFT', note: `no token within ±${WINDOW}; nearest '${best.token}' at :${best.ln} (${signed > 0 ? '+' : ''}${signed} vs cited span) — read the code, then re-anchor` });
+  }
+
+  // ─── malformed-wrap leg (estate review LW-009, 2026-11-07) ─────────────────
+  // A cite whose digits wrap onto the NEXT comment line parses today only
+  // because normalizeComment space-joins lines before scanning — behaviour the
+  // grammar above never promised and that a future refactor of the join (or the
+  // sweep) would silently revoke: the wrapped cite would simply stop being
+  // counted, green forever over dead coordinates. That is the exact silent-rot
+  // class this tool exists to kill, so the hazard is refused at the door: any
+  // errors.ts line ending in `File.php:` (colon with no digits on its line) is
+  // reported MALFORMED-WRAP. Keep every `File.php:NN[,NN-MM]` token on ONE line
+  // and wrap the PROSE after it instead.
+  for (const [i, line] of SRC.split('\n').entries()) {
+    if (MALFORMED_WRAP_RE.test(line)) {
+      problems.push({
+        at: `errors.ts:${i + 1}`,
+        cite: '(malformed wrap)',
+        status: 'MALFORMED-WRAP',
+        note: 'cite ends its line at the colon — move the digits up so File.php:NN stays one token (cross-line digits parse only by join accident)',
+      });
     }
   }
+
+  // ─── report ────────────────────────────────────────────────────────────────
+  if (AS_JSON) {
+    console.log(JSON.stringify({ heads: HEADS, window: WINDOW, ok: okCount, problems }, null, 2));
+  } else {
+    console.log(`check-error-cites: hub @ ${HEADS.hub} · srv @ ${HEADS.srv} · window ±${WINDOW}`);
+    console.log(`ok=${okCount} problems=${problems.length}`);
+    for (const p of problems) {
+      console.log(`${p.status.padEnd(13)} ${p.at.padEnd(16)} ${p.cite.padEnd(58)} ${p.note}`);
+    }
+  }
+  const parsedCount = okCount + problems.length;
+  if (parsedCount < MIN_VERIFIED_CITES) {
+    console.error(
+      `check-error-cites: only ${parsedCount} cites parsed — below the ` +
+        `anti-vacuity floor ${MIN_VERIFIED_CITES}. A "clean" sweep that checked ` +
+        `nothing is a broken sweep, not a passing one: inspect CITE_RE and the ` +
+        `errors.ts cite blocks. Exit 2 — fix the tool, never ignore.`,
+    );
+    process.exit(2);
+  }
+  process.exit(problems.length > 0 ? 1 : 0);
 }
 
-// ─── malformed-wrap leg (estate review LW-009, 2026-11-07) ──────────────────
-// A cite whose digits wrap onto the NEXT comment line parses today only
-// because normalizeComment space-joins lines before scanning — behaviour the
-// grammar above never promised and that a future refactor of the join (or the
-// sweep) would silently revoke: the wrapped cite would simply stop being
-// counted, green forever over dead coordinates. That is the exact silent-rot
-// class this tool exists to kill, so the hazard is refused at the door: any
-// errors.ts line ending in `File.php:` (colon with no digits on its line) is
-// reported MALFORMED-WRAP. Keep every `File.php:NN[,NN-MM]` token on ONE line
-// and wrap the PROSE after it instead.
-for (const [i, line] of SRC.split('\n').entries()) {
-  if (/\.php:[ \t]*$/.test(line)) {
-    problems.push({
-      at: `errors.ts:${i + 1}`,
-      cite: '(malformed wrap)',
-      status: 'MALFORMED-WRAP',
-      note: 'cite ends its line at the colon — move the digits up so File.php:NN stays one token (cross-line digits parse only by join accident)',
-    });
+/**
+ * Entry guard: the sweep runs ONLY when this file is what Node was asked to
+ * execute (`npm run verify:cites`). A test (or any future importer) that loads
+ * the module for its exported parser must not trigger sibling-repo reads,
+ * console output, or process.exit. realpath both sides so a symlinked launch
+ * path still recognises itself; fall back to the plain resolve comparison when
+ * realpath fails (unreadable argv[1]).
+ */
+function entryIsThisModule() {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  const here = fileURLToPath(import.meta.url);
+  try {
+    return realpathSync(resolve(entry)) === realpathSync(here);
+  } catch {
+    return resolve(entry) === here;
   }
 }
 
-// ─── report ───────────────────────────────────────────────────────────────────
-if (AS_JSON) {
-  console.log(JSON.stringify({ heads: HEADS, window: WINDOW, ok: okCount, problems }, null, 2));
-} else {
-  console.log(`check-error-cites: hub @ ${HEADS.hub} · srv @ ${HEADS.srv} · window ±${WINDOW}`);
-  console.log(`ok=${okCount} problems=${problems.length}`);
-  for (const p of problems) {
-    console.log(`${p.status.padEnd(13)} ${p.at.padEnd(16)} ${p.cite.padEnd(58)} ${p.note}`);
-  }
-}
-const parsedCount = okCount + problems.length;
-if (parsedCount < MIN_VERIFIED_CITES) {
-  console.error(
-    `check-error-cites: only ${parsedCount} cites parsed — below the ` +
-    `anti-vacuity floor ${MIN_VERIFIED_CITES}. A "clean" sweep that checked ` +
-    `nothing is a broken sweep, not a passing one: inspect CITE_RE and the ` +
-    `errors.ts cite blocks. Exit 2 — fix the tool, never ignore.`,
-  );
-  process.exit(2);
-}
-process.exit(problems.length > 0 ? 1 : 0);
+if (entryIsThisModule()) runCli();
