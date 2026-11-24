@@ -12,6 +12,7 @@
  * JSON Schema verbatim.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
+import type { WireKeysExact } from './internal/wireKeys.js';
 /**
  * Media type discriminator — the full `media_items.type` column ENUM, in schema
  * order. Authoritative sources, which this MUST track verbatim: the server
@@ -54,12 +55,16 @@ export interface MediaPerson {
     /** Profile photo URL, or null when unknown. */
     profile_url: string | null;
 }
+/** Ordered key set of {@link MediaPerson} (S-contracts-02 / -002). */
+export declare const MEDIA_PERSON_KEYS: readonly ["name", "role", "job", "profile_url"];
 /** A production company in the detail-only `production_companies[]` block. */
 export interface ProductionCompany {
     name: string;
     logo_url: string | null;
     origin_country: string | null;
 }
+/** Ordered key set of {@link ProductionCompany} (S-contracts-02 / -002). */
+export declare const PRODUCTION_COMPANY_KEYS: readonly ["name", "logo_url", "origin_country"];
 /**
  * A media stream row (video/audio/subtitle) from the `media_streams` table,
  * surfaced verbatim on the DETAIL endpoint under `streams[]`.
@@ -76,6 +81,12 @@ export interface MediaStream {
     width: number | null;
     height: number | null;
 }
+/**
+ * Ordered key set of {@link MediaStream} (S-contracts-02 / -002) — the
+ * `media_streams` row keys the server surfaces verbatim under `streams[]` on
+ * the detail endpoint.
+ */
+export declare const MEDIA_STREAM_KEYS: readonly ["id", "media_item_id", "stream_index", "stream_type", "codec", "language", "bitrate", "width", "height"];
 /**
  * Per-user favorite/rating block attached ONLY to the DETAIL endpoint
  * (`GET /api/v1/media/{id}`) by `WebPortalRouter::resolveUserData()`.
@@ -106,7 +117,112 @@ export interface MediaItemUserData {
     progress_percent?: number;
 }
 /**
- * A single media item, as returned by the browse/list endpoints.
+ * The LIST-scope media item — exactly the keys `MediaItemShaper::shape()`
+ * emits, in the return-array's order (S-contracts-02 / phlix-contracts-010).
+ *
+ * Where the flat {@link MediaItem} union grew one optional member per field
+ * ever seen on ANY media surface (so a list row type could not promise that a
+ * key it always carries was there, and a detail type could not promise the
+ * detail-only keys either), this interface is the browse/grid scope: every one
+ * of the 27 keys is PRESENT on every `GET /api/v1/media` row,
+ * `getLibraryItems` row, continue-watching / most-watched rail element
+ * (`MediaItemShaper::shape()` array literal, server
+ * `src/Media/Library/MediaItemShaper.php` — the whole ordered set is pinned
+ * by `test/mediaShapeParity.test.ts` reading that file at run time). Values
+ * stay nullable exactly where the shaper emits nulls.
+ *
+ * List rows do NOT carry `cast`, `crew`, `tags`, `external_ids`,
+ * `backdrop_url_large`, `theme_audio_url`, `trailer_*`, `logo_url`,
+ * `streams`, `stream_url`, `user_data`, or `files` — reading those off a
+ * summary-typed value is a compile error, which is the point of the split.
+ */
+export interface MediaItemSummary {
+    /** Non-null: the shaper coerces malformed ids to `''`, never null. */
+    id: string;
+    /** Non-null: coerced (`name ?? id ?? 'Untitled'`) by the shaper. */
+    name: string;
+    /** Non-null string: `SortTitle::from($name)` on every row. */
+    sort_title: string;
+    /** Non-null: enum-constrained, malformed types coerce to `'movie'`. */
+    type: MediaType;
+    /**
+     * Basename-reduced path for non-admin views (null when the raw path is
+     * missing/empty). shapeDetail() re-expands it to the full path for admins.
+     */
+    path: string | null;
+    /** Scalar-coerced library id, null when absent (server shape():261). */
+    library_id: string | null;
+    poster_url: string | null;
+    poster_srcset: string | null;
+    /** Row-sized (w780-class) backdrop for hero strips; null when no art. */
+    backdrop_url: string | null;
+    backdrop_srcset: string | null;
+    /** Flat de-duplicated genre list — never an object map. */
+    genres: string[];
+    year: number | null;
+    /** Normalized, enum-constrained; NR folds to UNRATED upstream. */
+    rating: ContentRating | null;
+    /** TMDB runtime in MINUTES (not ticks). */
+    runtime: number | null;
+    /** Probed length in SECONDS; null until transcode probe. */
+    duration: number | null;
+    overview: string | null;
+    /** Flat actor-name list — the rich objects live on `cast[]` (detail). */
+    actors: string[];
+    director: string | null;
+    parent_id: string | null;
+    season_number: number | null;
+    episode_number: number | null;
+    episode_title: string | null;
+    /** ISO date string from air_date/first_aired/aired/premiered/release_date. */
+    air_date: string | null;
+    /** Music metadata; null for non-audio items. */
+    artist: string | null;
+    album: string | null;
+    created_at: string | null;
+    updated_at: string | null;
+}
+/**
+ * Ordered 27-key LIST scope of {@link MediaItemSummary} — the exact key order
+ * of `MediaItemShaper::shape()`'s return-array literal (server
+ * `src/Media/Library/MediaItemShaper.php` :236–:332 at the authority commit
+ * `262f01d3`). {@link file://./../../phlix-server/src/Media/Library/MediaItemShaper.php}
+ * is the runtime authority: `test/mediaShapeParity.test.ts` parses the shape()
+ * body out of that file and asserts this list key-for-key, in order.
+ */
+export declare const MEDIA_ITEM_SUMMARY_KEYS: readonly ["id", "name", "sort_title", "type", "path", "library_id", "poster_url", "poster_srcset", "backdrop_url", "backdrop_srcset", "genres", "year", "rating", "runtime", "duration", "overview", "actors", "director", "parent_id", "season_number", "episode_number", "episode_title", "air_date", "artist", "album", "created_at", "updated_at"];
+/**
+ * The detail-only fields `MediaItemShaper::shapeDetail()` assigns onto the
+ * merged row AFTER spreading `shape()` — in the order the shaper assigns them
+ * (server `src/Media/Library/MediaItemShaper.php` :363–:448 at the authority
+ * commit `262f01d3`). `backdrop_url`/`backdrop_srcset`/`path` are RE-ASSIGNED
+ * (hero budget / full admin path) but do not enter the list as additions —
+ * they were already carried by shape().
+ */
+export declare const MEDIA_ITEM_DETAIL_ADDITION_KEYS: readonly ["streams", "cast", "crew", "tags", "production_companies", "studio", "backdrop_url_large", "theme_audio_url", "trailer_url", "trailer_key", "trailer_site", "logo_url", "external_ids"];
+/**
+ * One entry of the admin-gated `files[]` block `shapeDetail()` adds for admin
+ * callers (`buildFilesBlock`; keys are its literal).
+ */
+export interface MediaFileEntry {
+    path: string;
+    size_bytes: number | null;
+    container: string | null;
+    codec: string | null;
+    resolution: string | null;
+}
+/** Ordered key set of {@link MediaFileEntry} (S-contracts-02 / -002). */
+export declare const MEDIA_FILE_ENTRY_KEYS: readonly ["path", "size_bytes", "container", "codec", "resolution"];
+/**
+ * A single media item — the FLAT union across every media surface (list rows,
+ * child-list rows with `user_data`, detail responses with `cast`/`crew`/
+ * `streams`, admin details with `files`). Kept as the wide compat shape:
+ * scopes are optional so any real or synthetic row satisfies it.
+ *
+ * New code that knows which endpoint produced a value should type it with the
+ * scoped pair: {@link MediaItemSummary} (browse/grid rows — every key present)
+ * and {@link MediaItemDetail} (detail rows), both pinned key-for-key against
+ * the server shapers by `test/mediaShapeParity.test.ts`.
  *
  * Required fields per the schema are `id`, `name`, `type`. All other base
  * fields are always present on list responses (null when unknown). The
@@ -214,6 +330,95 @@ export interface MediaItem {
      * responses. See `MediaItemUserData`.
      */
     user_data?: MediaItemUserData | null;
+    /** Scalar-coerced owning-library id (server shape():261), null when absent. */
+    library_id?: string | null;
+    /** Row-sized backdrop (list) / hero backdrop (detail); null when no art. */
+    backdrop_url?: string | null;
+    /** Responsive backdrop srcset candidates; null for non-TMDB backdrops. */
+    backdrop_srcset?: string | null;
+    /** Episode/series air date (ISO string) from metadata; null when unknown. */
+    air_date?: string | null;
+    /** Music: track artist; null for non-audio items. */
+    artist?: string | null;
+    /** Music: album name; null for non-audio items. */
+    album?: string | null;
+    /** Detail-only tag/keyword list (`shapeDetail()` :374). */
+    tags?: string[];
+    /**
+     * Detail-only curated provider-id map (`shapeDetail()` :448): `{tmdb, imdb,
+     * tvdb, anidb, …}` → stringified id. Present on the detail shape (empty map
+     * when no ids), never on the list shape.
+     */
+    external_ids?: Record<string, string>;
+    /** Detail-only theme/OP audio URL (`shapeDetail()` :410). */
+    theme_audio_url?: string | null;
+    /** Detail-only full-resolution (`/original`) backdrop (`shapeDetail()` :408). */
+    backdrop_url_large?: string | null;
+    /**
+     * Admin-only per-file block (`shapeDetail()`'s `$isAdmin` arm). Non-admin
+     * responses never carry it.
+     */
+    files?: MediaFileEntry[];
+}
+/**
+ * Ordered key set of {@link MediaItemUserData} (S-contracts-02 / -002).
+ */
+export declare const MEDIA_ITEM_USER_DATA_KEYS: readonly ["favorite", "rating", "watched", "position_ticks", "duration_ticks", "progress_percent"];
+/**
+ * The COMPLETE media-item key set — the 27 {@link MEDIA_ITEM_SUMMARY_KEYS}
+ * followed by the {@link MEDIA_ITEM_DETAIL_ADDITION_KEYS} plus `files` (the
+ * admin-gated `shapeDetail()` block), then the two controller-applied keys.
+ * Ties BOTH {@link MediaItem} (flat union) and {@link MediaItemDetail}: same
+ * keys, different optionality — that difference is exactly what the scope
+ * split buys. Order is pinned by `test/mediaShapeParity.test.ts` (the
+ * 27-key prefix against the live server source); membership is tied by
+ * `WireKeysExact` at compile time.
+ */
+export declare const MEDIA_ITEM_KEYS: readonly ["id", "name", "sort_title", "type", "path", "library_id", "poster_url", "poster_srcset", "backdrop_url", "backdrop_srcset", "genres", "year", "rating", "runtime", "duration", "overview", "actors", "director", "parent_id", "season_number", "episode_number", "episode_title", "air_date", "artist", "album", "created_at", "updated_at", "streams", "cast", "crew", "tags", "production_companies", "studio", "backdrop_url_large", "theme_audio_url", "trailer_url", "trailer_key", "trailer_site", "logo_url", "external_ids", "files", "stream_url", "user_data"];
+/**
+ * The DETAIL-scope media item — every {@link MediaItemSummary} key plus the
+ * fields `shapeDetail()` / the detail controllers add. Required where the
+ * detail endpoint always emits the key (`streams`, `cast`, `crew`, `tags`,
+ * `production_companies`, `studio`, `backdrop_url_large`, `theme_audio_url`,
+ * `trailer_url`, `trailer_key`, `trailer_site`, `logo_url`, `external_ids` —
+ * the shaper assigns every one of them on every detail response, some as
+ * `null`/empty); optional only where emission is genuinely conditional (the
+ * admin-only `files` block, the profile-gated `stream_url` mint, and the
+ * portal-only `user_data` block).
+ *
+ * Key set is exactly {@link MEDIA_ITEM_KEYS}, pinned by
+ * `test/mediaShapeParity.test.ts` against the server shapers.
+ */
+export interface MediaItemDetail extends MediaItemSummary {
+    /** Always assigned by `shapeDetail()` (`$merged['streams']`), possibly empty. */
+    streams: MediaStream[];
+    /** Rich cast objects; empty list when metadata carries none. */
+    cast: MediaPerson[];
+    /** Rich crew objects; empty list when metadata carries none. */
+    crew: MediaPerson[];
+    /** Tag/keyword list (`shapeDetail()` :374); empty when none. */
+    tags: string[];
+    production_companies: ProductionCompany[];
+    studio: string | null;
+    /** Full-resolution `/original` backdrop (`shapeDetail()` :408). */
+    backdrop_url_large: string | null;
+    /** Theme/OP audio URL (`shapeDetail()` :410). */
+    theme_audio_url: string | null;
+    trailer_url: string | null;
+    trailer_key: string | null;
+    trailer_site: string | null;
+    logo_url: string | null;
+    /** Curated provider-id map (`shapeDetail()` :448); always present, may be empty. */
+    external_ids: Record<string, string>;
+    /**
+     * Admin-gated per-file block (`buildFilesBlock`). Absent on non-admin
+     * responses.
+     */
+    files?: MediaFileEntry[];
+    /** Signed direct-play URL, minted by the controllers after shaping. */
+    stream_url?: string;
+    /** Portal-only per-user block (`WebPortalRouter::resolveUserData`). */
+    user_data?: MediaItemUserData | null;
 }
 /**
  * Per-user playback/watch state for an item. Phlix records resume position in
@@ -233,6 +438,8 @@ export interface UserData {
     rating?: number;
     favorite?: boolean;
 }
+/** Ordered key set of {@link UserData} (S-contracts-02 / -002). */
+export declare const USER_DATA_KEYS: readonly ["resume_position_ticks", "playback_position_ticks", "played", "is_watched", "rating", "favorite"];
 /**
  * A library (collection root). The server lists libraries via
  * `GET /api/v1/libraries`.
@@ -252,6 +459,8 @@ export interface Library {
      */
     item_count?: number;
 }
+/** Ordered key set of {@link Library} (S-contracts-02 / -002). */
+export declare const LIBRARY_KEYS: readonly ["id", "name", "type", "item_count"];
 /**
  * Envelope for the library LIST endpoint `GET /api/v1/libraries`.
  *
@@ -261,6 +470,8 @@ export interface Library {
 export interface LibrariesResponse {
     libraries: Library[];
 }
+/** Ordered key set of {@link LibrariesResponse} (S-contracts-02 / -002). */
+export declare const LIBRARIES_RESPONSE_KEYS: readonly ["libraries"];
 /**
  * Envelope for the single-library detail endpoint
  * `GET /api/v1/libraries/{id}`.
@@ -272,6 +483,8 @@ export interface LibrariesResponse {
 export interface LibraryResponse {
     library: Library;
 }
+/** Ordered key set of {@link LibraryResponse} (S-contracts-02 / -002). */
+export declare const LIBRARY_RESPONSE_KEYS: readonly ["library"];
 /**
  * Base media list envelope. The server has TWO list surfaces with different
  * shapes:
@@ -290,6 +503,12 @@ export interface MediaItemsResponse {
     offset?: number;
 }
 /**
+ * Ordered key set of {@link MediaItemsResponse} — and of
+ * {@link PagedMediaItemsResponse}, which narrows the same four keys.
+ * (S-contracts-02 / -002.)
+ */
+export declare const MEDIA_ITEMS_RESPONSE_KEYS: readonly ["items", "total", "limit", "offset"];
+/**
  * The paged grid response from `GET /api/v1/media` (`WebPortalRouter::getMedia()`),
  * which ALWAYS includes `total`/`limit`/`offset` (unlike the bare
  * `getLibraryItems` `{ items, limit, offset }` surface, which omits `total`).
@@ -303,6 +522,8 @@ export interface PagedMediaItemsResponse extends MediaItemsResponse {
 export interface MediaItemResponse {
     item: MediaItem;
 }
+/** Ordered key set of {@link MediaItemResponse} (S-contracts-02 / -002). */
+export declare const MEDIA_ITEM_RESPONSE_KEYS: readonly ["item"];
 /** A `series` top-level item. */
 export interface Series extends MediaItem {
     type: 'series';
@@ -356,3 +577,36 @@ export interface OtherMediaItem extends MediaItem {
  * discriminants you support and fall through for the rest.
  */
 export type AnyMediaItem = Movie | Series | Season | Episode | OtherMediaItem;
+export type MediaItemSummaryKeysTied = WireKeysExact<MediaItemSummary, typeof MEDIA_ITEM_SUMMARY_KEYS>;
+export type MediaItemKeysTied = WireKeysExact<MediaItem, typeof MEDIA_ITEM_KEYS>;
+export type MediaItemDetailKeysTied = WireKeysExact<MediaItemDetail, typeof MEDIA_ITEM_KEYS>;
+export type MediaItemUserDataKeysTied = WireKeysExact<MediaItemUserData, typeof MEDIA_ITEM_USER_DATA_KEYS>;
+export type MediaPersonKeysTied = WireKeysExact<MediaPerson, typeof MEDIA_PERSON_KEYS>;
+export type ProductionCompanyKeysTied = WireKeysExact<ProductionCompany, typeof PRODUCTION_COMPANY_KEYS>;
+export type MediaStreamKeysTied = WireKeysExact<MediaStream, typeof MEDIA_STREAM_KEYS>;
+export type MediaFileEntryKeysTied = WireKeysExact<MediaFileEntry, typeof MEDIA_FILE_ENTRY_KEYS>;
+export type UserDataKeysTied = WireKeysExact<UserData, typeof USER_DATA_KEYS>;
+export type LibraryKeysTied = WireKeysExact<Library, typeof LIBRARY_KEYS>;
+export type LibrariesResponseKeysTied = WireKeysExact<LibrariesResponse, typeof LIBRARIES_RESPONSE_KEYS>;
+export type LibraryResponseKeysTied = WireKeysExact<LibraryResponse, typeof LIBRARY_RESPONSE_KEYS>;
+export type MediaItemsResponseKeysTied = WireKeysExact<MediaItemsResponse, typeof MEDIA_ITEMS_RESPONSE_KEYS>;
+export type PagedMediaItemsResponseKeysTied = WireKeysExact<PagedMediaItemsResponse, typeof MEDIA_ITEMS_RESPONSE_KEYS>;
+export type MediaItemResponseKeysTied = WireKeysExact<MediaItemResponse, typeof MEDIA_ITEM_RESPONSE_KEYS>;
+/** Every media-family tie, aggregated for the runtime legs of the gate. */
+export declare const MEDIA_KEY_TIES: {
+    readonly summary: true;
+    readonly item: true;
+    readonly detail: true;
+    readonly userData: true;
+    readonly person: true;
+    readonly productionCompany: true;
+    readonly stream: true;
+    readonly fileEntry: true;
+    readonly resume: true;
+    readonly library: true;
+    readonly librariesResponse: true;
+    readonly libraryResponse: true;
+    readonly mediaItemsResponse: true;
+    readonly pagedMediaItemsResponse: true;
+    readonly mediaItemResponse: true;
+};

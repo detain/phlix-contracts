@@ -6,11 +6,14 @@
  * ServerInfoDto, ClaimRequest, ClaimResponse}`.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
+import type { WireKeysExact } from './internal/wireKeys.js';
 /** A library entry inside a heartbeat (snake_case, per the PHP payload). */
 export interface HeartbeatLibrary {
     library_id: string;
     library_name: string;
 }
+/** Ordered key set of {@link HeartbeatLibrary} (S-contracts-02 / -002). */
+export declare const HEARTBEAT_LIBRARY_KEYS: readonly ["library_id", "library_name"];
 /**
  * Server → Hub heartbeat, sent every ~60s once enrolled.
  * Mirrors `HeartbeatDto::toPayload()`.
@@ -33,6 +36,11 @@ export interface HeartbeatDto {
     /** Libraries on this server. */
     libraries: HeartbeatLibrary[];
 }
+/**
+ * Ordered key set of {@link HeartbeatDto} (S-contracts-02 / -002) — camelCase
+ * per `HeartbeatDto::toPayload()` (mirrored from `phlix-shared`).
+ */
+export declare const HEARTBEAT_DTO_KEYS: readonly ["serverId", "version", "timestamp", "uptimeSeconds", "activeSessions", "activeTranscodes", "hostnameCandidates", "libraries"];
 /** Lifecycle status of an enrolled server (mirror `ServerInfoDto::STATUS_*`). */
 export declare const SERVER_STATUS: {
     readonly ONLINE: "online";
@@ -65,6 +73,8 @@ export interface ServerInfoDto {
     /** Number of libraries last reported via heartbeat; null when none yet. */
     libraryCount: number | null;
 }
+/** Ordered key set of {@link ServerInfoDto} (S-contracts-02 / -002). */
+export declare const SERVER_INFO_DTO_KEYS: readonly ["serverId", "userId", "serverName", "version", "lastSeenAt", "status", "hostnameCandidates", "relayActive", "libraryCount"];
 /**
  * Server → Hub claim-flow start payload. Mirrors `ClaimRequest::toPayload()`.
  */
@@ -80,6 +90,8 @@ export interface ClaimRequest {
     /** Spec version — starts at "v1". */
     protocolVersion: string;
 }
+/** Ordered key set of {@link ClaimRequest} (S-contracts-02 / -002). */
+export declare const CLAIM_REQUEST_KEYS: readonly ["serverName", "version", "publicKeysJwk", "hostnameCandidates", "protocolVersion"];
 /**
  * Hub → Server response to a {@link ClaimRequest}. Mirrors
  * `ClaimResponse::toPayload()`.
@@ -94,3 +106,18 @@ export interface ClaimResponse {
     /** Where the server should send heartbeats once enrolled. */
     hubBaseUrl: string;
 }
+/** Ordered key set of {@link ClaimResponse} (S-contracts-02 / -002). */
+export declare const CLAIM_RESPONSE_KEYS: readonly ["claimCode", "expiresIn", "claimId", "hubBaseUrl"];
+export type HeartbeatLibraryKeysTied = WireKeysExact<HeartbeatLibrary, typeof HEARTBEAT_LIBRARY_KEYS>;
+export type HeartbeatDtoKeysTied = WireKeysExact<HeartbeatDto, typeof HEARTBEAT_DTO_KEYS>;
+export type ServerInfoDtoKeysTied = WireKeysExact<ServerInfoDto, typeof SERVER_INFO_DTO_KEYS>;
+export type ClaimRequestKeysTied = WireKeysExact<ClaimRequest, typeof CLAIM_REQUEST_KEYS>;
+export type ClaimResponseKeysTied = WireKeysExact<ClaimResponse, typeof CLAIM_RESPONSE_KEYS>;
+/** Every hub-DTO tie, aggregated for the runtime legs of the gate. */
+export declare const HUB_KEY_TIES: {
+    readonly heartbeatLibrary: true;
+    readonly heartbeat: true;
+    readonly serverInfo: true;
+    readonly claimRequest: true;
+    readonly claimResponse: true;
+};

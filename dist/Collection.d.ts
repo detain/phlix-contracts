@@ -5,6 +5,7 @@
  * (wire DTOs), and all client repos. Mirrors the collection API responses.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
+import type { WireKeysExact } from './internal/wireKeys.js';
 /**
  * A collection box-set containing multiple items (e.g., a movie franchise).
  */
@@ -28,3 +29,14 @@ export interface CollectionMember {
     /** Display order within the collection. */
     order: number;
 }
+/** Ordered key set of {@link CollectionBoxSet} (S-contracts-02 / -002). */
+export declare const COLLECTION_BOX_SET_KEYS: readonly ["id", "name", "overview", "posterUrl", "backdropUrl", "items"];
+/** Ordered key set of {@link CollectionMember} (S-contracts-02 / -002). */
+export declare const COLLECTION_MEMBER_KEYS: readonly ["id", "title", "posterUrl", "year", "mediaType", "order"];
+export type CollectionBoxSetKeysTied = WireKeysExact<CollectionBoxSet, typeof COLLECTION_BOX_SET_KEYS>;
+export type CollectionMemberKeysTied = WireKeysExact<CollectionMember, typeof COLLECTION_MEMBER_KEYS>;
+/** Every collection tie, aggregated for the runtime legs of the gate. */
+export declare const COLLECTION_KEY_TIES: {
+    readonly boxSet: true;
+    readonly member: true;
+};

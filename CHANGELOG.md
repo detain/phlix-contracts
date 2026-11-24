@@ -36,6 +36,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   maps move; the frozen trio (`error-codes.json` `5d1783a7…`, route manifest
   `c2111cd3…`, `mcp-scopes.json` `8c92c070…`) is byte-ident.
 
+- Media-family wire-parity gate + `MediaItem` scope split — S-contracts-02 /
+  phlix-contracts-002 [High], phlix-contracts-010 [Medium].
+  `test/mediaShapeParity.test.ts` is the media family's first parity gate: unlike
+  the fixture-photograph gates (playback/syncplay/track), it is a LIVE SOURCE
+  oracle — it reads the server's `MediaItemShaper.php` and both controller hosts
+  at run time (`PHLIX_CONTRACTS_SRV_REPO`, default `../phlix-server`) and pins
+  shape()'s 27-key return array and shapeDetail()'s addition order
+  key-for-key, line-anchor-for-line-anchor (±5 drift window), so a server-side
+  rename/insert/reorder reddens the suite (measured at phlix-server
+  `262f01d3…`; the private sibling is invisible to public CI, where the source
+  legs report SKIPPED by name — never silently green — while the TS-side legs
+  run everywhere). The scope split answers -010: `MediaItemSummary` mirrors the
+  list shape as 27 REQUIRED members (the server always emits all of them),
+  `MediaItemDetail extends MediaItemSummary` adds the 13 enrichment keys
+  (`streams, cast, crew, tags, production_companies, studio,
+  backdrop_url_large, theme_audio_url, trailer_url, trailer_key, trailer_site,
+  logo_url, external_ids`) plus the admin-gated `files: MediaFileEntry[]`, the
+  signed-URL `stream_url` and per-request `user_data` legs as typed optionals.
+  The flat `MediaItem` was NOT narrowed or renamed — it gains the ten
+  under-declared members (`library_id, backdrop_url, backdrop_srcset, air_date,
+  artist, album` list-side; `tags, external_ids, theme_audio_url,
+  backdrop_url_large` detail-side; + `files`) as optionals, a purely ADDITIVE
+  change: existing consumers compile unchanged; any future rename/removal of a
+  member would be a compile break for the four pinned clients, so per the
+  union-growth law in `src/errors.ts` the next tag carrying a member-shape
+  narrowing must be recorded as a major. Ordered key-list consts +
+  `WireKeysExact` ties + `*_KEY_TIES` rosters now cover the whole un-gated
+  family (the nine types -002 named): media.ts (15 ties), hub.ts (5),
+  Chapter.ts (7), Marker.ts (3, incl. the `MARKER_TYPES`-derived `MarkerType`
+  vocabulary — type-identical to the old literal union), Collection.ts (2),
+  Recommendation.ts (2), SimilarItem.ts (1); `test/wireKeys.test.ts`'s
+  consumer roster grew 3 to 10 accordingly (it is scan-equality-pinned, so the
+  growth is mandatory, not cosmetic). Regenerated `dist/`: the ten touched
+  files' `.d.ts`/`.js` mirrors and both bundles + maps move; the frozen trio
+  (`error-codes.json` `5d1783a7…`, `server-route-manifest.json` `626e475b…`,
+  `mcp-scopes.json` `8c92c070…`) is byte-ident.
+
 ### Changed
 
 - Package-internal type strictness raised — S-contracts-05 /

@@ -6,6 +6,8 @@
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
 
+import type { WireKeysExact } from './internal/wireKeys.js';
+
 /**
  * A media item similar to another, returned by the similar-items engine.
  *
@@ -22,3 +24,27 @@ export interface SimilarItem {
   /** Why this item was selected as similar. */
   reason: 'genre' | 'actor' | 'director' | 'rating' | 'year';
 }
+
+/** Ordered key set of {@link SimilarItem} (S-contracts-02 / -002). */
+export const SIMILAR_ITEM_KEYS = [
+  'id',
+  'title',
+  'posterUrl',
+  'year',
+  'score',
+  'reason',
+] as const;
+
+// ---------------------------------------------------------------------------
+// Compile-time ties (S-contracts-02 / -002). See `src/media.ts` for the law;
+// these pin each wire interface to its ordered key-list const.
+// ---------------------------------------------------------------------------
+
+export type SimilarItemKeysTied = WireKeysExact<SimilarItem, typeof SIMILAR_ITEM_KEYS>;
+
+const _similarItemKeysTied: SimilarItemKeysTied = true;
+
+/** Every similar-item tie, aggregated for the runtime legs of the gate. */
+export const SIMILAR_ITEM_KEY_TIES = {
+  item: _similarItemKeysTied,
+} as const;

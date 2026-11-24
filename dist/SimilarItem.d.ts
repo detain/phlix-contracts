@@ -5,6 +5,7 @@
  * (wire DTOs), and all client repos. Mirrors the similar-items API responses.
  * @copyright 2026 Joe Huss <detain@interserver.net>
  */
+import type { WireKeysExact } from './internal/wireKeys.js';
 /**
  * A media item similar to another, returned by the similar-items engine.
  *
@@ -21,3 +22,10 @@ export interface SimilarItem {
     /** Why this item was selected as similar. */
     reason: 'genre' | 'actor' | 'director' | 'rating' | 'year';
 }
+/** Ordered key set of {@link SimilarItem} (S-contracts-02 / -002). */
+export declare const SIMILAR_ITEM_KEYS: readonly ["id", "title", "posterUrl", "year", "score", "reason"];
+export type SimilarItemKeysTied = WireKeysExact<SimilarItem, typeof SIMILAR_ITEM_KEYS>;
+/** Every similar-item tie, aggregated for the runtime legs of the gate. */
+export declare const SIMILAR_ITEM_KEY_TIES: {
+    readonly item: true;
+};

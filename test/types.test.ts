@@ -5,9 +5,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { MEDIA_ITEM_KEYS, MEDIA_ITEM_SUMMARY_KEYS } from '../src/media';
 import type {
   ContentRating,
   MediaItem,
+  MediaItemDetail,
+  MediaItemSummary,
   MediaItemUserData,
   MediaItemsResponse,
   PagedMediaItemsResponse,
@@ -441,5 +444,119 @@ describe('type-level construction smoke', () => {
     expect(Object.keys(absent)).toHaveLength(0);
     expect(undefSearch.search).toBeUndefined();
     expect(undefFlag['hwaccel.enabled']).toBeUndefined();
+  });
+});
+
+describe('S-contracts-02 scope split — MediaItemSummary / MediaItemDetail compile smoke', () => {
+  // The server's list shape (MediaItemShaper::shape()) emits all 27 keys on
+  // EVERY row; the mirror type therefore makes them REQUIRED (null-carrying,
+  // never absent). The detail shape layers the enrichment on top. The flat
+  // MediaItem stays the all-optional back-compat union — consumers pinning it
+  // compile unchanged (additive-only law; see the CHANGELOG entry).
+  const summaryRow: MediaItemSummary = {
+    id: 'm1',
+    name: 'Dune',
+    sort_title: 'Dune',
+    type: 'movie',
+    path: 'dune.mkv',
+    library_id: 'lib1',
+    poster_url: null,
+    poster_srcset: null,
+    backdrop_url: null,
+    backdrop_srcset: null,
+    genres: ['sci-fi'],
+    year: 2021,
+    rating: 'PG-13',
+    runtime: 155,
+    duration: 9300,
+    overview: '…',
+    actors: ['T. Chalamet'],
+    director: 'D. Villeneuve',
+    parent_id: null,
+    season_number: null,
+    episode_number: null,
+    episode_title: null,
+    air_date: null,
+    artist: null,
+    album: null,
+    created_at: '2026-01-01 00:00:00',
+    updated_at: '2026-01-02 00:00:00',
+  };
+
+  it('mirrors the 27-key list shape as required members', () => {
+    expect(Object.keys(summaryRow)).toHaveLength(MEDIA_ITEM_SUMMARY_KEYS.length);
+    // @ts-expect-error — a list row is NOT allowed to advertise the detail-only `cast`
+    const detailLeak: MediaItemSummary = { ...summaryRow, cast: [] };
+    // @ts-expect-error — nor the detail-only `external_ids`
+    const externalLeak: MediaItemSummary = { ...summaryRow, external_ids: {} };
+    // @ts-expect-error — required members cannot be elided with undefined (exactOptional)
+    const missingAirDate: MediaItemSummary = { ...summaryRow, air_date: undefined };
+    expect(detailLeak.name).toBe('Dune');
+    expect(externalLeak.id).toBe('m1');
+    expect(missingAirDate.name).toBe('Dune');
+  });
+
+  it('mirrors the detail scope: summary ∪ 13 enrichment keys, controller legs optional', () => {
+    const detailRow: MediaItemDetail = {
+      ...summaryRow,
+      streams: [],
+      cast: [],
+      crew: [],
+      tags: [],
+      production_companies: [],
+      studio: null,
+      backdrop_url_large: null,
+      theme_audio_url: null,
+      trailer_url: null,
+      trailer_key: null,
+      trailer_site: null,
+      logo_url: null,
+      external_ids: { tmdb: '1' },
+    };
+    expect(detailRow.external_ids['tmdb']).toBe('1');
+    // stream_url / user_data / files are per-endpoint arms — absent is legal…
+    const noArms: MediaItemDetail = { ...detailRow };
+    expect(noArms.files).toBeUndefined();
+    // …and present is typed.
+    const withArms: MediaItemDetail = {
+      ...detailRow,
+      stream_url: '/x?sig',
+      user_data: { favorite: false, rating: null, watched: true },
+      files: [{ path: '/m/dune.mkv', size_bytes: 1, container: null, codec: null, resolution: null }],
+    };
+    expect(withArms.user_data?.watched).toBe(true);
+  });
+
+  it('keeps the flat MediaItem back-compat: partial rows and full 43-key rows both compile', () => {
+    const minimal: MediaItem = { id: 'm1', name: 'x', type: 'movie' };
+    expect(minimal.id).toBe('m1');
+    const full: MediaItem = {
+      ...summaryRow,
+      streams: [],
+      cast: [],
+      crew: [],
+      tags: [],
+      production_companies: [],
+      studio: null,
+      backdrop_url_large: null,
+      theme_audio_url: null,
+      trailer_url: null,
+      trailer_key: null,
+      trailer_site: null,
+      logo_url: null,
+      external_ids: {},
+      stream_url: '/m/m1/stream?exp=1&sig=2',
+      user_data: null,
+      files: [],
+      // `path` overrides the summary spread: the flat legacy member predates
+      // the wire truth that the shaper can null it (additive-only law keeps
+      // the old `path?: string` arm — this is a TEST literal, not the type).
+      path: 'dune.mkv',
+    };
+    expect(Object.keys(full)).toHaveLength(MEDIA_ITEM_KEYS.length);
+    // Summary rows still satisfy the flat interface (every member optional) —
+    // the scope split is additive, not a narrowing of the old type.
+    const flatFromSummary: MediaItem = { ...summaryRow, path: 'dune.mkv' };
+    expect(flatFromSummary.library_id).toBe('lib1');
   });
 });

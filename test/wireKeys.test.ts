@@ -73,7 +73,23 @@ function consumerFiles(texts: Map<string, string>): string[] {
 /** The complete src consumer roster — equality-pinned against the scan
  *  below, so a new tie without a roster entry and a silently dropped tie
  *  both redden this suite. */
-const SRC_CONSUMERS = ['src/playback.ts', 'src/SyncPlay.ts', 'src/StreamSession.ts'];
+/** The complete src consumer roster — equality-pinned against the scan
+ *  below, so a new tie without a roster entry and a silently dropped tie
+ *  both redden this suite. Grown by S-contracts-02 (media wire-parity gate):
+ *  the media family and its five satellite shape files joined as tie
+ *  consumers; still scan-checked, so drift reddens — never silently passes. */
+const SRC_CONSUMERS = [
+  'src/playback.ts',
+  'src/SyncPlay.ts',
+  'src/StreamSession.ts',
+  'src/media.ts',
+  'src/hub.ts',
+  'src/Chapter.ts',
+  'src/Marker.ts',
+  'src/Collection.ts',
+  'src/Recommendation.ts',
+  'src/SimilarItem.ts',
+];
 /** The committed dist mirror of every rostered consumer. */
 const DIST_CONSUMERS = SRC_CONSUMERS.map((f) => f.replace(/^src\//, 'dist/').replace(/\.ts$/, '.d.ts'));
 
