@@ -39,7 +39,7 @@ for the newest one):
 // package.json
 {
   "dependencies": {
-    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.8"
+    "@phlix/contracts": "github:detain/phlix-contracts#v0.5.9"
   }
 }
 ```

@@ -18,6 +18,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.9] - 2026-11-25
+
+Release cut (S-contracts-10) over the v0.5.8 base: absorbs the full untagged
+`dist/` delta — 23 files, +1028/−343 vs `v0.5.8`, spanning the 30 content
+commits since that cut (the stage-1 program wave S-contracts-01..-09 and
+-11..-18 plus -25/-26, the ROK-S23 `MediaItemUserData` child-list fields, the
+eslint-10/vite-8 dev-dependency refresh, and the errors.ts
+coordinate-currency re-anchor waves).
+
+- **Consumer notes at re-pin**: the shipped `dist/*.d.ts` tree now carries
+  NodeNext-safe `./x.js` specifiers (S-contracts-01); `SERVER_ROUTE_MANIFEST`
+  is the literal `[HttpMethod, string]` tuple table again, with the widened
+  readonly-array view shipping as the separate `ServerRouteManifest` alias
+  (S-contracts-04); `MediaItem` gained additive optional members and
+  `MediaItemSummary`/`MediaItemDetail` joined the surface (S-contracts-02);
+  `isErrorCode` ships as a runtime boundary guard (S-contracts-03);
+  `SyncPlayGroup.playback_state` is vocabulary-bound with a deliberate string
+  fallback (S-contracts-13). The `ErrorCode` union did NOT grow (no TS2741
+  cohort); no new wire codes.
+- Registry trio at the cut: `dist/error-codes.json` 5d1783a7 (205 codes, held),
+  `dist/mcp-scopes.json` 8c92c070 (held), `dist/server-route-manifest.json`
+  c2111cd3 -> 626e475b (418 tuples @ server 262f01d3 — regen #39 rotates the
+  provenance stamp only; the tuple set is unchanged).
+- Whole-dist aggregate md5 (`find dist -type f | sort | xargs md5sum | md5sum`):
+  0ed5804a (v0.5.8) -> 56fda474.
+- Gates at cut: eslint/tsc/nodecheck 0; vitest serial 20 files / 302 tests,
+  100% statements/branches/functions/lines; build deterministic — committed
+  `dist/` byte-fresh before and after this release commit (diff + porcelain
+  gate green). Consumers re-pin at `#v0.5.9`; hub/ui/tizen/windows manifest and
+  era-pin rotation legs ride their own plan steps.
+
 ### Added
 
 - `WEBHOOK_EVENT` gained the three account-lifecycle members `USER_LOGIN`
