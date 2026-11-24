@@ -11,8 +11,8 @@
  *
  * `test/routeManifest.test.ts` asserts the working-copy JSON matches the TS
  * manifest — which reddens a forgotten regen whenever the suite runs before a
- * rebuild — and CI adds the committed-freshness gate: `git diff --exit-code --
- * dist/server-route-manifest.json` right after `npm run build`, so a stale
+ * rebuild — and CI adds the committed-freshness gate: the whole-tree `git diff
+ * --exit-code -- dist/` right after `npm run build`, so a stale
  * COMMITTED artifact is a RED even though the build healed the working copy.
  * Same pattern as `emit-error-codes.mjs`.
  *

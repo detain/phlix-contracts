@@ -27,9 +27,11 @@ alwaysApply: false
   tests. `npm run build` re-runs `tsc --noEmit` itself; keep the standalone
   `typecheck` step as the fast-fail.
 - `npm run build` also emits the vendored JSON artifacts
-  (`node scripts/emit-mcp-scopes.mjs`, `node scripts/emit-server-route-manifest.mjs`)
-  from the built bundle. `test/mcp.test.ts` and `test/routeManifest.test.ts`
-  red on a stale `dist/mcp-scopes.json` / `dist/server-route-manifest.json`, so
-  the build must run before the suite — keep it ahead of tests in CI.
+  (`node scripts/emit-error-codes.mjs`, `node scripts/emit-mcp-scopes.mjs`,
+  `node scripts/emit-server-route-manifest.mjs`) from the built bundle.
+  `test/errors.test.ts`, `test/mcp.test.ts` and `test/routeManifest.test.ts`
+  red on a stale `dist/error-codes.json` / `dist/mcp-scopes.json` /
+  `dist/server-route-manifest.json`, so the build must run before the suite —
+  keep it ahead of tests in CI.
 - Tests live in `test/*.test.ts` (e.g. `test/audio.test.ts`,
   `test/rating.test.ts`) and import from `../src/...`, never from `dist/`.

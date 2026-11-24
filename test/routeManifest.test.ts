@@ -20,8 +20,8 @@
  * silently agreed-upon change. The committed-artifact asserts below read the
  * WORKING-COPY bytes: locally that catches a hand-edit or a stale committed
  * JSON, but in CI `npm run build` heals the working copy first, so committed
- * freshness is enforced by the CI step `git diff --exit-code --
- * dist/server-route-manifest.json` (see the final describe for the full scope).
+ * freshness is enforced by the whole-tree CI step `git diff --exit-code --
+ * dist/` (see the final describe for the full scope).
  *
  * @copyright 2026 Joe Huss <detain@interserver.net>
  * @license MIT
@@ -234,8 +234,8 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
   // the committed file, so the agreement and byte-freeze asserts below redden
   // a forgotten regen; but in CI `npm run build` heals the working copy before
   // the suite runs, so a stale COMMITTED artifact cannot be caught HERE. The
-  // committed-freshness gate is the CI step `git diff --exit-code --
-  // dist/server-route-manifest.json` immediately after the build. What IS
+  // committed-freshness gate is the whole-tree CI step `git diff --exit-code
+  // -- dist/` immediately after the build. What IS
   // caught in both modes: the JSON disagreeing with the TS manifest —
   // tuple-for-tuple, order-for-order, provenance-for-provenance — because the
   // build derives the JSON FROM that manifest, so a divergence means the

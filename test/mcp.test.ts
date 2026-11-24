@@ -70,8 +70,8 @@ describe('the committed dist/mcp-scopes.json artifact', () => {
   // that IS the committed file, so a forgotten regen reddens here; but in CI
   // `npm run build` heals the working copy before the suite runs, so a stale
   // COMMITTED artifact cannot be caught HERE. The committed-freshness gate is
-  // the CI step `git diff --exit-code -- dist/mcp-scopes.json` immediately
-  // after the build — the same pattern as dist/error-codes.json (see the
+  // the whole-tree CI step `git diff --exit-code -- dist/` immediately after
+  // the build — one gate covering every emitted registry JSON (see the
   // describe comment in test/errors.test.ts for why the gate lives in CI
   // rather than as an in-test `git show HEAD:…` comparison).
   const artifact = JSON.parse(

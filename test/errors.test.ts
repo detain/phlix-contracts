@@ -638,8 +638,8 @@ describe('the committed dist/error-codes.json artifact', () => {
   // rebuild yet) that IS the committed file, so the byte-freeze below reddens a
   // forgotten regen; but in CI `npm run build` heals the working copy before
   // the suite runs, so a stale COMMITTED artifact cannot be caught HERE. The
-  // committed-freshness gate is the CI step `git diff --exit-code --
-  // dist/error-codes.json` immediately after the build. Chosen over an in-test
+  // committed-freshness gate is the whole-tree CI step `git diff --exit-code
+  // -- dist/` immediately after the build. Chosen over an in-test
   // `git show HEAD:…` comparison because the suite must stay runnable outside a
   // git worktree (packed/source-distributed runs) and must not race a
   // staged-but-uncommitted index, where HEAD is by definition older than the

@@ -38,6 +38,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Stale-gate prose pass (phlix-contracts-038 / S-contracts-18): the CI
+  freshness gate was folded from three per-JSON `git diff --exit-code --
+  dist/<file>.json` steps into the whole-tree `git diff --exit-code -- dist/`
+  (plus the porcelain assertion), but seven docstrings still cited the retired
+  per-file commands verbatim — `test/errors.test.ts`, `test/routeManifest.test.ts`
+  (header and the committed-artifact describe), `test/mcp.test.ts`, and the
+  three `scripts/emit-*.mjs` headers. All now name the whole-tree step (the
+  `src/errors.ts` idiom); the enforcement they describe was always true
+  (whole-tree subsumes per-file), so this is prose-currency only. The rules
+  files move with it: `wire-parity-gates.md` cites the actual 418 tuples (with
+  `provenance.total` named as the live authority) and its emitted-registries
+  law gains `dist/error-codes.json` / `scripts/emit-error-codes.mjs`;
+  `coverage-ci.md` likewise carries the error-codes emitter and its test.
+  Docstrings and rule prose only — zero source/behavior change, `dist/`
+  untouched (frozen trio byte-ident), suite green unchanged.
+
 - `SyncPlayGroup.playback_state` is no longer a bare `string` (phlix-contracts-024): it is now
   `SyncPlayPlaybackState = SyncPlayPlaybackStateName | (string & {})`, where
   `SyncPlayPlaybackStateName` spells out the four states the server's `GroupState::STATE_*`
