@@ -32,5 +32,11 @@ export { SERVER_ROUTE_MANIFEST, SERVER_ROUTE_MANIFEST_PROVENANCE, } from './rout
  * makes `GET /api/v1/media/{id}` unable to absorb
  * `GET /api/v1/media/{id}/not-a-route` (sibling-wildcard absorption: the
  * S276/S279/S280 defect family this package exists to prevent).
+ *
+ * A `method` the manifest never registers (an empty group, or a value
+ * outside `HttpMethod` arriving from an untyped caller) serves nothing and
+ * returns false — the same answer the pre-grouping-free scan gave; the
+ * exhaustive differential pin in `test/routeManifest.test.ts` is what keeps
+ * the grouping from ever changing that meaning.
  */
 export declare function isServedRoute(method: HttpMethod, concretePath: string): boolean;

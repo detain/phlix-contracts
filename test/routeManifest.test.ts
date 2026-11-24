@@ -314,6 +314,108 @@ describe('isServedRoute — tuple-exact, never substring, never sibling-wildcard
   });
 });
 
+describe('isServedRoute — method-keyed pre-grouping agrees with the full-table law (phlix-contracts-019)', () => {
+  // S-contracts-26 replaced the per-call `.some()` over all 418 tuples with
+  // a per-method pre-grouped lookup. That optimization is only lawful while
+  // it answers EVERY question exactly as the full-table scan did, so this
+  // describe carries its own oracle: the original law RESTATED FROM SCRATCH
+  // — a `.some()` over the manifest with an independently built anchored
+  // regex cache, sharing zero code with `src/routeManifest.ts`. The fast
+  // path can only stay green by agreeing with the slow law it replaced on
+  // every case; grouping that drops a tuple, miskeys a method, or widens a
+  // template to prefix/substring semantics (the S276/S279 defect family)
+  // diverges here, not in production.
+  const ORACLE_ANCHORED = new Map<string, RegExp>();
+  function oracleAnchored(pathTemplate: string): RegExp {
+    let anchored = ORACLE_ANCHORED.get(pathTemplate);
+    if (anchored === undefined) {
+      anchored = new RegExp(
+        `^${pathTemplate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\{[^}]*\\\}/g, '[^/]+')}$`,
+      );
+      ORACLE_ANCHORED.set(pathTemplate, anchored);
+    }
+    return anchored;
+  }
+  function oracleIsServed(method: HttpMethod, concretePath: string): boolean {
+    return SERVER_ROUTE_MANIFEST.some(
+      ([m, template]) => m === method && oracleAnchored(template).test(concretePath),
+    );
+  }
+
+  // The union restated independently of src: a method missing here loses its
+  // sweep rows, so this list is a pin on the union's current shape as much
+  // as a corpus builder (generated-file header owns the truth).
+  const ALL_METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
+
+  /**
+   * Adversarial variants of a registered template — the shapes the absorption
+   * defect family kept mis-serving. Expected values are never hardcoded:
+   * the oracle answers, the module must match, so the pin stays honest even
+   * where a variant genuinely IS served by some other tuple.
+   */
+  function variantsOf(template: string): string[] {
+    const segments = template.split('/');
+    const variants = [
+      `${template}/NOT-A-ROUTE`,
+      `${template}/deeper/still`,
+      `${template}/`,
+      `${template}//`,
+      `${segments.slice(0, -1).join('/')}/SIBLING`,
+    ];
+    if (segments.length > 2) {
+      variants.push(segments.slice(0, -1).join('/')); // strict prefix
+    }
+    return variants;
+  }
+
+  it('serves every registered tuple under its own method (grouping lost nothing)', () => {
+    // Absolute law pin, not a comparison: a dropped tuple makes its own
+    // (method, template) row false here while the positive sweep below would
+    // still agree (both sides wrong in the same direction is exactly what a
+    // differential alone cannot see — this row can).
+    for (const [method, template] of SERVER_ROUTE_MANIFEST) {
+      expect(isServedRoute(method, template), key(method, template)).toBe(true);
+    }
+  });
+
+  it('matches the full-table oracle on every registered path under every method', () => {
+    for (const [, template] of SERVER_ROUTE_MANIFEST) {
+      for (const method of ALL_METHODS) {
+        expect(isServedRoute(method, template)).toBe(oracleIsServed(method, template));
+      }
+    }
+  });
+
+  it('matches the oracle on adversarial variants of every template, under every method', () => {
+    for (const [, template] of SERVER_ROUTE_MANIFEST) {
+      for (const path of variantsOf(template)) {
+        for (const method of ALL_METHODS) {
+          expect(isServedRoute(method, path)).toBe(oracleIsServed(method, path));
+        }
+      }
+    }
+  });
+
+  it('matches the oracle on degenerate path probes', () => {
+    for (const method of ALL_METHODS) {
+      for (const path of ['', '/', '//', '/api', '/api/', 'api/v1', '/health/', '?x=1', '/health?a=1']) {
+        expect(isServedRoute(method, path)).toBe(oracleIsServed(method, path));
+      }
+    }
+  });
+
+  it('serves nothing under a method the manifest never registers (untyped-caller arm)', () => {
+    // A JS consumer can hand the predicate any string. The grouped lookup
+    // takes the undefined-group arm; the scan takes the never-equal arm;
+    // both must answer false for every registered path — no throw, no
+    // accidental match through a same-path group.
+    const unregistered = 'TRACE' as unknown as HttpMethod;
+    for (const [, template] of SERVER_ROUTE_MANIFEST) {
+      expect(isServedRoute(unregistered, template)).toBe(false);
+    }
+  });
+});
+
 describe('isServedRoute — packaged surface (exports hygiene, LW-070)', () => {
   // The whole point of hoisting the predicate is that clients IMPORT it:
   // roku/mobile/console/windows used to re-implement the matching regex per

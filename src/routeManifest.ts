@@ -49,15 +49,42 @@ function anchoredTemplate(pathTemplate: string): RegExp {
 }
 
 /**
+ * Method-keyed pre-grouping (phlix-contracts-019): a lookup scans ONE
+ * method's templates, never all 418 tuples. Eager at module scope — the
+ * manifest is immutable, so one O(418) pass per process replaces a 418-row
+ * scan per call, with no lazy-init state inside the predicate. Grouping
+ * narrows WHICH templates a lookup tests; HOW a template is tested stays
+ * entirely behind the `ANCHORED` memo above (regex build still happens at
+ * most once per template, per process).
+ */
+const ROUTES_BY_METHOD = new Map<HttpMethod, string[]>();
+for (const [method, template] of SERVER_ROUTE_MANIFEST) {
+  const group = ROUTES_BY_METHOD.get(method);
+  if (group === undefined) {
+    ROUTES_BY_METHOD.set(method, [template]);
+  } else {
+    group.push(template);
+  }
+}
+
+/**
  * The client-side matching law: `concretePath` is served by the manifest
  * under `method` ONLY by a tuple-exact match — anchored, `{param}` spans
  * exactly one path segment, never a substring, never a prefix. This is what
  * makes `GET /api/v1/media/{id}` unable to absorb
  * `GET /api/v1/media/{id}/not-a-route` (sibling-wildcard absorption: the
  * S276/S279/S280 defect family this package exists to prevent).
+ *
+ * A `method` the manifest never registers (an empty group, or a value
+ * outside `HttpMethod` arriving from an untyped caller) serves nothing and
+ * returns false — the same answer the pre-grouping-free scan gave; the
+ * exhaustive differential pin in `test/routeManifest.test.ts` is what keeps
+ * the grouping from ever changing that meaning.
  */
 export function isServedRoute(method: HttpMethod, concretePath: string): boolean {
-  return SERVER_ROUTE_MANIFEST.some(
-    ([m, template]) => m === method && anchoredTemplate(template).test(concretePath),
-  );
+  const templates = ROUTES_BY_METHOD.get(method);
+  if (templates === undefined) {
+    return false;
+  }
+  return templates.some((template) => anchoredTemplate(template).test(concretePath));
 }
