@@ -18,8 +18,10 @@ jobs:
   test:
     runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      # Full-SHA pins (supply-chain hygiene, matching the codacy step below):
+      # the trailing comment records the upstream tag each SHA decodes to.
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: '24'
           cache: npm
@@ -46,7 +48,13 @@ jobs:
       # whole-tree diff, which subsumes them and adds the unguarded
       # bundle/.d.ts/.map class.)
       - name: dist/ committed-freshness check
-        run: git diff --exit-code -- dist/
+        # `git diff` is blind to NEW untracked dist files (inherent git
+        # semantics), so a build that starts emitting an extra artifact would
+        # pass a bare diff. The porcelain assertion after it closes that class
+        # — same shape as the phlix-syncplay freshness gate.
+        run: |
+          git diff --exit-code -- dist/
+          test -z "$(git status --porcelain -- dist/)"
 
       - run: npm run test:run -- --coverage
 
