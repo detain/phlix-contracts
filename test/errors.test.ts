@@ -18,6 +18,7 @@ import {
   ERROR_CODE,
   ERROR_CODES,
   ERROR_DOMAINS,
+  isErrorCode,
   AUTH_ERROR_CODES,
   HUB_ERROR_CODES,
   CLAIM_ERROR_CODES,
@@ -164,6 +165,88 @@ describe('error-code registry invariants', () => {
         expect(code).toMatch(DOTTED_OR_SNAKE);
       }
     }
+  });
+
+});
+
+describe('isErrorCode runtime guard', () => {
+  // The `ErrorCode` union erases at runtime, so every boundary that receives a
+  // wire string (a fetch `catch`, a SyncPlay frame's `error_code`/`code`, a
+  // webhook payload) must narrow through THIS predicate instead of a private
+  // copy — verified drift: phlix-ui re-implements `REGISTERED_ERROR_CODES` +
+  // `isRegisteredErrorCode()` at src/i18n/errors.ts and gates against it.
+
+  it('accepts every registered wire string (total sweep over the registry)', () => {
+    // Anti-vacuity: the sweep below has members, so an empty ERROR_CODES
+    // cannot make a stubbed-out `() => true` guard look correct.
+    expect(ERROR_CODES.length).toBe(205);
+    for (const code of ERROR_CODES) {
+      expect(isErrorCode(code)).toBe(true);
+    }
+  });
+
+  it('rejects unknown strings and every near-miss of a real code', () => {
+    const first = ERROR_CODES[0];
+    const last = ERROR_CODES[ERROR_CODES.length - 1];
+    for (const value of [
+      '',
+      'nope',
+      'auth', // domain name, not a code
+      'auth.not_a_real_code',
+      'AUTH_FAILED', // SCREAMING shape, but not a legacy member (pinned set above)
+      'syncplay.create_failed ',
+      ' syncplay.create_failed',
+      first + ' ',
+      ' ' + first,
+      first.slice(0, -1),
+      first + '_x',
+      last.slice(1),
+      'x' + last,
+    ]) {
+      expect(isErrorCode(value)).toBe(false);
+    }
+  });
+
+  it('rejects every non-string value a wire field can carry', () => {
+    for (const value of [
+      undefined,
+      null,
+      0,
+      1,
+      NaN,
+      true,
+      false,
+      {},
+      [],
+      ['auth.required'],
+      () => 'auth.required',
+      Symbol('auth.required'),
+      new String('auth.required'), // boxed primitive: typeof is 'object'
+    ]) {
+      expect(isErrorCode(value)).toBe(false);
+    }
+  });
+
+  it('answers false for prototype members, not the inherited function', () => {
+    // The `constructor` class (mirrors LW-028's probe): a naive
+    // `value in ERROR_CODE_MAP` / truthiness gate returns the FUNCTION for
+    // these, which a caller then renders or calls. A Set has no proto keys.
+    for (const value of ['constructor', '__proto__', 'toString', 'hasOwnProperty', 'valueOf']) {
+      expect(isErrorCode(value)).toBe(false);
+    }
+  });
+
+  it('agrees with the committed dist/error-codes.json vocabulary', () => {
+    // The PHP side gates against the artifact; the JS side gates through this
+    // guard. Divergence between the two is the drift this step exists to kill.
+    const artifact = JSON.parse(
+      readFileSync(resolve(__dirname, '..', 'dist', 'error-codes.json'), 'utf8'),
+    ) as { codes: string[] };
+    expect(artifact.codes.length).toBe(ERROR_CODES.length);
+    for (const code of artifact.codes) {
+      expect(isErrorCode(code)).toBe(true);
+    }
+    expect(isErrorCode('auth.definitely_not_in_the_artifact')).toBe(false);
   });
 
 });

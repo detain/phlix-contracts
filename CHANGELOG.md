@@ -30,6 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Runtime `isErrorCode(value: unknown): value is ErrorCode` predicate exported from
+  `src/errors.ts` (phlix-contracts-004): the `ErrorCode` union erases at runtime, so every
+  wire boundary (fetch `catch`, SyncPlay frame `error_code`/`code`, webhook payload) needs a
+  membership oracle, and consumers had begun hand-rolling drifting copies (verified: phlix-ui
+  `src/i18n/errors.ts` re-implements `REGISTERED_ERROR_CODES` + `isRegisteredErrorCode()`).
+  Membership derives from `ERROR_CODES` itself, so the guard can never disagree with the
+  emitted `dist/error-codes.json`. Additive type-level change — the registry content is
+  untouched, so the frozen artifact md5 (`5d1783a7…`, 205 codes) holds; only the bundle and
+  `errors.d.ts` bytes move, absorbed by the next tag cut. ui adoption is a separate
+  follow-on lane once that tag ships.
 - `MediaItemUserData` gains optional `watched`, `position_ticks`, `duration_ticks`,
   `progress_percent` for the add-only per-row `user_data` block on
   `GET /api/v1/media?parentId=` child lists (ROK-S23 / ROK-24; server 553e56f).

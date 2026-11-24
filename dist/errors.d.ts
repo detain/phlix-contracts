@@ -2343,6 +2343,19 @@ export declare const SYNCPLAY_TWIN_ERROR_CODES: readonly SyncPlayTwinErrorCode[]
 export declare const LEGACY_SYNCPLAY_ERROR_CODES: readonly LegacySyncPlayErrorCode[];
 /** Every wire string, in registry declaration order. */
 export declare const ERROR_CODES: readonly ErrorCode[];
+/**
+ * Runtime boundary parse: narrow an unknown value (a fetched `catch`, a WS
+ * frame's `error_code`/`code` field, a webhook payload) to the registry
+ * domain. This is THE membership oracle for the wire vocabulary — the type
+ * union erases at runtime, so every consumer that must branch on "is this a
+ * registered code" needs this predicate, not a hand-rolled copy. Previously
+ * each consumer re-derived its own `Set` (verified: phlix-ui re-implements
+ * `REGISTERED_ERROR_CODES` + `isRegisteredErrorCode()` privately at
+ * src/i18n/errors.ts) and could silently drift from the registry; ui adopts
+ * this export at the next contracts tag. Matches against `ERROR_CODES`
+ * itself, so it can never disagree with the emitted `dist/error-codes.json`.
+ */
+export declare const isErrorCode: (value: unknown) => value is ErrorCode;
 /** Per-domain code unions. */
 export type AuthErrorCode = ErrorCodeIn<'auth'>;
 export type HubErrorCode = ErrorCodeIn<'hub'>;
