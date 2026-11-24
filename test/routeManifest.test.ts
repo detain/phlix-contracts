@@ -453,3 +453,50 @@ describe('the committed dist/server-route-manifest.json artifact', () => {
     },
   );
 });
+
+describe('the dist/server-route-manifest.json export subpath (real-loader probe)', () => {
+  // phlix-contracts-030: LW-070 taught Node to resolve the `./routeManifest`
+  // predicate by package name, but the JSON subpath this file's clients
+  // vendor (phlix-roku-client et al.) was declared in package.json without an
+  // equivalent probe — a renamed or removed `./dist/server-route-manifest.json`
+  // export key would have passed CI while breaking every consumer import.
+  // Same two-law shape as the LW-070 describe above: declared + committed,
+  // then resolved by package name through Node's OWN loader (not vitest's src
+  // aliasing), with law cases — one served tuple, one permanently-unserved
+  // tuple — riding along so a stub cannot ship green.
+  const exportKey = './dist/server-route-manifest.json';
+
+  it(`publishes a ${exportKey} export whose file is committed`, () => {
+    const pkg = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf8')) as {
+      exports: Record<string, unknown>;
+    };
+    const entry = pkg.exports[exportKey];
+    expect(entry, `package.json exports is missing the ${exportKey} subpath`).toBeDefined();
+    expect(entry).toBe(exportKey);
+    expect(existsSync(resolve(__dirname, '..', String(entry))), `${String(entry)} is not committed`).toBe(true);
+  });
+
+  it('resolves by package name through the real Node loader (ESM and CJS)', () => {
+    const cases =
+      '[Array.isArray(m.routes), m.routes.length >= 300, ' +
+      'm.routes.some(r => r[0] === "GET" && r[1] === "/api/v1/syncplay/groups"), ' +
+      'm.routes.some(r => r[0] === "GET" && r[1] === "/api/v1/syncplay/rooms")].join(",")';
+    const opts = { cwd: resolve(__dirname, '..'), encoding: 'utf8' } as const;
+    const esm = execFileSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `const m = (await import("@phlix/contracts/dist/server-route-manifest.json", { with: { type: "json" } })).default; console.log(${cases});`,
+      ],
+      opts,
+    ).trim();
+    expect(esm).toBe('true,true,true,false');
+    const cjs = execFileSync(
+      process.execPath,
+      ['-e', `const m = require("@phlix/contracts/dist/server-route-manifest.json"); console.log(${cases});`],
+      opts,
+    ).trim();
+    expect(cjs).toBe('true,true,true,false');
+  });
+});

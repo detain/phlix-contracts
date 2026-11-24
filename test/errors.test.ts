@@ -11,8 +11,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import {
   ERROR_CODE,
@@ -683,5 +684,52 @@ describe('the committed dist/error-codes.json artifact', () => {
     // emitter reproduces faithfully still changes the md5 consumers key on.
     const md5 = createHash('md5').update(readFileSync(resolve(__dirname, '..', 'dist', 'error-codes.json'))).digest('hex');
     expect(md5).toBe('5d1783a71a3c4e128b2021327cad3717');
+  });
+});
+
+describe('the dist/error-codes.json export subpath (real-loader probe)', () => {
+  // phlix-contracts-030: the `./dist/error-codes.json` export key is declared
+  // in package.json but was never resolved through Node's loader — this suite
+  // read the file by relative path, so a renamed or removed key would pass CI
+  // while breaking a consumer writing
+  // `import ... from '@phlix/contracts/dist/error-codes.json'`. Mirrors the
+  // LW-070 packaged-surface pattern in routeManifest.test.ts: the subpath
+  // must be declared, its file committed, and Node's OWN loader (not
+  // vitest's src aliasing) must resolve it by package name. Law cases ride
+  // along with the resolution probe: existence without semantics would let
+  // a stub ship green.
+  it('publishes a ./dist/error-codes.json export whose file is committed', () => {
+    const pkg = JSON.parse(readFileSync(resolve(__dirname, '..', 'package.json'), 'utf8')) as {
+      exports: Record<string, unknown>;
+    };
+    const entry = pkg.exports['./dist/error-codes.json'];
+    expect(entry, 'package.json exports is missing the ./dist/error-codes.json subpath').toBeDefined();
+    expect(entry).toBe('./dist/error-codes.json');
+    expect(existsSync(resolve(__dirname, '..', String(entry))), `${String(entry)} is not committed`).toBe(true);
+  });
+
+  it('resolves by package name through the real Node loader (ESM and CJS)', () => {
+    // A semantic probe: the loader must hand back the ordered 205-code
+    // registry, not any JSON. codes[0] is the registry's first declaration
+    // (auth.required) and the floor mirrors the artifact describe above.
+    const cases = '[Array.isArray(m.codes), m.codes.length, m.codes[0]].join("#")';
+    const expected = 'true#205#auth.required';
+    const opts = { cwd: resolve(__dirname, '..'), encoding: 'utf8' } as const;
+    const esm = execFileSync(
+      process.execPath,
+      [
+        '--input-type=module',
+        '-e',
+        `const m = (await import("@phlix/contracts/dist/error-codes.json", { with: { type: "json" } })).default; console.log(${cases});`,
+      ],
+      opts,
+    ).trim();
+    expect(esm).toBe(expected);
+    const cjs = execFileSync(
+      process.execPath,
+      ['-e', `const m = require("@phlix/contracts/dist/error-codes.json"); console.log(${cases});`],
+      opts,
+    ).trim();
+    expect(cjs).toBe(expected);
   });
 });
