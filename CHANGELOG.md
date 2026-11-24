@@ -44,6 +44,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   server/hub). Cosmetic/legal-clarity only — no source bytes moved, `dist/`
   unchanged.
 - Dev-dependency upgrade: eslint 9 -> 10.15 (+ @eslint/js 10), @types/node 26, vite 8.3.8, vitest/coverage-v8 5.1, typescript-eslint 8.72.2. TypeScript stays on 6.0.x because typescript-eslint 8 supports only `<6.1.0` (TS 7 unsupported). `dist/` is byte-identical; GitHub Actions were already at latest majors. `npm audit` still reports only the single upstream minimatch advisory (no fix available; more dependents listed under eslint 10).
+- README/docs pass (phlix-contracts-018/-022/-034/-035, S-contracts-25): (a) the
+  positioning bullets and the `SyncPlay.ts` modules-table row now state that the
+  SyncPlay WebSocket frame/message types ship from `detain/phlix-syncplay` — the
+  split `src/errors.ts:17-18` already recorded — so a consumer wiring WS lands in
+  the right repo; (b) a new "Golden vectors" subsection maps the four
+  `test/fixtures/*.json` captures to their parity suites and key-list consts and
+  gives the consumer-side run-your-client-against-them recipe (previously each
+  client re-derived it); (c) every COOKIE-DESIGN.md cite named by the finding
+  (README x4, `src/headers.ts` x2) gained the doc's resolvable location — the
+  estate workspace root (`../COOKIE-DESIGN.md`), complementing the CTR-14/20 pass
+  that said "not vendored" but gave no path; (d) the `./routeManifest` subpath
+  note records that it resolves to the full package bundle (38,653 B at this
+  writing), tree-shaken by bundlers but paid in full by unbundled Node/CJS and
+  Metro consumers, cross-referencing the CTR-16 watch item. Comment/doc-only: no
+  wire, type or error-code change; the shipped `dist/headers.d.ts` and the source
+  maps regenerate with the docblock reflow; the frozen registry md5s
+  (5d1783a7/c2111cd3/8c92c070) hold.
 
 ### Added
 

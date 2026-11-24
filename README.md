@@ -15,6 +15,10 @@ Phlix client and both servers, so they stop redeclaring divergent local types.
   functions only.
 - Mirrors the PHP `detain/phlix-shared` package and the Phlix server's JSON
   response shapes.
+- **SyncPlay WebSocket frame types are not here.** The live-socket message
+  types and payload interfaces ship from `detain/phlix-syncplay` (the split
+  `src/errors.ts:17-18` records); this package holds the REST-side SyncPlay
+  shapes and the shared error-code vocabulary only.
 - **REST/wire response types use the server's `snake_case` field names
   verbatim.** Deliberate `camelCase` exceptions include: `LibraryQuery`'s
   query params (`yearFrom`, `yearTo`, `libraryId`, `parentId`, `topLevel`)
@@ -73,6 +77,17 @@ const errorCodes = require('@phlix/contracts/dist/error-codes.json');
   data is typed at the root export (`ERROR_CODES`, per-domain unions, and
   `SERVER_ROUTE_MANIFEST` plus the `isServedRoute` matcher from
   `routeManifest.ts`, also importable as `@phlix/contracts/routeManifest`).
+- **`@phlix/contracts/routeManifest` ships the full bundle, not a standalone
+  chunk.** Its `import`/`require` conditions resolve to the same whole-package
+  bundles the root export uses (`dist/phlix-contracts.js` — 38,653 B at this
+  writing — and `dist/phlix-contracts.umd.cjs`), because the build has one
+  lib entry; an `isServedRoute` import therefore references the module graph
+  that carries the full 418-tuple table. Bundler consumers tree-shake the
+  unused exports away; unbundled Node/CJS and Metro consumers pay the real
+  bytes. The layout is a deliberate watch item, not an oversight (CTR-16 note
+  in `CHANGELOG.md`). If a consumer only needs the route data, read the
+  `./dist/server-route-manifest.json` subpath directly instead of importing
+  the matcher.
 - **PHP-side vendoring idiom** (as phlix-server and phlix-hub do): copy the
   registry JSON into the repo's contract-test fixture path and keep that
   repo's `ErrorCodesContractTest` byte-pin green — the pin test is the
@@ -117,13 +132,13 @@ The root barrel (`src/index.ts`) re-exports all 25 modules below.
 |---------------|---------|
 | `media.ts`    | `MediaType`, `ContentRating`, `MediaItem`, `MediaPerson`, `ProductionCompany`, `MediaStream`, `MediaItemUserData`, `UserData`, `Library`, `LibrariesResponse`, `LibraryResponse`, `MediaItemsResponse`, `PagedMediaItemsResponse`, `MediaItemResponse`, `Series`, `Movie`, `Season`, `Episode`, `OtherMediaItem`, `AnyMediaItem` |
 | `playback.ts` | `StreamProtocol`, `StreamInfo`, `MediaSource`, `CanonicalRenditionId`/`RenditionId`, `AUTO_QUALITY`/`AutoQuality`/`QualitySelection`, `Rendition`/`RENDITION_KEYS`, `TranscodeSubtitleTrack`, `TranscodeStartResponse`, `TranscodeStatusResponse`, `pickDefaultRendition`, `SubtitleTrack`, `AudioTrack`, `SUBTITLE_TRACK_KEYS`/`AUDIO_TRACK_KEYS`/`TRACK_KEY_TIES`, `DeviceProfile`, `WindowsDeviceProfile`, `SkipButtonSpec`/`SKIP_BUTTON_SPEC_KEYS`, `SkipMarkers`/`PlaybackMarkers`, `TimeMarker`/`TIME_MARKER_KEYS`, `PlaybackInfoChapter`/`PLAYBACK_INFO_CHAPTER_KEYS`, `Crossfade`/`CROSSFADE_KEYS`, `PlaybackConstraints`/`PLAYBACK_CONSTRAINTS_KEYS`, `PlaybackInfo` (`quality_ladder` key always present, value `Rendition[] \| null` — LW-069), `PlaybackInfoBase`/`PLAYBACK_INFO_KEYS`, `PLAYBACK_INFO_KEY_TIES` (+ the `*KeysTied` compile-time tie types), `PlaybackBundle`, `PlaybackInfoResponse`, `PlaybackStartResponse`, `PlaybackProgress`, `PlaybackSession` |
-| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ `JwtIssuer`/`JwtAudience`/`JwtType`), `COOKIE_MODE`/`CookieMode` (since v0.5.8; absent from the `v0.5.7` tag) — token custody modes (COOKIE-DESIGN.md §2.1 — an estate workspace-root doc, not vendored here: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
+| `auth.ts`     | `User`, `UserInfo`, `AuthResult`, `ProviderAuthResult`, `Session`, `JwtClaims`, `JWT_ISS`/`JWT_AUD`/`JWT_TYPE` (+ `JwtIssuer`/`JwtAudience`/`JwtType`), `COOKIE_MODE`/`CookieMode` (since v0.5.8; absent from the `v0.5.7` tag) — token custody modes (COOKIE-DESIGN.md §2.1 — estate workspace-root doc, `../COOKIE-DESIGN.md` one directory above every `phlix-*` checkout, not vendored here: `cookie` = browser class, `bearer` = device class + http-LAN fallback) |
 | `hub.ts`      | `HeartbeatDto`, `HeartbeatLibrary`, `ServerInfoDto`, `ClaimRequest`, `ClaimResponse`, `SERVER_STATUS`/`ServerStatus` |
 | `library.ts`  | `LibraryQuery`, `LibrarySort`, `SortOrder`, `ServerSettings`, `SignupMode` |
 | `events.ts`   | event payload interfaces (`PhlixEvent` base + per-event `*Event`) + `PLUGIN_EVENT`/`PluginEventName`, `WEBHOOK_EVENT`/`WebhookEventType`, `WEBHOOK_EVENT_RESERVED`, `EVENT` |
 | `mcp.ts`      | `MCP_SCOPE`, `McpScope`, `MCP_SCOPES`, `MCP_TOKEN_PREFIX` (mirrored to `dist/mcp-scopes.json`) |
 | `errors.ts`   | `ERROR_CODE`, `ERROR_CODES`, `ERROR_DOMAINS`/`ErrorDomain`, `ErrorCode`/`ErrorCodeIn`, per-domain code lists + unions, `SYNCPLAY_ERROR_CODES`/`SyncPlayErrorCode`, `LEGACY_SYNCPLAY_ERROR_CODES`, `SYNCPLAY_ERROR_CODE_TWINS` (mirrored to `dist/error-codes.json`) |
-| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `BuildPhlixHeadersOptions`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1 — estate workspace-root doc, not vendored) |
+| `headers.ts`  | `X_PHLIX_*` header-name constants, `DeviceType`, `BuildPhlixHeadersOptions`, `buildPhlixHeaders` (its `X-Phlix-Device-Type` header is the server's cookie opt-out signal — COOKIE-DESIGN.md §2.1 — estate workspace-root doc, `../COOKIE-DESIGN.md`, not vendored; location note under `CP-NNN` in Reading conventions) |
 | `ticks.ts`    | `TICKS_PER_SECOND`/`_MINUTE`/`_HOUR`, `ticksToSeconds`, `secondsToTicks`, `ticksToMinutes`, `ticksToHms`, `formatRuntime`, `formatDuration` |
 | `Rating.ts`   | `Rating`, `MediaRatings`, `RatingValue`, `RatingSortKey`, `MinRatingFilter`, `MaxRatingFilter`, `SmartRuleField`, `MediaItemRatingSource`, `pickDisplayRating`, `ManualMatchOverride` |
 | `Chapter.ts`  | `ChapterMarker`, `ChapterTrack`, `ChapterInfo`, `TrickplaySprite`, `TrickplayInfo`, `SkipConfig`, `MarkerTimeline` |
@@ -137,8 +152,8 @@ The root barrel (`src/index.ts`) re-exports all 25 modules below.
 | `ProfileTag.ts` | `ProfileTag` |
 | `StreamSession.ts` | `ProfileStreamLimit`/`PROFILE_STREAM_LIMIT_KEYS`, `StreamType`, `ActiveStream`/`ACTIVE_STREAM_KEYS`, `STREAM_SESSION_KEY_TIES` (+ `*KeysTied` tie types) |
 | `Music.ts`    | `MusicArtist`, `MusicAlbum`, `MusicTrack`, `AudioPreferences` |
-| `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup` (`SyncPlayRoom` is a deprecated alias), `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` |
-| `routeManifest.ts` | `isServedRoute` (the client-side tuple-exact match law), plus `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` re-exported unchanged from `routeManifest.generated.ts` (generated, never hand-edited — see `scripts/generate-server-route-manifest.mjs`); also importable via the `@phlix/contracts/routeManifest` subpath |
+| `SyncPlay.ts` | `SyncPlayRole`, `SyncPlayPermission`, `SyncPlayMember`/`SyncPlayMembersDict`, `SyncPlayQueueItem`, `SyncPlayGroup` (`SyncPlayRoom` is a deprecated alias), `SyncPlayGroupListItem`, the REST envelopes (`SyncPlayListGroupsResponse`, `SyncPlayCreateGroupResponse`, `SyncPlayGetGroupResponse`, `SyncPlayJoinGroupResponse`, `SyncPlayLeaveGroupResponse`, `SyncPlayErrorResponse`), `SYNC_PLAY_*_KEYS`, `SYNC_PLAY_KEY_TIES` — REST-side only: the WebSocket frame/message types ship from `detain/phlix-syncplay` |
+| `routeManifest.ts` | `isServedRoute` (the client-side tuple-exact match law), plus `SERVER_ROUTE_MANIFEST`, `SERVER_ROUTE_MANIFEST_PROVENANCE` re-exported unchanged from `routeManifest.generated.ts` (generated, never hand-edited — see `scripts/generate-server-route-manifest.mjs`); also importable via the `@phlix/contracts/routeManifest` subpath — the subpath resolves to the full package bundle, see Consuming the registries |
 
 Registry provenance, deliberately:
 
@@ -198,6 +213,32 @@ Registry provenance, deliberately:
   `SUBTITLE_TRACK_KEYS`, `SYNC_PLAY_*_KEYS`) are gated against the captured
   server fixtures in `test/fixtures/`.
 
+### Golden vectors
+
+`test/fixtures/` ships four **golden-vector** files — wire payloads captured
+from the real `detain/phlix-server` emit sites, each with a provenance header
+recording the `serverSha` and the authority classes it was dumped from
+(regeneration commands, refuse-drift rules, and throwaway-MySQL requirements
+are under Development). This package's acceptance bar for its key-list consts:
+
+| Fixture | Pinned by | Key sets |
+|---------|-----------|----------|
+| `stream-track-vectors.json` | `test/trackShapeParity.test.ts` | `AUDIO_TRACK_KEYS`, `SUBTITLE_TRACK_KEYS` |
+| `syncplay-envelope-vectors.json` | `test/syncPlayShapeParity.test.ts` | `SYNC_PLAY_*_KEYS` + the REST envelopes |
+| `playback-info-vectors.json` | `test/playbackShapeParity.test.ts` | `PLAYBACK_INFO_KEYS` (+ rendition shapes) |
+| `stream-session-vectors.json` | `test/streamSessionShapeParity.test.ts` | `PROFILE_STREAM_LIMIT_KEYS`, `ACTIVE_STREAM_KEYS` |
+
+Run-your-client recipe: in each fixture, every recorded `response`/`state`/
+entry value is **emitted bytes decoded from real server output** — only the
+input literals are hand-built (each file's `$comment` says so). That makes the
+four files a shared conformance corpus for any client: feed each recorded
+payload through your client's JSON parse + model layer and assert the decoded
+object carries exactly the recorded keys and values — the same check the four
+parity suites above run against this package's types. If your parser diverges
+on a recorded key, either it disagrees with the server's actual wire output
+(client bug) or your server build is past the fixture's provenance `serverSha`
+(regenerate against that sha via the dump scripts — never hand-edit).
+
 ## Development
 
 ```bash
@@ -250,13 +291,20 @@ Notation the README, source docblocks, and CHANGELOG use throughout:
 - **`SNNN`** — an estate audit-program ticket (S280 = the route-manifest generation
   program; S249 = the MCP-scope census this package also vendors).
 - **`CP-NNN`** — a Cookie Program row: the estate token-custody program
-  COOKIE-DESIGN.md specifies (CP-001 = the `COOKIE_MODE` custody marker this package
+  COOKIE-DESIGN.md specifies. Locating that doc: it lives in the estate
+  workspace root — the directory that holds all the `phlix-*` checkouts, i.e.
+  `../COOKIE-DESIGN.md` relative to this repo (on the estate host:
+  `/home/sites/phlix/COOKIE-DESIGN.md`) — and is not vendored into any package
+  tarball, so every COOKIE-DESIGN.md §-cite in this README and in source
+  docblocks resolves only against an estate workspace layout. (CP-001 = the
+  `COOKIE_MODE` custody marker this package
   records; CP-011 = the cookie dual-emit lane). Rows also carry the program's
   knock-on work (CP-025 = the `verify:cites` re-anchor sweep after cookie-era churn).
 - **`LW-NNN`** — an estate-review ledger row: one cross-repo review finding and the
   cure that answers it (LW-040 = the `WireKeysExact` consolidation; LW-069 = the
   `PlaybackInfo` key-set truth). Source and test docblocks cite the row a pin answers.
-- **`CD-Na`** — an owner ruling recorded in COOKIE-DESIGN.md (CD-1a..CD-8a, ruled
+- **`CD-Na`** — an owner ruling recorded in COOKIE-DESIGN.md (workspace-root doc —
+  location under `CP-NNN` above; CD-1a..CD-8a, ruled
   2026-11-05); e.g. CD-2a = the envelope law (device-class requests never receive
   `Set-Cookie`), CD-3a = the https/localhost `Secure` law.
 - **`W1`/`W1b`/`W2`/`W3`/`W5`** — the numbered server/hub emit-wave lanes that promoted
