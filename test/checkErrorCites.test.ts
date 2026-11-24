@@ -61,7 +61,7 @@ describe('CITE_RE grammar — prefix forms', () => {
     expect(scanCites('hub Application.php:12')).toEqual([
       { from: 12, to: 12, prefix: 'hub', file: 'Application.php', index: 0 },
     ]);
-    expect(scanCites('srv File.php:7')[0].prefix).toBe('srv');
+    expect(scanCites('srv File.php:7')[0]!.prefix).toBe('srv');
   });
 
   it('accepts a path cite and prose between cites', () => {
@@ -308,7 +308,7 @@ describe('real-registry golden — the sweep substrate itself', () => {
     const b = scanCites('hub X.php:10');
     expect(spans(a)).toEqual(['1-1', '237-241', '300-300']);
     expect(b).toHaveLength(1);
-    expect(b[0].index).toBe(0);
+    expect(b[0]!.index).toBe(0);
     expect(scanCites('srv A.php:10 and B.php:20 :30')).toEqual(scanCites('srv A.php:10 and B.php:20 :30'));
   });
 });

@@ -176,7 +176,7 @@ describe('rendition wire-shape smoke', () => {
       subtitles: [],
       variants: null,
     };
-    expect(start.variants?.[0].id).toBe('1080p');
+    expect(start.variants?.[0]!.id).toBe('1080p');
     expect(legacy.variants).toBeNull();
     expect(legacy.progress).toBe(42.5);
     expect(start.dash_url).toContain('/dash/j1/manifest.mpd');
@@ -248,7 +248,7 @@ describe('rendition wire-shape smoke', () => {
     // Unscanned item → whole value null; the key stays present (bare rail in
     // test/fixtures/playback-info-vectors.json pins exactly this).
     const nullLadder: PlaybackInfo = { ...withLadder, quality_ladder: null };
-    expect(withLadder.quality_ladder?.[0].url).toBeNull();
+    expect(withLadder.quality_ladder?.[0]!.url).toBeNull();
     expect(nullLadder.quality_ladder).toBeNull();
     expect(Object.keys(nullLadder)).toContain('quality_ladder');
   });

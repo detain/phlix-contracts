@@ -187,8 +187,8 @@ describe('isErrorCode runtime guard', () => {
   });
 
   it('rejects unknown strings and every near-miss of a real code', () => {
-    const first = ERROR_CODES[0];
-    const last = ERROR_CODES[ERROR_CODES.length - 1];
+    const first = ERROR_CODES[0]!;
+    const last = ERROR_CODES[ERROR_CODES.length - 1]!;
     for (const value of [
       '',
       'nope',

@@ -38,6 +38,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Package-internal type strictness raised — S-contracts-05 /
+  phlix-contracts-006 [Medium], -025 [Low]. `tsconfig.json` now enables
+  `noUncheckedIndexedAccess`: every indexed read (`arr[i]`, `.split(…)[0]`,
+  record lookup) types as `T | undefined` until the site proves otherwise —
+  in a contracts package whose entire job is honest typing, an unguarded
+  index read pretending to be defined was the gap to close. Re-measured
+  from red at this base: 52 errors (1 src / 51 test; the plan-time reviewer
+  figure of 48 predates the pinning tests S-contracts-07/-16 added after
+  it). All resolved: `src/Audio.ts` guards `pickDefaultAudio`'s subtag
+  extraction with a non-null assertion (`String.prototype.split` always
+  returns at least one segment — a language invariant asserted, not a
+  runtime arm added: the emitted JS stays byte-identical), and the test
+  sites assert into fixtures whose membership they themselves pin. The two
+  shape-parity suites model their rail sets as closed vocabularies instead
+  (`Record<VectorRail, Rail>` keyed by a literal union + `as const` name
+  loops): named-rail lookups become total, a rail-name typo is now
+  compile-red, and the runtime membership loops still prove the shipped
+  fixtures carry every rail. `tsconfig.build.json` retires its
+  unused-locals/unused-parameters `false` overrides (-025): `src/` passes
+  both arms under the root config already, so the divergence silently
+  tolerated dead code on the build path only. Zero shipped-surface change:
+  no `.d.ts` or bundle bytes move, the frozen trio is byte-ident
+  (`error-codes.json` `5d1783a7…`, `server-route-manifest.json`
+  `626e475b…`, `mcp-scopes.json` `8c92c070…`); the two bundle source maps
+  move their embedded `Audio.ts` text/mappings only.
+
 - `scripts/generate-server-route-manifest.mjs` generator hardening —
   S-contracts-04 / phlix-contracts-005 [Medium], -020 [Low], -021 [Low].
   (a) The emitted `SERVER_ROUTE_MANIFEST` const is now UN-ANNOTATED: the old

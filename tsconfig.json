@@ -28,6 +28,11 @@
         // (2026-11-06). test/types.test.ts carries the @ts-expect-error pins
         // that turn "someone removes this line" into a red typecheck gate.
         "exactOptionalPropertyTypes": true,
+        // S-contracts-05 (phlix-contracts-006): a wire-contract package must
+        // not let an unguarded indexed read pretend to be a defined value —
+        // under this flag every `arr[i]` / `.split(...)[0]` is `T | undefined`
+        // until the site proves otherwise.
+        "noUncheckedIndexedAccess": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,

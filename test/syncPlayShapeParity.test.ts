@@ -89,9 +89,24 @@ interface VectorFixture {
     authority: string;
     marker: string;
   };
-  rails: Record<string, Rail>;
+  // S-contracts-05: the rail set is a CLOSED vocabulary this suite pins by
+  // name — an open Record<string, Rail> made every named lookup `| undefined`
+  // under noUncheckedIndexedAccess. Keying the record by the union makes the
+  // dot-accesses total (and typos red at compile time); the runtime
+  // membership loop below still proves the shipped fixture carries them all.
+  rails: Record<VectorRail, Rail>;
   groupState: { case: string; state: Record<string, unknown> };
 }
+
+/** Every rail this vector fixture must carry. */
+type VectorRail =
+  | 'listGroups'
+  | 'createGroup'
+  | 'getGroup'
+  | 'joinGroup'
+  | 'leaveGroup'
+  | 'createGroupError'
+  | 'getGroupNotFound';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(here, 'fixtures', 'syncplay-envelope-vectors.json');
@@ -204,7 +219,7 @@ describe('SyncPlayShapeParity', () => {
         'leaveGroup',
         'createGroupError',
         'getGroupNotFound',
-      ]) {
+      ] as const) {
         expect(fixture.rails[name], `rail ${name} missing from the fixture`).toBeDefined();
       }
       expect((fixture.rails.listGroups.response.groups as unknown[]).length).toBeGreaterThan(0);
@@ -221,7 +236,7 @@ describe('SyncPlayShapeParity', () => {
     });
 
     it('create/join/get rails all carry the same state keys', () => {
-      for (const rail of ['createGroup', 'joinGroup', 'getGroup']) {
+      for (const rail of ['createGroup', 'joinGroup', 'getGroup'] as const) {
         const group = fixture.rails[rail].response.group as Record<string, unknown>;
         expect(Object.keys(group), `rail ${rail}`).toEqual([...SYNC_PLAY_GROUP_KEYS]);
       }
@@ -235,8 +250,8 @@ describe('SyncPlayShapeParity', () => {
         expect(Object.keys(value)).toEqual([...SYNC_PLAY_MEMBER_KEYS]);
         expect(value.id, 'dict key must equal the member id').toBe(id);
       }
-      expect(members.alpha.is_host, 'the host member must be marked').toBe(true);
-      expect(members.beta.is_host, 'a non-host member must be marked false').toBe(false);
+      expect(members.alpha!.is_host, 'the host member must be marked').toBe(true);
+      expect(members.beta!.is_host, 'a non-host member must be marked false').toBe(false);
     });
 
     it('queue items carry the exact ordered emitted keys', () => {
@@ -247,7 +262,7 @@ describe('SyncPlayShapeParity', () => {
     });
 
     it('no state rail carries the pre-S415 list-row fiction', () => {
-      for (const rail of ['createGroup', 'joinGroup', 'getGroup']) {
+      for (const rail of ['createGroup', 'joinGroup', 'getGroup'] as const) {
         const keys = Object.keys(fixture.rails[rail].response.group as Record<string, unknown>);
         for (const fiction of STATE_FICTION_KEYS) {
           expect(keys, `${rail} emitted '${fiction}' — authority changed without re-ruling`).not.toContain(fiction);
@@ -268,9 +283,9 @@ describe('SyncPlayShapeParity', () => {
       }
       // The password witness: a password-protected group lists has_password=true
       // through the REAL publish/read round-trip (the S414 console bug class).
-      expect(rows[0].has_password).toBe(true);
-      expect(rows[0].is_playing).toBe(false);
-      expect(typeof rows[0].id).toBe('string');
+      expect(rows[0]!.has_password).toBe(true);
+      expect(rows[0]!.is_playing).toBe(false);
+      expect(typeof rows[0]!.id).toBe('string');
     });
   });
 
@@ -336,7 +351,7 @@ describe('SyncPlayShapeParity', () => {
 
     it('every playback_state the server emitted in the fixture is a NAMED arm', () => {
       const emitted: unknown[] = [fixture.groupState.state.playback_state];
-      for (const rail of ['createGroup', 'joinGroup', 'getGroup']) {
+      for (const rail of ['createGroup', 'joinGroup', 'getGroup'] as const) {
         const group = fixture.rails[rail].response.group as Record<string, unknown>;
         emitted.push(group.playback_state);
       }

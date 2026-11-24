@@ -77,8 +77,21 @@ interface VectorFixture {
     marker: string;
     signer: string;
   };
-  rails: Record<string, Rail>;
+  // S-contracts-05: the rail set is a CLOSED vocabulary this suite pins by
+  // name — an open Record<string, Rail> made every named lookup `| undefined`
+  // under noUncheckedIndexedAccess. Keying the record by the union makes the
+  // dot-accesses total (and typos red at compile time); the runtime
+  // membership loop below still proves the shipped fixture carries them all.
+  rails: Record<VectorRail, Rail>;
 }
+
+/** Every rail this vector fixture must carry. */
+type VectorRail =
+  | 'rich'
+  | 'constraintsBoth'
+  | 'constraintsSubset'
+  | 'bare'
+  | 'notFound';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const FIXTURE_PATH = resolve(here, 'fixtures', 'playback-info-vectors.json');
@@ -128,7 +141,7 @@ describe('PlaybackInfoShapeParity (LW-069)', () => {
     });
 
     it('carries every rail and never a vacuous witness', () => {
-      for (const name of ['rich', 'constraintsBoth', 'constraintsSubset', 'bare', 'notFound']) {
+      for (const name of ['rich', 'constraintsBoth', 'constraintsSubset', 'bare', 'notFound'] as const) {
         expect(fixture.rails[name], `rail ${name} missing from the fixture`).toBeDefined();
       }
       expect((rich.chapters as unknown[]).length, 'rich rail has no chapter rows').toBeGreaterThan(0);
@@ -216,7 +229,7 @@ describe('PlaybackInfoShapeParity (LW-069)', () => {
         expect(rung.url, `rung ${rung.id} minted a url — the preview must not`).toBeNull();
       }
       expect(ladder.filter((rung) => rung.is_original === true)).toHaveLength(1);
-      expect(ladder[0].id).toBe('original');
+      expect(ladder[0]!.id).toBe('original');
       // The whole field is null for an item with no source metadata — the KEY
       // stays present (the pre-LW-069 optional-key fiction died here).
       expect(Object.keys(bare)).toContain('quality_ladder');
@@ -232,9 +245,9 @@ describe('PlaybackInfoShapeParity (LW-069)', () => {
       }
       expect(rows.map((row) => row.index)).toEqual([0, 1]);
       expect(rows.map((row) => row.stream_index)).toEqual([1, 2]);
-      expect(rows[0].default).toBe(true); // stored disposition promoted
-      expect(rows[1].default).toBe(false);
-      expect(rows[1].title).toBe('Commentary');
+      expect(rows[0]!.default).toBe(true); // stored disposition promoted
+      expect(rows[1]!.default).toBe(false);
+      expect(rows[1]!.title).toBe('Commentary');
       expect(bare.audio_tracks).toEqual([]);
     });
 
@@ -255,7 +268,7 @@ describe('PlaybackInfoShapeParity (LW-069)', () => {
       for (const row of rows) {
         expect(row.url as string).not.toContain('sig=');
       }
-      expect(rows[0].url).toBe('/api/v1/media/bbbbbbbb-0000-4000-8000-000000000001/subtitles/0');
+      expect(rows[0]!.url).toBe('/api/v1/media/bbbbbbbb-0000-4000-8000-000000000001/subtitles/0');
       expect(bare.subtitle_tracks).toEqual([]);
     });
   });

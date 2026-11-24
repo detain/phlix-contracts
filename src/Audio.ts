@@ -35,7 +35,11 @@ export function pickDefaultAudio(
   if (!preferredLanguages.length) return 0;
 
   for (const prefLang of preferredLanguages) {
-    const normalizedPref = prefLang.toLowerCase().split('-')[0]; // 'en-US' -> 'en'
+    // S-contracts-05: under noUncheckedIndexedAccess this read types as
+    // `string | undefined`, but String.prototype.split ALWAYS returns at
+    // least one segment — a language invariant, asserted rather than given a
+    // runtime `??` arm the emitted JS could never take (keeps the bundle byte-identical).
+    const normalizedPref = prefLang.toLowerCase().split('-')[0]!; // 'en-US' -> 'en'
     const idx = tracks.findIndex(t =>
       t.language?.toLowerCase().startsWith(normalizedPref)
     );

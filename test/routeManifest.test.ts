@@ -327,7 +327,7 @@ describe('isServedRoute — packaged surface (exports hygiene, LW-070)', () => {
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as {
       exports: Record<string, { types?: string; import?: string; require?: string }>;
     };
-    const entry = pkg.exports['./routeManifest'];
+    const entry = pkg.exports['./routeManifest']!;
     expect(entry, 'package.json exports is missing the ./routeManifest subpath').toBeDefined();
     expect(entry.types).toBe('./dist/routeManifest.d.ts');
     expect(entry.import).toBe('./dist/phlix-contracts.js');

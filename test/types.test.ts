@@ -84,7 +84,7 @@ describe('type-level construction smoke', () => {
     };
     expect(item.id).toBe('a1');
     expect(item.actors).toEqual(['Harrison Ford']);
-    expect(item.cast?.[0].role).toBe('Deckard');
+    expect(item.cast?.[0]!.role).toBe('Deckard');
     expect(item.sort_title).toBe('Blade Runner');
     expect(item.duration).toBe(7020);
     expect(item.poster_srcset).toContain('342w');
@@ -206,7 +206,7 @@ describe('type-level construction smoke', () => {
       // single-library detail omits item_count
       library: { id: 'l1', name: 'Movies', type: 'movie' },
     };
-    expect(list.libraries[0].item_count).toBe(3);
+    expect(list.libraries[0]!.item_count).toBe(3);
     expect(detail.library.id).toBe('l1');
   });
 
@@ -386,7 +386,7 @@ describe('type-level construction smoke', () => {
       relayActive: false,
       libraryCount: null,
     };
-    expect(hb.libraries[0].library_id).toBe('l1');
+    expect(hb.libraries[0]!.library_id).toBe('l1');
     expect(info.relayActive).toBe(false);
   });
 

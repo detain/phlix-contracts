@@ -12,8 +12,15 @@
         "declarationDir": "./dist",
         "rootDir": "src",
         "emitDeclarationOnly": true,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false
+        // S-contracts-05 (phlix-contracts-025): build-config parity — the
+        // unused-locals/parameters arms stay ON here, identical to the root
+        // tsconfig the typecheck gate runs. src/ passes them under the root
+        // config already (it includes src/**), so this override was pure
+        // divergence: a locally-unused symbol sailed through `npm run build`
+        // and only surfaced in the separate typecheck leg — or, in CI orders
+        // that build before typecheck, never before the bytes shipped.
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
     },
     "include": ["src/**/*.ts", "src/**/*.d.ts"],
     "exclude": ["test/**/*", "src/**/*.test.ts"]
